@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technician Growth Planner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F2EDE6; color: #1E1E1E; min-height: 100vh; font-size: 14px; }
+    header { background: #1A1A1A; padding: 22px 36px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+    .header-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #C9A84C; margin-bottom: 4px; }
+    header h1 { font-size: 18px; font-weight: 700; color: #FFF; }
+    header p  { font-size: 12px; color: #999; margin-top: 2px; }
+    .header-actions { display: flex; gap: 8px; }
+    .header-btn { padding: 8px 14px; border-radius: 7px; border: 1.5px solid #444; background: transparent; color: #CCC; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+    .header-btn:hover { border-color: #C9A84C; color: #C9A84C; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 28px 20px 60px; }
+    .disclaimer { background: #FDF6E3; border: 1.5px solid #E8D49A; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 12.5px; color: #6B5518; line-height: 1.55; display: flex; gap: 10px; align-items: flex-start; }
+    .disclaimer .d-icon { font-size: 18px; flex-shrink: 0; line-height: 1.3; }
+    .card { background: #FFF; border-radius: 14px; padding: 26px 28px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #EAE4DC; }
+    .card-title { font-size: 14px; font-weight: 700; color: #1A1A1A; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #C9A84C; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .step-num { background: #1A1A1A; color: #C9A84C; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+    .profile-grid { display: grid; grid-template-columns: 2fr 1.4fr 1.4fr 1.4fr; gap: 16px; margin-bottom: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #888; }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; border: 1.5px solid #DDD7CE; border-radius: 8px; font-size: 13px; color: #1A1A1A; background: #FAFAF9; transition: border-color 0.15s, box-shadow 0.15s; font-family: inherit; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #C9A84C; box-shadow: 0 0 0 3px rgba(201,168,76,0.12); background: #FFF; }
+    .form-group select { cursor: pointer; }
+    .metrics-intro { font-size: 12px; color: #888; margin-bottom: 16px; padding: 10px 14px; background: #FAFAF9; border-radius: 8px; border: 1px solid #EAE4DC; }
+    .optional-tag { margin-left: auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #B5890C; background: #FDF6E3; border: 1px solid #E8D49A; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .metrics-table { width: 100%; border-collapse: collapse; }
+    .metrics-table thead th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #888; border-bottom: 2px solid #EAE4DC; }
+    .metrics-table thead th:not(:first-child) { text-align: center; }
+    .metrics-table .group-row td { padding: 10px 16px 6px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #B5890C; background: #FDFAF4; border-top: 2px solid #EAE4DC; }
+    .metrics-table .group-row:first-child td { border-top: none; }
+    .metrics-table .data-row td { padding: 8px 16px; border-bottom: 1px solid #F2EDE6; vertical-align: middle; }
+    .metrics-table .data-row:last-child td { border-bottom: none; }
+    .metrics-table .data-row:hover { background: #FDFAF9; }
+    .metric-label { font-size: 13px; color: #333; }
+    .metric-hint { font-size: 10.5px; color: #B5890C; font-style: italic; display: block; margin-top: 1px; }
+    .input-wrap { display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .input-wrap .sym { font-size: 12px; color: #AAA; flex-shrink: 0; }
+    .input-wrap input { width: 110px; padding: 8px 10px; border: 1.5px solid #DDD7CE; border-radius: 7px; font-size: 13px; text-align: right; color: #1A1A1A; background: #FAFAF9; transition: border-color 0.15s, box-shadow 0.15s; }
+    .input-wrap input:focus { outline: none; border-color: #C9A84C; box-shadow: 0 0 0 3px rgba(201,168,76,0.12); background: #FFF; }
+    .gen-btn { display: block; width: 100%; padding: 16px; background: #1A1A1A; color: #FFF; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s, transform 0.1s; margin: 8px 0 28px; }
+    .gen-btn:hover { background: #C9A84C; }
+    .gen-btn:active { transform: scale(0.99); }
+    #resultsSection { display: none; }
+    .results-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; gap: 12px; }
+    .results-header h2 { font-size: 18px; font-weight: 700; color: #1A1A1A; }
+    .results-header p  { font-size: 12px; color: #888; margin-top: 3px; }
+    .results-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .results-btn { padding: 8px 16px; border-radius: 8px; border: 1.5px solid #DDD7CE; background: white; font-size: 12px; font-weight: 600; cursor: pointer; color: #555; transition: all 0.15s; white-space: nowrap; }
+    .results-btn:hover { border-color: #C9A84C; color: #B5890C; }
+    .result-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; background: #FFF; border: 1px solid #EAE4DC; border-radius: 12px; padding: 6px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+    .rtab { padding: 9px 15px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: #555; cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+    .rtab:hover { background: #FAFAF9; color: #1A1A1A; }
+    .rtab.active { background: #1A1A1A; color: #FFF; }
+    .rtab-print { margin-left: auto; padding: 9px 15px; border: 1.5px solid #EAE4DC; background: transparent; font-size: 13px; font-weight: 600; color: #1A1A1A; cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+    .rtab-print:hover { border-color: #C9A84C; background: #FAFAF9; }
+    .rpanel { display: none; }
+    .rpanel.active { display: block; }
+    .status-banner { border-radius: 14px; padding: 22px 26px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 18px; border: 1.5px solid transparent; }
+    .status-banner.green  { background: #EBF7F0; border-color: #A3D9B1; }
+    .status-banner.yellow { background: #FFF8E7; border-color: #F5CC6E; }
+    .status-banner.red    { background: #FEF0EE; border-color: #F5A89A; }
+    .status-banner.blue   { background: #EFF6FF; border-color: #93C5FD; }
+    .status-emoji { font-size: 44px; line-height: 1; flex-shrink: 0; }
+    .status-body h3 { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
+    .status-banner.green  .status-body h3 { color: #155724; }
+    .status-banner.yellow .status-body h3 { color: #7B5A00; }
+    .status-banner.red    .status-body h3 { color: #7A1A1A; }
+    .status-banner.blue   .status-body h3 { color: #1E3A5F; }
+    .status-body p { font-size: 13px; color: #444; line-height: 1.55; }
+    .status-meta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 7px; }
+    .meta-pill { padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(0,0,0,0.06); color: #555; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+    .kpi-row { display: grid; gap: 10px; margin-bottom: 10px; }
+    .kpi-row:last-child { margin-bottom: 0; }
+    .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .kpi-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .kpi-card { background: #FAFAF9; border: 1.5px solid #EAE4DC; border-radius: 10px; padding: 13px 14px; }
+    .kpi-card.bm-green  { border-color: #A3D9B1; background: #F4FBF6; }
+    .kpi-card.bm-yellow { border-color: #F5CC6E; background: #FDFAF0; }
+    .kpi-card.bm-red    { border-color: #F5A89A; background: #FEF5F4; }
+    .kpi-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #999; margin-bottom: 6px; }
+    .kpi-value-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: #1A1A1A; line-height: 1; }
+    .kpi-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .kpi-dot.green  { background: #28A745; }
+    .kpi-dot.yellow { background: #F0B429; }
+    .kpi-dot.red    { background: #DC3545; }
+    .kpi-trend-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: wrap; }
+    .trend-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 600; }
+    .trend-pill.up     { background: #D4F0DC; color: #1A6B30; }
+    .trend-pill.down   { background: #FDDDD9; color: #9B1C1C; }
+    .trend-pill.stable { background: #FFF3D6; color: #B5890C; }
+    .trend-pill.neutral { background: #EEE; color: #AAA; }
+    .trend-pill.capacity { background: #E0EDFB; color: #1E3A5F; }
+    .kpi-target { font-size: 10px; color: #BBB; }
+    .root-cause-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 14px; }
+    .root-cause-card { border-radius: 10px; padding: 16px; border-left: 4px solid transparent; }
+    .root-cause-card.acquisition { background: #FEF0EE; border-left-color: #DC3545; }
+    .root-cause-card.retention   { background: #FFF8E7; border-left-color: #F0B429; }
+    .root-cause-card.revenue     { background: #F3EEFF; border-left-color: #7C3AED; }
+    .root-cause-card.success     { background: #EBF7F0; border-left-color: #28A745; }
+    .root-cause-card.capacity    { background: #EFF6FF; border-left-color: #3B82F6; }
+    .rc-icon  { font-size: 24px; margin-bottom: 8px; }
+    .rc-title { font-size: 14px; font-weight: 700; color: #1A1A1A; }
+    .rc-sub   { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.6px; color: #888; margin: 2px 0 10px; }
+    .rc-signals { padding-left: 14px; }
+    .rc-signals li { font-size: 12.5px; color: #333; margin-bottom: 5px; line-height: 1.4; }
+    .new-tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .ntb-cell { text-align: center; padding: 10px 8px; background: white; border-radius: 8px; border: 1px solid #EAE4DC; }
+    .ntb-label { font-size: 10px; color: #888; margin-bottom: 4px; }
+    .ntb-val   { font-size: 18px; font-weight: 800; color: #1A1A1A; }
+    .coaching-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .coaching-card { border-radius: 10px; padding: 16px; border: 1.5px solid #EAE4DC; background: #FAFAF9; border-top: 4px solid #CCC; }
+    .coaching-card.p1 { border-top-color: #DC3545; }
+    .coaching-card.p2 { border-top-color: #F0B429; }
+    .coaching-card.p3 { border-top-color: #28A745; }
+    .coaching-card.p4 { border-top-color: #7C3AED; }
+    .coaching-card.notes-card { border-top-color: #3B82F6; background: #EFF6FF; border-color: #93C5FD; }
+    .cc-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #999; margin-bottom: 4px; }
+    .cc-title    { font-size: 14px; font-weight: 700; color: #1A1A1A; margin-bottom: 10px; }
+    .cc-list     { padding-left: 14px; }
+    .cc-list li  { font-size: 12.5px; color: #444; margin-bottom: 6px; line-height: 1.45; }
+    .notes-text  { font-size: 13px; color: #1E3A5F; line-height: 1.6; margin-bottom: 10px; background: white; padding: 10px 12px; border-radius: 7px; border: 1px solid #93C5FD; font-style: italic; }
+    .cycle-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .cycle-table th, .cycle-table td { padding: 5px 10px; font-size: 11.5px; border: 1px solid #EAE4DC; text-align: left; }
+    .cycle-table th { background: #FDFAF4; color: #B5890C; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; }
+    .price-card { border-radius: 10px; padding: 20px; border: 1.5px solid #EAE4DC; }
+    .price-card.ready     { background: #EBF7F0; border-color: #A3D9B1; }
+    .price-card.not-ready { background: #FFF8E7; border-color: #F5CC6E; }
+    .price-card.na        { background: #EFF6FF; border-color: #93C5FD; }
+    .pc-icon  { font-size: 30px; margin-bottom: 8px; }
+    .pc-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .price-card.ready     .pc-title { color: #155724; }
+    .price-card.not-ready .pc-title { color: #7B5A00; }
+    .price-card.na        .pc-title { color: #1E3A5F; }
+    .pc-body { font-size: 13px; color: #333; line-height: 1.6; }
+    .price-guide { margin-top: 14px; background: white; border-radius: 8px; padding: 14px; border: 1px solid rgba(0,0,0,0.08); }
+    .price-guide-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; color: #1A1A1A; }
+    .price-guide ul, .criteria-list { padding-left: 14px; margin-top: 8px; }
+    .price-guide li, .criteria-list li { font-size: 12.5px; color: #444; margin-bottom: 5px; line-height: 1.4; }
+    .criteria-list li::marker { color: #F0B429; }
+    .tt-step { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #B5890C; margin: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
+    .tt-step::after { content: ''; flex: 1; height: 1px; background: #EAE4DC; }
+    .tier-card { border: 1.5px solid #EAE4DC; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; background: #FAFAF9; }
+    .tier-card.q { border-color: #A3D9B1; background: #F4FBF6; }
+    .tier-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+    .tier-name { font-size: 14px; font-weight: 800; color: #1A1A1A; }
+    .tier-pill { padding: 3px 11px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .tier-pill.q { background: #D4F0DC; color: #1A6B30; }
+    .tier-pill.f { background: #FDDDD9; color: #9B1C1C; }
+    .tier-pill.i { background: #FFF3D6; color: #B5890C; }
+    .path-label { font-size: 10.5px; font-weight: 700; color: #888; margin: 8px 0 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .month-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .m-chip { flex: 1; min-width: 100px; text-align: center; border-radius: 8px; padding: 8px 6px; border: 1.5px solid #EAE4DC; background: #FFF; }
+    .m-chip .m-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #999; margin-bottom: 2px; }
+    .m-chip .m-val { font-size: 14px; font-weight: 800; color: #1A1A1A; }
+    .m-chip.ok  { background: #F4FBF6; border-color: #A3D9B1; } .m-chip.ok .m-val  { color: #1A6B30; }
+    .m-chip.bad { background: #FEF5F4; border-color: #F5A89A; } .m-chip.bad .m-val { color: #9B1C1C; }
+    .m-chip.na .m-val { color: #BBB; font-weight: 600; }
+    .goal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 4px 0 14px; }
+    .goal-tile { border-radius: 12px; padding: 18px 16px; text-align: center; border: 1.5px solid #E8D49A; background: #FDF6E3; }
+    .goal-tile.primary { background: #1A1A1A; border-color: #1A1A1A; }
+    .goal-tile .g-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #B5890C; margin-bottom: 6px; }
+    .goal-tile.primary .g-label { color: #C9A84C; }
+    .goal-tile .g-value { font-size: 28px; font-weight: 800; color: #1A1A1A; line-height: 1.05; }
+    .goal-tile.primary .g-value { color: #FFF; }
+    .goal-tile .g-sub { font-size: 11px; color: #888; margin-top: 5px; }
+    .goal-tile.primary .g-sub { color: #999; }
+    .goal-days { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .goal-day-pill { padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #F4FBF6; border: 1px solid #A3D9B1; color: #1A6B30; }
+    .title-track { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
+    .tt-cell { text-align: center; padding: 12px 8px; background: #FAFAF9; border-radius: 8px; border: 1.5px solid #EAE4DC; }
+    .tt-cell.achieved { background: #F4FBF6; border-color: #A3D9B1; }
+    .tt-cell.next { background: #FDF6E3; border-color: #C9A84C; }
+    .tt-title { font-size: 12px; font-weight: 700; color: #1A1A1A; margin-bottom: 3px; }
+    .tt-req   { font-size: 11px; color: #888; }
+    .tt-badge { font-size: 10px; font-weight: 700; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tt-cell.achieved .tt-badge { color: #1A6B30; }
+    .tt-cell.next .tt-badge { color: #B5890C; }
+    .talking-points-box { background: #FAFAF9; border: 1.5px dashed #C9A84C; border-radius: 10px; padding: 20px 22px; font-size: 13px; line-height: 1.8; color: #222; white-space: pre-wrap; font-family: inherit; }
+    .info-box { background: #FAFAF9; border: 1px solid #EAE4DC; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #555; line-height: 1.55; }
+    @media (max-width: 860px) {
+      .profile-grid { grid-template-columns: 1fr 1fr; }
+      .coaching-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .kpi-row.cols-3, .kpi-row.cols-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .profile-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .kpi-row.cols-3, .kpi-row.cols-4 { grid-template-columns: 1fr 1fr; }
+      header { padding: 16px 18px; }
+      .container { padding: 18px 12px 48px; }
+      .card { padding: 18px 16px; }
+    }
+    @media print {
+      @page { size: portrait; margin: 0.5in; }
+      body { background: white; }
+      header { position: static; box-shadow: none; }
+      .header-actions, .gen-btn, .results-actions, #inputSection, .result-tabs { display: none !important; }
+      .card { box-shadow: none; border: 1px solid #DDD; break-inside: avoid; }
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+      .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+      .kpi-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+      .coaching-grid { grid-template-columns: 1fr 1fr; }
+      .rpanel { display: block !important; }
+      .rpanel + .rpanel { break-before: page; }
+      body.printing-takeaway header,
+      body.printing-takeaway .results-header,
+      body.printing-takeaway .disclaimer,
+      body.printing-takeaway .rpanel:not([data-panel="takeaway"]) { display: none !important; }
+      body.printing-takeaway .container { padding-top: 0 !important; }
+      body.printing-takeaway .rpanel[data-panel="takeaway"] { display: block !important; break-before: auto; }
+      body.printing-takeaway #takeawayCard { margin-top: 0 !important; border: none; }
+      body.printing-takeaway .rpanel[data-panel="takeaway"] .results-btn { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="header-eyebrow">LifeSpa Leader Tools</div>
+    <h1>Technician Growth Planner</h1>
+    <p>KPI Trend Summary · Coaching Recommendations · Leadership Playbook Aligned</p>
+  </div>
+  <div class="header-actions">
+    <button class="header-btn" onclick="scrollToResults()">↓ View Results</button>
+    <button class="header-btn" onclick="window.print()">🖨 Print Report</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="disclaimer">
+    <div class="d-icon">ℹ️</div>
+    <div><strong>Use this tool as a guide.</strong> Use your own judgment and double-check recommendations with the Leadership Playbook, your Lead General, or a Center of Excellence Leader if you are unsure.</div>
+  </div>
+
+  <div id="inputSection">
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">1</span> Technician Profile</div>
+      <div class="profile-grid">
+        <div class="form-group">
+          <label>Technician Name</label>
+          <input type="text" id="techName" placeholder="e.g. Sarah Johnson">
+        </div>
+        <div class="form-group">
+          <label>Hire Date</label>
+          <input type="date" id="hireDate">
+        </div>
+        <div class="form-group">
+          <label>Service Category</label>
+          <select id="category" onchange="updateBenchmarkBar()">
+            <option value="">Select category…</option>
+            <option value="hair">Hair</option>
+            <option value="body">Body</option>
+            <option value="skin">Skin</option>
+            <option value="nails">Nails</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Employment Type</label>
+          <select id="empType" onchange="updateBenchmarkBar()">
+            <option value="fulltime">Full Time (120+ scheduled hrs/mo)</option>
+            <option value="parttime">Part Time (&lt;120 scheduled hrs/mo)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="benchmarkBar" style="display:none; background:#1A1A1A; color:#FFF; border-radius:8px; padding:10px 16px; font-size:12px; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:6px;">
+        <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#C9A84C;">Benchmarks:</span>
+        <span id="bmPrimary"></span>
+        <span style="color:#444;">·</span>
+        <span id="bmRPH"></span>
+        <span style="color:#444;">·</span>
+        <span id="bmProd"></span>
+        <span style="color:#444;">·</span>
+        <span id="bmRR"></span>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div class="form-group">
+          <label>Leader Notes, Context &amp; Questions <span style="text-transform:none; font-weight:400; color:#AAA;">(optional — matched against the Leadership Playbook; relevant guidance appears in the coaching output)</span></label>
+          <textarea id="leaderNotes" rows="3" placeholder="Add context or ask a question — e.g. Sarah struggles with confidence recommending retail. When should I consider a level lock? A guest no-showed twice — what's our policy? Her goal is $7K/month by Q4…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">2</span> Performance Metrics</div>
+      <div class="metrics-intro">
+        Enter the technician's data for the most recent month and 12-month average. Trends compare the two to show direction of movement. Leave fields blank if data is unavailable.
+      </div>
+
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th style="width:46%">Metric</th>
+            <th style="width:27%">Most Recent Month</th>
+            <th style="width:27%">12-Month Average</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="group-row"><td colspan="3">💰 Revenue</td></tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Total Revenue</span><span class="metric-hint" id="hint-totalRevenue">Select a category to see benchmark</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="totalRevenue_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="totalRevenue_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Service Revenue</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="serviceRevenue_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="serviceRevenue_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Retail Revenue</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="retailRevenue_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="retailRevenue_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+
+          <tr class="group-row"><td colspan="3">⏱ Revenue Per Hour</td></tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Total Revenue Per Hour</span><span class="metric-hint" id="hint-totalRPH">Select a category to see benchmark</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="totalRPH_r" placeholder="0.00" min="0" step="0.01"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="totalRPH_y" placeholder="0.00" min="0" step="0.01"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Service Revenue Per Hour</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="serviceRPH_r" placeholder="0.00" min="0" step="0.01"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="serviceRPH_y" placeholder="0.00" min="0" step="0.01"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Retail Revenue Per Hour</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="retailRPH_r" placeholder="0.00" min="0" step="0.01"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="retailRPH_y" placeholder="0.00" min="0" step="0.01"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Sales Per Booked Hour</span></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="salesPerBookedHr_r" placeholder="0.00" min="0" step="0.01"></div></td>
+            <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="salesPerBookedHr_y" placeholder="0.00" min="0" step="0.01"></div></td>
+          </tr>
+
+          <tr class="group-row"><td colspan="3">📊 Productivity &amp; Schedule</td></tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Productivity</span><span class="metric-hint">Benchmark: 70%+ (Hours Booked ÷ Hours Scheduled)</span></td>
+            <td><div class="input-wrap"><input type="number" id="productivity_r" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td>
+            <td><div class="input-wrap"><input type="number" id="productivity_y" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Hours Booked</span></td>
+            <td><div class="input-wrap"><input type="number" id="hoursBooked_r" placeholder="0" min="0" step="0.5"></div></td>
+            <td><div class="input-wrap"><input type="number" id="hoursBooked_y" placeholder="0" min="0" step="0.5"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Hours Scheduled</span></td>
+            <td><div class="input-wrap"><input type="number" id="hoursScheduled_r" placeholder="0" min="0" step="0.5"></div></td>
+            <td><div class="input-wrap"><input type="number" id="hoursScheduled_y" placeholder="0" min="0" step="0.5"></div></td>
+          </tr>
+
+          <tr class="group-row"><td colspan="3">👥 Client Metrics</td></tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Repeat Rate (Retention)</span><span class="metric-hint" id="hint-repeatRate">Hair 75% · Body 60% · Skin 70% · Nails 70%</span></td>
+            <td><div class="input-wrap"><input type="number" id="repeatRate_r" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td>
+            <td><div class="input-wrap"><input type="number" id="repeatRate_y" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label"># of New Client Visits</span></td>
+            <td><div class="input-wrap"><input type="number" id="newVisits_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><input type="number" id="newVisits_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label"># of Repeat Client Visits</span></td>
+            <td><div class="input-wrap"><input type="number" id="repeatVisits_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><input type="number" id="repeatVisits_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+          <tr class="data-row">
+            <td><span class="metric-label">Total Client Visits</span></td>
+            <td><div class="input-wrap"><input type="number" id="totalVisits_r" placeholder="0" min="0" step="1"></div></td>
+            <td><div class="input-wrap"><input type="number" id="totalVisits_y" placeholder="0" min="0" step="1"></div></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">3</span> Heatmap Schedule Optimization</div>
+      <div class="metrics-intro">
+        Pull this data from the <strong>Heatmap tool using the 10-week lookback</strong>. Enter the technician's % booked for each day of the week, and the % booked for their <strong>service category at this location</strong> for the same days. <strong>Enter 0% for any day the technician is not scheduled</strong> — the tool treats 0% as not working that day. If the technician is working less-desirable days (Sunday–Tuesday for most categories; Monday–Tuesday for Body, since Sunday can be a desirable massage day) while category demand is high (70%+) on days they're not scheduled, the tool will suggest reviewing a schedule change to help them get busier.
+      </div>
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th style="width:34%">Day</th>
+            <th style="width:33%">Technician % Booked</th>
+            <th style="width:33%">Category % Booked (Location)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="data-row"><td><span class="metric-label">Sunday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_sun" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_sun" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Monday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_mon" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_mon" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Tuesday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_tue" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_tue" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Wednesday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_wed" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_wed" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Thursday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_thu" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_thu" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Friday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_fri" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_fri" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Saturday</span></td><td><div class="input-wrap"><input type="number" id="heatmapTech_sat" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="heatmapCat_sat" placeholder="0" min="0" max="100" step="1"><span class="sym">%</span></div></td></tr>
+        </tbody>
+      </table>
+      <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
+        <div class="d-icon">⚠️</div>
+        <div>If this technician has been with us more than 6 months and repeat rate isn't growing, address retention before adjusting their schedule to try to gain more new clients — a fuller schedule won't help if guests aren't returning.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">4</span> Payroll &amp; Compensation
+        <span class="optional-tag">Optional</span>
+      </div>
+      <div id="payrollBody">
+      <div class="metrics-intro">
+        Reference the <strong>Compensation Dashboard</strong> for level lock status, qualification, and rate comparison before answering these questions.
+      </div>
+      <div class="profile-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+        <div class="form-group">
+          <label>Currently on a Level Lock?</label>
+          <select id="onLevelLock"><option value="">Select…</option><option value="yes">Yes</option><option value="no">No</option></select>
+        </div>
+        <div class="form-group">
+          <label>Qualifies for a Level Lock?</label>
+          <select id="qualifiesLevelLock"><option value="">Select…</option><option value="yes">Yes</option><option value="no">No</option></select>
+        </div>
+        <div class="form-group">
+          <label>If Locked, Rate Is…</label>
+          <select id="lockRateComparison">
+            <option value="">N/A / not locked</option>
+            <option value="above">Above suggested rate</option>
+            <option value="at">At suggested rate</option>
+            <option value="below">Below suggested rate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>MWA in Past 4 Weeks? <span style="text-transform:none; font-weight:400; color:#AAA;">(excludes CA)</span></label>
+          <select id="mwaRecent">
+            <option value="">Select…</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+            <option value="na">N/A — California location</option>
+          </select>
+        </div>
+      </div>
+      <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
+        <div class="d-icon">💳</div>
+        <div>A Minimum Wage Adjustment (MWA) means extra money is added to the technician's paycheck to bring their pay up to minimum wage, because their commission for the hours they worked came in below the minimum-wage equivalent. Frequent MWA is a signal worth discussing in the 1:1 — this question does not apply to California locations, which have different wage laws.</div>
+      </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">5</span> Title Promotion Data <span style="font-size:11px; font-weight:400; color:#AAA;">(last 3 months — used only for the Title Promotion Tracker)</span>
+        <span class="optional-tag">Optional</span>
+      </div>
+      <div id="titleBody">
+      <div class="metrics-intro">
+        Enter the technician's <strong>total revenue</strong>, <strong>revenue per hour</strong>, and <strong>repeat rate</strong> for each of the last three months. Titles require <strong>each of the 3 months individually</strong> to meet the benchmark and repeat rate qualifier — averages are not used. This tracker checks the metric that matches the Employment Type selected in Step 1 (Total Revenue for Full Time, Revenue Per Hour for Part Time) applied consistently across all 3 months.
+        <br><br>
+        <strong>Note:</strong> DOMO determines Full Time vs. Part Time status <em>separately for each month</em> based on that month's actual scheduled hours (120+ hrs = Full Time, under 120 = Part Time) — so if this technician's hours varied month to month, DOMO may evaluate some months on Revenue and others on Revenue Per Hour. This tracker applies one employment type across all 3 months for simplicity, so treat it as an estimate and verify the official calculation in DOMO before promoting.
+      </div>
+
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th style="width:34%">Metric</th>
+            <th style="width:22%">3 Months Ago</th>
+            <th style="width:22%">2 Months Ago</th>
+            <th style="width:22%">Most Recent Month</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="data-row"><td><span class="metric-label">Total Revenue</span></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRevenue_m1" placeholder="0" min="0" step="1"></div></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRevenue_m2" placeholder="0" min="0" step="1"></div></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRevenue_m3" placeholder="0" min="0" step="1"></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Revenue Per Hour</span></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRPH_m1" placeholder="0.00" min="0" step="0.01"></div></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRPH_m2" placeholder="0.00" min="0" step="0.01"></div></td><td><div class="input-wrap"><span class="sym">$</span><input type="number" id="titleRPH_m3" placeholder="0.00" min="0" step="0.01"></div></td></tr>
+          <tr class="data-row"><td><span class="metric-label">Repeat Rate</span></td><td><div class="input-wrap"><input type="number" id="titleRR_m1" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="titleRR_m2" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td><td><div class="input-wrap"><input type="number" id="titleRR_m3" placeholder="0" min="0" max="100" step="0.1"><span class="sym">%</span></div></td></tr>
+        </tbody>
+      </table>
+
+      <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
+        <div class="d-icon">⚠️</div>
+        <div><strong>Before announcing a title promotion to the technician, cross-check this data against DOMO.</strong> The figures entered here are leader-reported and used only to estimate progress — DOMO is the source of truth for official title eligibility.</div>
+      </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="step-num">6</span> Goal Setting <span class="optional-tag">Optional</span></div>
+      <div class="metrics-intro">
+        Set a revenue goal <strong>with</strong> the technician, or let the tool suggest one based on their most recent month's total revenue. <strong>Tip:</strong> if you fill in the <strong>Schedule Optimization</strong> section (Step 3), the tool will also break the monthly goal into a daily goal for each day the technician works.
+      </div>
+      <div class="profile-grid" style="grid-template-columns: 1.4fr 1fr 1fr;">
+        <div class="form-group">
+          <label>How do you want to set the goal?</label>
+          <select id="goalMode" onchange="goalModeChange()">
+            <option value="suggest">Suggest a goal from recent revenue</option>
+            <option value="custom">Set a custom goal with the technician</option>
+          </select>
+        </div>
+        <div class="form-group" id="goalGrowthGroup">
+          <label>Growth Over Recent Month</label>
+          <div class="input-wrap" style="justify-content:flex-start;"><input type="number" id="goalGrowthPct" placeholder="10" min="0" step="1" style="width:90px;"><span class="sym">%</span></div>
+        </div>
+        <div class="form-group" id="goalCustomGroup" style="display:none;">
+          <label>Custom Monthly Goal</label>
+          <div class="input-wrap" style="justify-content:flex-start;"><span class="sym">$</span><input type="number" id="goalCustom" placeholder="0" min="0" step="1" style="width:120px;"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="form-group">
+          <label>Professional Growth Goal <span style="text-transform:none; font-weight:400; color:#AAA;">(optional — the technician's career/development goal)</span></label>
+          <textarea id="goalProfessional" rows="2" placeholder="e.g. Laura wants to improve her product knowledge and grow her retail sales · earn her Master Stylist title by Q4 · learn balayage · become a mentor…"></textarea>
+        </div>
+      </div>
+      <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
+        <div class="d-icon">🎯</div>
+        <div>The suggested goal grows the most recent month's total revenue by the percentage you choose (default 10%). A daily goal only appears if the Schedule Optimization section (Step 3) is filled in — otherwise you'll get a monthly goal only. The professional growth goal is added to the technician takeaway sheet and used for playbook-based talking points.</div>
+      </div>
+    </div>
+
+
+    <button class="gen-btn" onclick="runAnalysis()">✦ Generate Growth Plan &amp; Coaching Recommendations</button>
+  </div>
+
+
+  <div id="resultsSection">
+    <div class="results-header">
+      <div>
+        <h2 id="resultsTechName">Growth Plan</h2>
+        <p id="resultsMeta"></p>
+      </div>
+      <div class="results-actions">
+        <button class="results-btn" onclick="editInputs()">✏️ Edit Inputs</button>
+      </div>
+    </div>
+
+    <nav class="result-tabs" id="resultTabs">
+      <button class="rtab active" data-tab="overview"  onclick="showTab('overview')">📋 Overview</button>
+      <button class="rtab"        data-tab="diagnosis" onclick="showTab('diagnosis')">🔍 Diagnosis</button>
+      <button class="rtab"        data-tab="recs"      onclick="showTab('recs')">💡 Recommendations</button>
+      <button class="rtab"        data-tab="price"     onclick="showTab('price')">💰 Price Increase</button>
+      <button class="rtab"        data-tab="schedule"  onclick="showTab('schedule')">🗓 Schedule</button>
+      <button class="rtab"        data-tab="titles"    onclick="showTab('titles')">🏆 Titles</button>
+      <button class="rtab"        data-tab="goal"      onclick="showTab('goal')">🥅 Goal Setting</button>
+      <button class="rtab"        data-tab="takeaway"  onclick="showTab('takeaway')">📄 Takeaway</button>
+      <button class="rtab-print" onclick="window.print()">🖨 Print / Save PDF</button>
+    </nav>
+
+    <div class="rpanel active" data-panel="overview">
+      <div id="overallStatus"></div>
+      <div class="card">
+        <div class="card-title">📊 KPI Trend Dashboard <span style="font-size:11px; font-weight:400; color:#AAA; margin-left:4px;">— trend compares most recent month to 12-month average</span></div>
+        <div id="kpiDashboard"></div>
+        <p style="font-size:11px; color:#999; margin-top:12px; line-height:1.5;"><strong>Sales per booked hour</strong> is the average revenue (service + retail) a technician generates for each hour they were actually booked with a guest — it shows how much they earn while in the chair or treatment room, separate from how full their schedule is. Low sales per booked hour can point to low pricing or services running long.</p>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="diagnosis">
+      <div class="card">
+        <div class="card-title">🔍 Business Growth Diagnosis</div>
+        <p style="font-size:12px; color:#888; margin-bottom:14px;">For a technician whose business isn't growing, work two questions in order: <strong>1) Are clients returning?</strong> <strong>2) Are they busy enough?</strong> Retention first — if retention is healthy, increase demand. Green performers who are already growing get an opportunity view instead.</p>
+        <div id="diagnosisContent"></div>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="recs">
+      <div class="card">
+        <div class="card-title">🎯 Coaching Recommendations</div>
+        <div id="coachingContent" class="coaching-grid"></div>
+      </div>
+      <div class="card" id="payrollCard">
+        <div class="card-title">💳 Payroll &amp; Compensation Insights</div>
+        <p style="font-size:12px; color:#888; margin-bottom:8px;">Based on the Level Lock and MWA answers in Step 4. Reference the Compensation Dashboard for the source of truth.</p>
+        <div id="payrollContent"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 Suggested 1:1 Talking Points</div>
+        <p style="font-size:12px; color:#888; margin-bottom:14px;">Use this as a starting framework and customize for your conversation. Per the playbook: co-create the plan — ask guiding questions rather than telling them what to do.</p>
+        <div id="talkingPointsContent" class="talking-points-box"></div>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="price">
+      <div class="card">
+        <div class="card-title">💰 Price Increase Readiness</div>
+        <div id="priceContent"></div>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="schedule">
+      <div class="card">
+        <div class="card-title">🗓 Heatmap Schedule Optimization</div>
+        <p style="font-size:12px; color:#888; margin-bottom:8px;">Based on the day-of-week % booked entered in Step 3 (Heatmap tool, 10-week lookback).</p>
+        <div id="heatmapContent"></div>
+      </div>
+
+      <div class="card" id="activitiesCard">
+        <div class="card-title">📣 Business-Building &amp; Downtime Activities <span style="font-size:11px; font-weight:400; color:#AAA;">— reference</span></div>
+        <p style="font-size:12px; color:#888; margin-bottom:14px;">Concrete activities a technician can do during downtime to <strong>attract new guests</strong> and <strong>engage existing ones</strong> (from the LifeSpa playbook). Shown because productivity is below 70%.</p>
+
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">Where New Guests Come From</div>
+        <div class="root-cause-grid" style="margin-top:0; margin-bottom:18px;">
+          <div class="root-cause-card" style="background:#EFDDD3; border-left-color:#906f5b;">
+            <div class="rc-title" style="font-size:13px;">Your Leads</div>
+            <ul class="rc-signals"><li>Friends</li><li>Family</li><li>Current clientele</li><li>Networking</li><li>Social media</li></ul>
+          </div>
+          <div class="root-cause-card" style="background:#DDE5E4; border-left-color:#7E9794;">
+            <div class="rc-title" style="font-size:13px;">LifeSpa Leads</div>
+            <ul class="rc-signals"><li>Walk-ins</li><li>New member engagement</li><li>New member credits</li><li>Marketing / programs</li></ul>
+          </div>
+          <div class="root-cause-card" style="background:#E6E4D6; border-left-color:#B0AD8E;">
+            <div class="rc-title" style="font-size:13px;">Life Time Leads</div>
+            <ul class="rc-signals"><li>Events</li><li>Team members</li><li>Members</li></ul>
+          </div>
+        </div>
+
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">Downtime Activities by Focus</div>
+        <table class="cycle-table" style="margin-bottom:16px;">
+          <thead><tr><th style="width:22%;">Focus</th><th>Activities</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Social</strong></td><td>Post daily available appointments · post tips, tricks, education, and new products · like/comment on client pictures · engage in the community · use location hashtags and tag LifeSpa / Life Time · plan and batch-create content.</td></tr>
+            <tr><td><strong>Rebooking &amp; Follow-Up</strong></td><td>Postcards and outbound calls to lapsed guests with a suggestion to schedule · personalized thank-you / follow-up notes after appointments · promote the referral program · reach out to guests of technicians who left (can offer 40% off).</td></tr>
+            <tr><td><strong>Services</strong></td><td>Offer complimentary Express Ritual / mini services to convert to a service or retail sale on the spot · complimentary 10-minute chair massage or stretch on the fitness floor · demonstrations / workshops (Kinesio taping, stretching, skin hydration, healthy aging, hair styling, foam rolling, Hypervolt) · complimentary consultations.</td></tr>
+            <tr><td><strong>In Club &amp; Community</strong></td><td>Offer essential oils and iced or hot towels following classes · club partnerships — find a buddy and support events / new launches · first-time offers ($25 off a $50+ service, $100 off a $300+ service) · collaborate with local micro-influencers / beauty bloggers · post photos on the LifeSpa Google page.</td></tr>
+            <tr><td><strong>New Members</strong></td><td>Call new member joins to remind them of the $50 new-member credit and track it in SmartWeb.</td></tr>
+            <tr><td><strong>Team Members</strong></td><td>Cross-promote with other departments · perform your services on other spa and club team members to create referral partners.</td></tr>
+            <tr><td><strong>Education &amp; Prep</strong></td><td>Product-knowledge training for retail · self-guided technical onboarding · vendor education and videos (SharePoint / YouTube / Vimeo) · research trends and techniques to highlight · deep-clean and organize your space (cleaning checklist).</td></tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">Highly Effective Schedule — Open-Hour Plan</div>
+        <table class="cycle-table">
+          <thead><tr><th style="width:16%;">Open Hour</th><th style="width:24%;">Focus</th><th>What to Do</th></tr></thead>
+          <tbody>
+            <tr><td>1st</td><td><strong>Business Building</strong></td><td>New member engagement, club engagement, community engagement, social media, and networking with other departments.</td></tr>
+            <tr><td>2nd</td><td><strong>Business Optimization</strong></td><td>Schedule optimization (fill gaps, lapsed-guest report), client follow-ups, and prepare your station / room for guests.</td></tr>
+            <tr><td>3rd</td><td><strong>HWOL</strong></td><td>Take a group training class (1 class/week can be taken on the clock in your first 90 days; must be introduced by the instructor).</td></tr>
+            <tr><td>4th</td><td><strong>Professional Development</strong></td><td>Technical onboarding, vendor education, review trends, attend the Marketing Hour (completed outside the spa).</td></tr>
+            <tr><td>5th</td><td><strong>Business Building</strong></td><td>Choose from the Business Building activities above.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="titles">
+      <div class="card" id="titleCard">
+        <div class="card-title">🏆 Title Promotion Tracker</div>
+        <p style="font-size:12px; color:#888; margin-bottom:8px;">Technicians can earn Senior, Master, or Elite titles by hitting the category's revenue benchmark <strong>in each of the last 3 months</strong> (no averaging) while maintaining the minimum repeat rate. Eligibility begins after 3 full months with LifeSpa. This tracker checks the 3 individual months entered in Step 5 above against the Employment Type selected in Step 1.</p>
+        <div id="titleContent"></div>
+        <div class="disclaimer" style="margin-top:14px;">
+          <div class="d-icon">⚠️</div>
+          <div><strong>Cross-check against DOMO before announcing a title promotion to the technician.</strong> This tracker is an estimate based on leader-entered data and a single employment type applied across all 3 months. DOMO is the official source of record for title eligibility.</div>
+        </div>
+      </div>
+      <div class="info-box" id="titleEmpty" style="display:none;">Title Promotion is optional. Fill in Step 5 to see the tracker.</div>
+    </div>
+
+    <div class="rpanel" data-panel="goal">
+      <div class="card" id="goalCard">
+        <div class="card-title">🥅 Goal Setting <span style="font-size:11px; font-weight:400; color:#AAA;">— optional</span></div>
+        <div id="goalContent"></div>
+      </div>
+    </div>
+
+    <div class="rpanel" data-panel="takeaway">
+      <div class="card" id="takeawayCard">
+        <div class="card-title">📄 Technician Takeaway Sheet
+          <button class="results-btn" style="margin-left:auto;" onclick="printTakeaway()">🖨 Print This Sheet</button>
+        </div>
+        <div id="takeawayContent"></div>
+      </div>
+    </div>
+
+    <div class="disclaimer" style="margin-top:20px;">
+      <div class="d-icon">ℹ️</div>
+      <div><strong>Use this tool as a guide.</strong> Use your own judgment and double-check recommendations with the Leadership Playbook, your Lead General, or a Center of Excellence Leader if you are unsure.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const BM = {
+  hair:  { revenue: 6300, revYellow: 3200, rph: 70, rphYellow: 36, repeatRate: 75, productivity: 70, revenueStr:'$6,300', rphStr:'$70/hr',  rrStr:'75%', label:'Hair' },
+  body:  { revenue: 6300, revYellow: 3200, rph: 70, rphYellow: 36, repeatRate: 60, productivity: 70, revenueStr:'$6,300', rphStr:'$70/hr',  rrStr:'60%', label:'Body' },
+  skin:  { revenue: 8400, revYellow: 4200, rph: 95, rphYellow: 46, repeatRate: 70, productivity: 70, revenueStr:'$8,400', rphStr:'$95/hr',  rrStr:'70%', label:'Skin' },
+  nails: { revenue: 4200, revYellow: 2600, rph: 45, rphYellow: 30, repeatRate: 70, productivity: 70, revenueStr:'$4,200', rphStr:'$45/hr',  rrStr:'70%', label:'Nails' },
+};
+
+const TITLES = {
+  hair:  { role:'Stylist',           rrQ: 55, tiers:[ {name:'Senior', ft:5000, pt:50}, {name:'Master', ft:6000, pt:60}, {name:'Elite', ft:9000,  pt:90}  ] },
+  body:  { role:'Massage Therapist', rrQ: 50, tiers:[ {name:'Senior', ft:5000, pt:55}, {name:'Master', ft:6000, pt:65}, {name:'Elite', ft:7500,  pt:80}  ] },
+  skin:  { role:'Esthetician',       rrQ: 55, tiers:[ {name:'Senior', ft:5500, pt:60}, {name:'Master', ft:6500, pt:75}, {name:'Elite', ft:10000, pt:110} ] },
+  nails: { role:'Nail Technician',   rrQ: 55, tiers:[ {name:'Senior', ft:3000, pt:30}, {name:'Master', ft:3500, pt:35}, {name:'Elite', ft:5000,  pt:50}  ] },
+};
+
+const NEW_TECH = [
+  { month: 2, hours: 20, prodPct: 50, rph: 20 },
+  { month: 3, hours: 25, prodPct: 55, rph: 25 },
+  { month: 4, hours: 35, prodPct: 60, rph: 35 },
+];
+
+const REBOOK_CYCLES = [
+  ['Haircuts (men/women)', '4–8 weeks'],
+  ['Color services', '6–8 weeks'],
+  ['Nails', '2–3 weeks'],
+  ['Waxing', '4–6 weeks'],
+  ['Facial / skin care', '4–6 weeks'],
+  ['Massage', '4–6 weeks'],
+];
+
+const CAPACITY_THRESHOLD = 80;
+
+function updateBenchmarkBar() {
+  const cat     = document.getElementById('category').value;
+  const empType = document.getElementById('empType').value;
+  const bar     = document.getElementById('benchmarkBar');
+  if (!cat) { bar.style.display = 'none'; return; }
+  const b = BM[cat];
+  const isPT = empType === 'parttime';
+  bar.style.display = 'flex';
+  document.getElementById('bmPrimary').innerHTML =
+    `<span style="color:#999; font-size:11px;">Primary (${isPT ? 'Part-Time' : 'Full-Time'}):</span> <span style="color:#C9A84C; font-weight:700;">${isPT ? b.rphStr : b.revenueStr+'/mo'}</span>`;
+  document.getElementById('bmRPH').innerHTML =
+    `<span style="color:#999; font-size:11px;">RPH:</span> <span style="color:#C9A84C; font-weight:700;">${b.rphStr}</span>`;
+  document.getElementById('bmProd').innerHTML =
+    `<span style="color:#999; font-size:11px;">Productivity:</span> <span style="color:#C9A84C; font-weight:700;">70%</span>`;
+  document.getElementById('bmRR').innerHTML =
+    `<span style="color:#999; font-size:11px;">Repeat Rate:</span> <span style="color:#C9A84C; font-weight:700;">${b.rrStr}</span>`;
+  document.getElementById('hint-totalRevenue').textContent = `Benchmark: ${b.revenueStr}/month (full-time)`;
+  document.getElementById('hint-totalRPH').textContent     = `Benchmark: ${b.rphStr}`;
+  document.getElementById('hint-repeatRate').textContent   = `Benchmark: ${b.rrStr}`;
+}
+
+function gv(id) {
+  const el = document.getElementById(id);
+  if (!el || el.value === '') return null;
+  return parseFloat(el.value);
+}
+function gm(prefix) { return { r: gv(prefix+'_r'), y: gv(prefix+'_y') }; }
+function gs(id) {
+  const el = document.getElementById(id);
+  if (!el || el.value === '') return null;
+  return el.value;
+}
+
+function trend(a, b) {
+  if (a == null || b == null || b === 0) return 'neutral';
+  const p = (a - b) / b;
+  if (p >  0.05) return 'up';
+  if (p < -0.05) return 'down';
+  return 'stable';
+}
+function status(val, bm) {
+  if (val == null || bm == null) return 'neutral';
+  const r = val / bm;
+  if (r >= 1.0)  return 'green';
+  if (r >= 0.90) return 'yellow';
+  return 'red';
+}
+function bandStatus(val, yellowFloor, greenThreshold) {
+  if (val == null) return 'neutral';
+  if (val >= greenThreshold) return 'green';
+  if (val >= yellowFloor)    return 'yellow';
+  return 'red';
+}
+
+function fc(v)  { if (v==null) return '—'; return '$'+Math.round(v).toLocaleString(); }
+function fcD(v) { if (v==null) return '—'; return '$'+v.toFixed(2); }
+function fp(v)  { if (v==null) return '—'; return v.toFixed(1)+'%'; }
+function fn(v)  { if (v==null) return '—'; return Math.round(v).toLocaleString(); }
+function tIcon(t) { return t==='up'?'↑':t==='down'?'↓':t==='stable'?'→':'—'; }
+function tWord(t) { return t==='up'?'Improving':t==='down'?'Declining':t==='stable'?'Stable':'No data'; }
+
+function monthsSince(d) {
+  if (!d) return null;
+  const h = new Date(d+'T00:00:00'), n = new Date();
+  return (n.getFullYear()-h.getFullYear())*12+(n.getMonth()-h.getMonth());
+}
+function daysSince(d) {
+  if (!d) return null;
+  const h = new Date(d+'T00:00:00'), n = new Date();
+  return Math.round((n - h) / 86400000);
+}
+
+const PLAYBOOK_KB = [
+  { re: /confiden/, tips: [
+    'Build confidence through role-playing consultations and scripting — small, visible wins create momentum',
+  ]},
+  { re: /retail|product recommend/, tips: [
+    'Retail (playbook): educate during and after the service, ask about client goals, share personal favorites, and review at-home routines — the company target is 15% of total revenue',
+    'Retail sales credit goes to the technician who made the recommendation (never to coordinators) — make sure recommendations are captured on the ticket',
+  ]},
+  { re: /rebook|pre-?book/, tips: [
+    'Rebooking play (playbook): set the expectation early in the service, create a personalized treatment plan, and hand off at the front desk — "Let\'s get you rebooked today for your next session"',
+    'Coordinators assume the rebook at checkout and offer low-commitment flexibility ("We\'ll hold this spot — you can always move it"); follow up 24–48 hours after any visit that didn\'t rebook',
+  ]},
+  { re: /consult/, tips: [
+    'Strengthen the intake consultation: set expectations clearly, uncover future service needs, and plant the rebooking seed upfront',
+  ]},
+  { re: /price increase|raise .{0,15}price|increase .{0,10}price/, tips: [
+    'Price increase (playbook): requires productivity ~75–80%+ AND a green repeat rate sustained over the 12-month view; minimum 10% increase, round up to end in 0 or 5, every 12–18 months — and never post signs or notify clients in advance',
+  ]},
+  { re: /price decrease|lower .{0,10}price|too expensive|overpriced|value gap/, tips: [
+    'Price decrease play (playbook): if priced above $100 with flat retention and stagnant productivity, consider a temporary decrease to $80–$95 with outreach to clients lapsed 6+ months; a booking spike confirms price was the barrier — no improvement points to performance or fit, not price',
+  ]},
+  { re: /pric/, tips: [
+    'Pricing check (playbook): per-minute minimums are Hair $1.05, Body $1.23, Skin $1.23, Nails $1.00 — round to the nearest $5, use the Pricing Calculator, and never discount bundled services',
+  ]},
+  { re: /new service|added a|launch/, tips: [
+    'New service added — confirm per-minute pricing is right, round to the nearest $5, and script the add-on/upgrade language',
+  ]},
+  { re: /goal|target|business plan/, tips: [
+    'Three pathways to growing revenue (playbook): increase service revenue (add-ons, upgrades, strategic price increases), expand booked hours (schedule optimization, pre-booking, new business), and drive retail — tie every action item to their goal in the Technician Business Plan',
+  ]},
+  { re: /stress|personal|outside|hard time|struggling at home/, tips: [
+    'Lead with empathy before numbers — check in on wellbeing and keep action items focused and achievable',
+  ]},
+  { re: /motiv|passion|burn|bored/, tips: [
+    'Reconnect to purpose: discuss career milestones, title promotions (Senior/Master/Elite), and what success looks like for them',
+  ]},
+  { re: /quit|leaving|resign|turnover|another salon|another job/, tips: [
+    'Consider a stay conversation: explore what would make this role more fulfilling before addressing performance',
+    'Remind them of the LifeSpa advantage: industry-leading commission (up to 70%+ for top performers), weekly Friday pay, benefits, free membership, and priority booking that rewards strong repeat rates',
+  ]},
+  { re: /schedule|availab|shift|days off/, tips: [
+    'Schedule standards (playbook): minimum 20 hrs/week, at least 3 shifts of 5+ hours, Wednesday–Saturday priority coverage; a verified book of business ($5,000+/month documented) earns greater flexibility',
+    'Use the Heatmap (10-week lookback) to align hours to demand — evenings and weekends are typically the most bookable windows',
+  ]},
+  { re: /heat ?map/, tips: [
+    'Heatmap (playbook): review % booked, technicians scheduled, and new-vs-existing client mix by day and hour to find unmet demand — use data to turn instinct into strategy',
+  ]},
+  { re: /lapsed|lost guest|outreach|win back|hasn'?t (been|come) back/, tips: [
+    'Guest outreach (playbook): lapsed guests are 0–8 weeks past their rebooking window with no future booking (act now); lost guests are 3+ months gone and much harder to win back — run the SmartWeb Customer Management report and use the phone scripts',
+  ]},
+  { re: /no.?show|cancel/, tips: [
+    'Cancellation policy (playbook): 24-hour notice required; late changes may be charged 50% and no-shows 100% of the scheduled service value (leader discretion) — the technician earns commission on any charged fee',
+  ]},
+  { re: /refund|complain|unhappy|upset guest|bad service|bad experience|redo/, tips: [
+    'Guest Service Challenge (playbook): use leader discretion to comp or discount for service recovery, document every case, and coach from it — the technician still earns commission when the GSC discount processes the ticket',
+  ]},
+  { re: /gift card/, tips: [
+    'Gift cards (playbook): usable at any Life Time club, LifeSpa, or LifeCafe; not refundable, replaceable, or redeemable for cash; never record or retain gift card numbers',
+  ]},
+  { re: /social|instagram|post|photo|google|review/, tips: [
+    'Digital marketing (playbook): "your business card is social media" — consistent Instagram posting of their work, actively requesting Google reviews, and 3–5 images of team work submitted weekly for the Google page',
+  ]},
+  { re: /new member|\$50|member credit/, tips: [
+    'New member connectivity (playbook): follow up within 5 days of join on the $50 new-member credit and track it in SmartWeb — the target is a 10% purchase rate from new member outreach',
+  ]},
+  { re: /express ritual|walk.?in|downtime|slow day|slow time|empty book/, tips: [
+    'Downtime plays (playbook): call new members about the $50 credit, offer complimentary 5–15 minute Express Rituals in the club, use first-time offers ($25 off a $50+ service, $100 off $300+), and offer 40% off to guests of departed technicians',
+  ]},
+  { re: /referr/, tips: [
+    'Referrals (playbook): occasional complimentary services for teammates (trainers, group fitness, concierge) create authentic advocates — people refer because they know you are great',
+  ]},
+  { re: /title|senior|master|elite/, tips: [
+    'Titles (playbook): eligibility begins after 3 full months; each of the last 3 months must individually clear the tier benchmark and repeat rate qualifier (no averaging) — verify in DOMO before announcing',
+  ]},
+  { re: /recogni|celebrat|mvp|award|anniversar|leaderboard/, tips: [
+    'Recognition (playbook): MVP (highest revenue MTD per category), Emerging Performer, Leaderboard, milestone anniversaries (5/10/15/20/25 years), and the annual LifeSpa Artist Awards — recognize monthly and visibly',
+  ]},
+  { re: /education|certif|\blearn\b|technique|mentor|product knowledge|advanced|specialt|\bclass(es)?\b|\bcourse\b|professional (growth|development)|skill(s)?|onboarding/, tips: [
+    'Professional development (playbook): tie the growth goal to the Technician Business Plan and the growth pathways — advanced education, specialty certifications, and premium/new service offerings. Use downtime (4th open hour) for self-guided technical onboarding and vendor education (SharePoint, vendor videos) — all completed outside the spa. Point them to Education/Onboarding resources.',
+    'Turn the development goal into measurable steps with a timeline, and revisit progress in each 1:1; when they hit a milestone, recognize it visibly (Leaderboard, MVP, Artist Awards).',
+  ]},
+  { re: /level ?lock|\block(ed|s)?\b/, tips: [
+    'Level Locks (playbook): 12-week lock (up to 50%) for new hires; quarterly pre-calculated locks for consistent green performers; a tradeoff tool for behavior changes — never for retention strugglers, never above what they consistently earn, and max ~6 months with a gradual taper after the first 12 weeks',
+  ]},
+  { re: /mwa|minimum wage/, tips: [
+    'MWA (playbook): triggered when commission falls below minimum wage for hours worked — coach with urgency on booked hours, productivity, and client retention, and review the Compensation Dashboard (emailed Wednesdays); excludes California',
+  ]},
+  { re: /overtime|over 40|40 hours/, tips: [
+    'Overtime (playbook): technicians are non-exempt — over 40 hours in a week triggers overtime at the FLSA half-rate premium; watch the red alert banner on the Compensation Dashboard',
+  ]},
+  { re: /\bpay\b|commission|compensation|paycheck|\btips?\b|gratuity/, tips: [
+    'Compensation (playbook): weekly pay every Friday; 8 commission levels from 35% up to 70%+, earned independently on service and retail; WISELY card tips load by 9am the next day — walk through their Compensation Dashboard with full transparency to connect behavior to earnings',
+  ]},
+  { re: /hiring|casting|interview|recruit|staffing/, tips: [
+    'Casting (playbook): 4-step process — first interview, practical assessment (always with a technical expert), Lead General interview, then offer with a 12-week level lock; repost requisitions every 30 days',
+  ]},
+  { re: /intake|soap note|waiver/, tips: [
+    'Intake forms (playbook): required for all massage and skin guests before the first visit and reviewed annually; SOAP notes documented after every service; forms retained 7 years',
+  ]},
+  { re: /retention|repeat rate|not returning|aren'?t (coming|returning)|clients? left/, tips: [
+    'Retention (playbook): retention is fully owned by the technician — red retention KPIs call for a structured coaching plan with clear improvement expectations and timelines; consecutive red months warrant a formal HR-approved performance plan',
+  ]},
+  { re: /team meeting/, tips: [
+    'Team meetings (playbook): monthly or quarterly, cancel with at least 24 hours notice; use the 60-minute agenda — theme, praise & gratitude, brand alignment, development topic, team practice, close',
+  ]},
+  { re: /book of business|following|clientele/, tips: [
+    'A verified book of business ($5,000+/month documented history) earns greater schedule flexibility; without one, schedule for growth — evenings, weekends, and Wednesday–Saturday coverage',
+  ]},
+  { re: /friends (and|&) family|trade service/, tips: [
+    'Friends & Family (playbook): services for 5 individuals of the technician\'s choosing for a small service fee, during off time or when not scheduled; Trade Services works the same for any LifeSpa team member',
+  ]},
+];
+
+function notesCoachingActions(notes, ctx) {
+  if (!notes) return [];
+  ctx = ctx || {};
+  const low = notes.toLowerCase();
+  const out = [];
+  const seen = new Set();
+  const add = (t) => { if (t && !seen.has(t)) { seen.add(t); out.push(t); } };
+
+  const nm = ctx.name || 'This technician';
+  if (/level ?lock|\block(ed|s)?\b/.test(low) && ctx.lockNotQualified) {
+    add(`${nm} is asking about a Level Lock but doesn't currently qualify. Explain why: a lock is earned through consistent green performance — a strong, sustained service revenue per hour — not by request. Redirect to what earns one: hit the productivity and repeat-rate benchmarks and sustain them, and the quarterly pre-calculated lock becomes available. Set a clear, measurable path in the business plan so they know exactly what to aim for.`);
+  }
+  if (/schedule|shift|days|availab/.test(low) && ctx.retentionLow) {
+    add(`${nm} wants a schedule change, but they aren't retaining guests yet. Per the playbook, more new-guest days won't grow the business if guests don't come back. Talking points: "Before we add busier days, let's make sure the guests you already see return — that's where your biggest growth is. Let's focus on rebooking every guest, personalizing each visit, and running your lapsed-guest outreach. Once your repeat rate is climbing, we'll revisit the schedule together." Keep retention the focus first.`);
+  }
+
+  PLAYBOOK_KB.forEach(e => {
+    if (e.re.test(low)) e.tips.forEach(add);
+  });
+  return out.slice(0, 14);
+}
+
+function runAnalysis() {
+  const name    = document.getElementById('techName').value.trim() || 'This Technician';
+  const hireDate = document.getElementById('hireDate').value;
+  const cat     = document.getElementById('category').value;
+  const isPT    = document.getElementById('empType').value === 'parttime';
+  const notes   = document.getElementById('leaderNotes').value.trim();
+
+  if (!cat) { alert('Please select a Service Category before generating the growth plan.'); return; }
+
+  const bm      = BM[cat];
+  const catLabel = bm.label;
+  const months  = monthsSince(hireDate);
+  const isNew   = months !== null && months < 6;
+  const genDate = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  const m = {
+    totalRevenue:     gm('totalRevenue'),
+    serviceRevenue:   gm('serviceRevenue'),
+    retailRevenue:    gm('retailRevenue'),
+    totalRPH:         gm('totalRPH'),
+    serviceRPH:       gm('serviceRPH'),
+    retailRPH:        gm('retailRPH'),
+    salesPerBookedHr: gm('salesPerBookedHr'),
+    productivity:     gm('productivity'),
+    hoursBooked:      gm('hoursBooked'),
+    hoursScheduled:   gm('hoursScheduled'),
+    repeatRate:       gm('repeatRate'),
+    newVisits:        gm('newVisits'),
+    repeatVisits:     gm('repeatVisits'),
+    totalVisits:      gm('totalVisits'),
+  };
+
+  const s = {
+    totalRevenue: bandStatus(m.totalRevenue.r, bm.revYellow, bm.revenue),
+    totalRPH:     bandStatus(m.totalRPH.r, bm.rphYellow, bm.rph),
+    productivity: status(m.productivity.r, bm.productivity),
+    repeatRate:   status(m.repeatRate.r, bm.repeatRate),
+  };
+
+  const sy = {
+    totalRevenue: bandStatus(m.totalRevenue.y, bm.revYellow, bm.revenue),
+    totalRPH:     bandStatus(m.totalRPH.y, bm.rphYellow, bm.rph),
+    productivity: status(m.productivity.y, bm.productivity),
+    repeatRate:   status(m.repeatRate.y, bm.repeatRate),
+  };
+
+  const statusRank = { green: 3, yellow: 2, red: 1, neutral: 0 };
+  const ptRevOverride = isPT &&
+    (s.totalRevenue === 'green' || s.totalRevenue === 'yellow') &&
+    statusRank[s.totalRevenue] > statusRank[s.totalRPH];
+  const primaryUsesRevenue = !isPT || ptRevOverride;
+
+  const primaryStatus  = primaryUsesRevenue ? s.totalRevenue : s.totalRPH;
+  const primaryStatusY = primaryUsesRevenue ? sy.totalRevenue : sy.totalRPH;
+  const primaryMetricR = primaryUsesRevenue ? m.totalRevenue.r : m.totalRPH.r;
+  const primaryMetricY = primaryUsesRevenue ? m.totalRevenue.y : m.totalRPH.y;
+  const primaryLabel   = primaryUsesRevenue ? 'Total Revenue' : 'Revenue/Hr';
+  const primaryFmt     = primaryUsesRevenue ? fc(primaryMetricR) : fcD(primaryMetricR);
+  const primaryFmtY    = primaryUsesRevenue ? fc(primaryMetricY) : fcD(primaryMetricY);
+  const primaryBMStr   = primaryUsesRevenue ? bm.revenueStr+'/mo' : bm.rphStr;
+
+  const tr = {};
+  Object.keys(m).forEach(k => tr[k] = trend(m[k].r, m[k].y));
+
+  const atCapacity = m.productivity.r != null && m.productivity.r >= CAPACITY_THRESHOLD;
+
+  const spbhThreshold = cat === 'nails' ? 50 : 70;
+  const spbhAvg = m.salesPerBookedHr.y != null ? m.salesPerBookedHr.y : m.salesPerBookedHr.r;
+  const spbhFlag = spbhAvg != null && spbhAvg < spbhThreshold;
+
+  const lowProd    = !isNew && (s.productivity === 'red' || s.productivity === 'yellow');
+  const lowRR      = !isNew && (s.repeatRate   === 'red' || s.repeatRate   === 'yellow');
+  const lowRPH     = !isNew && (s.totalRPH     === 'red' || s.totalRPH     === 'yellow');
+  const goodProd   = s.productivity === 'green';
+  const lowRev     = !isNew && (s.totalRevenue === 'red' || s.totalRevenue === 'yellow');
+  const droppingRR = !isNew && tr.repeatRate === 'down';
+  const dropping   = !isNew && !atCapacity && (tr.totalVisits === 'down' || tr.newVisits === 'down');
+  const busyLowRev = goodProd && (lowRev || lowRPH);
+
+  const rootCauses = [];
+  if (!isNew) {
+    if (lowProd || dropping)    rootCauses.push('acquisition');
+    if (lowRR   || droppingRR)  rootCauses.push('retention');
+    if (busyLowRev || (lowRPH && !lowProd)) rootCauses.push('revenue');
+    if (!rootCauses.length && primaryStatus !== 'green' && primaryStatus !== 'neutral')
+      rootCauses.push('revenue');
+  }
+
+  const lowProdStrongRR = lowProd && s.repeatRate === 'green';
+
+  const considerPriceValue = lowProd && (tr.productivity==='down' || tr.productivity==='stable' || tr.productivity==='neutral') &&
+                             (lowRR || tr.repeatRate==='stable' || tr.repeatRate==='down');
+
+  const sustainedProd = status(m.productivity.y, bm.productivity)==='green' || tr.productivity==='up' || tr.productivity==='stable';
+  const sustainedRR   = status(m.repeatRate.y, bm.repeatRate)==='green'   || tr.repeatRate==='up'   || tr.repeatRate==='stable';
+  const piReady = !isNew &&
+    s.productivity === 'green' && sustainedProd &&
+    s.repeatRate   === 'green' && sustainedRR;
+
+  document.getElementById('resultsTechName').textContent = name + ' — Growth Plan';
+  document.getElementById('resultsMeta').textContent =
+    `Generated ${genDate} · ${catLabel} · ${isPT ? 'Part Time' : 'Full Time'} · Primary benchmark: ${primaryBMStr}`;
+
+  const newNote = isNew ? ` This status compares ${name} to national benchmarks, not new-technician ramp targets. As a technician in their first 6 months, expect them to grow into these benchmarks — focus on month-over-month improvement (see the Diagnosis tab).` : '';
+  let bCls, bEmoji, bTitle, bDesc;
+  if (primaryStatus==='green') {
+    bCls='green'; bEmoji='🌟';
+    bTitle='Successful Performer — 🟢 Green Status';
+    bDesc=name+' is meeting the '+(primaryUsesRevenue?'total revenue':'revenue-per-hour')+' national benchmark for '+catLabel+'. Coach with freedom and flexibility — 1:1s can be monthly or quarterly based on their preference, and a walk-and-talk touch base may be preferred over a formal sit-down.'+newNote;
+  } else if (primaryStatus==='yellow') {
+    bCls='yellow'; bEmoji='⚡';
+    bTitle='Near Target — 🟡 Yellow Status';
+    bDesc=name+' is in the yellow range for '+(primaryUsesRevenue?'revenue':'RPH')+' ('+primaryFmt+' vs. green benchmark '+primaryBMStr+') — below the benchmark but above the red threshold. Per the playbook communication rhythm, weekly 1:1s are called for while scores are yellow — review KPIs, update the business plan, and set clear monthly goals to close the gap.'+newNote;
+  } else if (primaryStatus==='red') {
+    bCls='red'; bEmoji='🎯';
+    bTitle='Struggling Performer — 🔴 Red Status';
+    bDesc=name+' is below the '+(primaryUsesRevenue?'revenue':'RPH')+' national benchmark ('+primaryFmt+' vs. target '+primaryBMStr+'). '+(isNew?'':'Weekly 1:1s are required per the coaching cadence. ')+'Use the diagnosis below to identify the root cause and set clear improvement expectations and timelines.'+newNote;
+  } else {
+    bCls='blue'; bEmoji='📋';
+    bTitle=name+' — Metrics Overview';
+    bDesc='Enter '+(isPT?'Revenue Per Hour':'Total Revenue')+' data to determine the overall performance status.';
+  }
+
+  if (ptRevOverride) {
+    bDesc += ` Note for the leader: ${name} is part-time, but their Total Revenue (${fc(m.totalRevenue.r)}) meets the full-time ${catLabel} benchmark at ${s.totalRevenue==='green'?'green':'yellow'} level — that overrides the RPH benchmark for this growth plan.`;
+  }
+
+  let pills = '';
+  if (months!==null) pills+=`<span class="meta-pill">⏳ ${months} month${months!==1?'s':''} on team</span>`;
+  pills+=`<span class="meta-pill">✂️ ${catLabel}</span>`;
+  pills+=`<span class="meta-pill">${isPT?'🕐 Part Time':'🕘 Full Time'}</span>`;
+
+  document.getElementById('overallStatus').innerHTML=`
+    <div class="status-banner ${bCls}">
+      <div class="status-emoji">${bEmoji}</div>
+      <div class="status-body">
+        <h3>${bTitle}</h3>
+        <p>${bDesc}</p>
+        <div class="status-meta">${pills}</div>
+      </div>
+    </div>`;
+
+  function kCard(label, val, st, tn, tgt, customPill) {
+    const cardCls = st && st!=='neutral' ? `bm-${st}` : '';
+    const dotHtml = st && st!=='neutral' ? `<div class="kpi-dot ${st}"></div>` : '';
+    const pill = customPill || `<span class="trend-pill ${tn}">${tIcon(tn)} ${tWord(tn)}</span>`;
+    return `
+      <div class="kpi-card ${cardCls}">
+        <div class="kpi-label">${label}</div>
+        <div class="kpi-value-row"><div class="kpi-value">${val}</div>${dotHtml}</div>
+        <div class="kpi-trend-row">
+          ${pill}
+          ${tgt ? `<span class="kpi-target">Target: ${tgt}</span>` : ''}
+        </div>
+      </div>`;
+  }
+
+  const newVisitsPill = (atCapacity && tr.newVisits==='down')
+    ? `<span class="trend-pill capacity">↓ Expected — book is full</span>`
+    : null;
+
+  document.getElementById('kpiDashboard').innerHTML =
+    '<div class="kpi-row cols-3">' +
+      kCard('Total Revenue',        fc(m.totalRevenue.r),       primaryUsesRevenue?s.totalRevenue:null,  tr.totalRevenue,     bm.revenueStr+'/mo') +
+      kCard('Service Revenue',      fc(m.serviceRevenue.r),     null,                      tr.serviceRevenue,   null) +
+      kCard('Retail Revenue',       fc(m.retailRevenue.r),      null,                      tr.retailRevenue,    null) +
+    '</div>' +
+    '<div class="kpi-row cols-4">' +
+      kCard('Total Revenue / Hr',   fcD(m.totalRPH.r),          s.totalRPH,                tr.totalRPH,         bm.rphStr) +
+      kCard('Service Revenue / Hr', fcD(m.serviceRPH.r),        null,                      tr.serviceRPH,       null) +
+      kCard('Retail Revenue / Hr',  fcD(m.retailRPH.r),         null,                      tr.retailRPH,        null) +
+      kCard('Sales / Booked Hour',  fcD(m.salesPerBookedHr.r),  null, tr.salesPerBookedHr, null) +
+    '</div>' +
+    '<div class="kpi-row cols-3">' +
+      kCard('Productivity',         fp(m.productivity.r),       s.productivity,            tr.productivity,     '70%') +
+      kCard('Hours Booked',         fn(m.hoursBooked.r),        null,                      tr.hoursBooked,      null) +
+      kCard('Hours Scheduled',      fn(m.hoursScheduled.r),     null,                      tr.hoursScheduled,   null) +
+    '</div>' +
+    '<div class="kpi-row cols-4">' +
+      kCard('Repeat Rate',          fp(m.repeatRate.r),         s.repeatRate,              tr.repeatRate,       bm.rrStr) +
+      kCard('New Client Visits',    fn(m.newVisits.r),          null,                      tr.newVisits,        null, newVisitsPill) +
+      kCard('Repeat Client Visits', fn(m.repeatVisits.r),       null,                      tr.repeatVisits,     null) +
+      kCard('Total Client Visits',  fn(m.totalVisits.r),        null,                      tr.totalVisits,      null) +
+    '</div>';
+
+  let diagHtml = '';
+
+  if (isNew) {
+    const rampRowsTable = NEW_TECH.map(x => {
+      const cur = x.month === months;
+      return `<tr style="${cur ? 'background:#EFF6FF; font-weight:700;' : ''}">
+        <td>Month ${x.month}${cur ? ' ← current' : ''}</td>
+        <td style="text-align:center;">${x.hours}+</td>
+        <td style="text-align:center;">${x.prodPct}%+</td>
+        <td style="text-align:center;">$${x.rph}+</td>
+      </tr>`;
+    }).join('');
+    diagHtml = `
+      <div class="root-cause-card" style="background:#EFF6FF; border-left:4px solid #3B82F6; margin-bottom:14px;">
+        <div class="rc-icon">🌱</div>
+        <div class="rc-title">New Technician — Ramp-Up Reference</div>
+        <div class="rc-sub">Month ${months} on team</div>
+        <p style="font-size:13px; color:#333; line-height:1.55; margin-bottom:12px;">
+          Per the playbook, the first months focus on building <strong>booked hours</strong>,
+          <strong>productivity</strong>, and <strong>revenue per hour</strong> while ${name}'s client base grows.
+          The status colors above compare ${name} to <strong>national benchmarks from month one</strong> — use these
+          ramp minimums to gauge whether early momentum is on track.
+        </p>
+        <table class="cycle-table">
+          <thead><tr><th>Ramp Month</th><th style="text-align:center;">Booked Hours</th><th style="text-align:center;">Productivity</th><th style="text-align:center;">Revenue / Hr</th></tr></thead>
+          <tbody>${rampRowsTable}</tbody>
+        </table>
+      </div>`;
+  }
+
+  if (atCapacity && (tr.newVisits==='down' || tr.newVisits==='stable')) {
+    diagHtml += `
+      <div class="root-cause-card capacity" style="margin-bottom:14px;">
+        <div class="rc-icon">📈</div>
+        <div class="rc-title">Booked At or Near Capacity</div>
+        <div class="rc-sub">${fp(m.productivity.r)} booked — new client count is not a concern</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          ${name} is ${fp(m.productivity.r)} booked. At 80–85%+ booked, there simply isn't room to add many new
+          clients — a flat or declining new client count is <strong>expected and healthy</strong> here, not a warning sign.
+          The growth conversation shifts from filling the book to <strong>maximizing the value of every booked hour</strong>:
+          add-ons, upgrades, retail, and — if repeat rate is also green — a price increase.
+        </p>
+      </div>`;
+  }
+
+  const days = daysSince(hireDate);
+  const growthTrends = [tr.hoursBooked, tr.totalRevenue, tr.repeatRate];
+  const hasGrowthData = growthTrends.some(t => t !== 'neutral');
+  const stagnant90 = days !== null && days > 90 && hasGrowthData && !growthTrends.includes('up');
+
+  if (stagnant90) {
+    diagHtml += `
+      <div class="root-cause-card" style="background:#FEF0EE; border-left-color:#DC3545; margin-bottom:14px;">
+        <div class="rc-icon">📚</div>
+        <div class="rc-title">Growth Has Stalled Past the 90-Day Mark</div>
+        <div class="rc-sub">${days} days on team · booked hours, revenue, and repeat rate are flat or declining vs. the 12-month average</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          ${name} is past the 90-day mark without upward movement in booked hours, revenue, or repeat rate. Refer back
+          to the onboarding playbook and education resources — a refresh of the fundamentals (consultation structure,
+          pre-booking, downtime business-building activities) can help reset momentum.
+        </p>
+      </div>`;
+  }
+
+  const rrKnown = s.repeatRate !== 'neutral';
+  const retentionHealthy = s.repeatRate === 'green';
+  const retentionBelow = s.repeatRate === 'red' || s.repeatRate === 'yellow';
+  const prodKnown = s.productivity !== 'neutral';
+  const busyEnough = s.productivity === 'green' || atCapacity;
+  let fallingOff = false;
+
+  if (isNew) {
+    const rampMo = NEW_TECH.find(x => x.month === months);
+    const rampRows = [
+      { label:'Booked Hours', st:'neutral',      tn:tr.hoursBooked, cur:m.hoursBooked.r,  fmt:fn,  tgt: rampMo ? rampMo.hours+'+ (ramp)' : '—' },
+      { label:'Repeat Rate',  st:s.repeatRate,  tn:tr.repeatRate,  cur:m.repeatRate.r,   fmt:fp,  tgt:bm.rrStr },
+      { label:'Total Revenue',st:s.totalRevenue,tn:tr.totalRevenue,cur:m.totalRevenue.r, fmt:fc,  tgt:bm.revenueStr+'/mo' },
+      { label:'Revenue / Hr', st:s.totalRPH,    tn:tr.totalRPH,    cur:m.totalRPH.r,     fmt:fcD, tgt:bm.rphStr },
+      { label:'Productivity', st:s.productivity,tn:tr.productivity,cur:m.productivity.r, fmt:fp,  tgt:'70%' },
+    ];
+    const rampCells = rampRows.map(r => {
+      const move = r.tn === 'up' ? '<span style="color:#1A6B30; font-weight:700;">↑ Improving</span>'
+                 : r.tn === 'down' ? '<span style="color:#9B1C1C; font-weight:700;">↓ Slipping — watch</span>'
+                 : r.tn === 'stable' ? '<span style="color:#B5890C; font-weight:700;">→ Holding</span>'
+                 : '<span style="color:#BBB;">— no prior data</span>';
+      const stDot = r.st !== 'neutral' ? `<span class="kpi-dot ${r.st}" style="display:inline-block; vertical-align:middle; margin-left:6px;"></span>` : '';
+      return `<tr>
+        <td><strong>${r.label}</strong></td>
+        <td style="text-align:center;">${r.cur != null ? r.fmt(r.cur) : '—'}${stDot}</td>
+        <td style="text-align:center; color:#888;">${r.tgt}</td>
+        <td style="text-align:center;">${move}</td>
+      </tr>`;
+    }).join('');
+    diagHtml += `
+      <div class="info-box" style="margin-bottom:14px;">
+        <strong>First 6 months — watch the trend, not the benchmark.</strong> ${name} has been on the team
+        ${months !== null ? `${months} month${months!==1?'s':''}` : 'under 6 months'}. During ramp we do <strong>not</strong> flag
+        metrics that are below benchmark — new technicians are expected to grow into the benchmarks over their first 6 months.
+        What matters now is that booked hours, repeat rate, revenue, revenue per hour, and productivity are <strong>improving month over month</strong>.
+        (The colored dots still show where each metric stands against the full national benchmark, for reference.)
+      </div>
+      <table class="cycle-table" style="margin-bottom:14px;">
+        <thead><tr><th>Metric</th><th style="text-align:center;">Most Recent</th><th style="text-align:center;">Benchmark</th><th style="text-align:center;">Month-over-Month</th></tr></thead>
+        <tbody>${rampCells}</tbody>
+      </table>`;
+    const slipping = rampRows.filter(r => r.tn === 'down').map(r => r.label);
+    if (slipping.length) {
+      diagHtml += `
+        <div class="root-cause-card" style="background:#FEF0EE; border-left-color:#DC3545; margin-bottom:14px;">
+          <div class="rc-icon">⚠️</div>
+          <div class="rc-title">Watch: ${slipping.join(', ')} Slipping During Ramp</div>
+          <p style="font-size:13px; color:#333; line-height:1.55;">
+            ${slipping.join(', ')} ${slipping.length>1?'are':'is'} trending down versus the prior period. Early in the ramp we
+            expect steady month-over-month gains — dig into what changed and reinforce the onboarding fundamentals
+            (consultation structure, pre-booking, downtime business-building) before it becomes a pattern.
+          </p>
+        </div>`;
+    }
+  } else {
+
+  const greenGrowing = primaryStatus === 'green' && tr.totalRevenue === 'up';
+  if (greenGrowing) {
+    diagHtml += `
+      <div class="root-cause-card success" style="margin-bottom:14px;">
+        <div class="rc-icon">📈</div>
+        <div class="rc-title">Strong &amp; Growing — Look for Opportunity, Not Problems</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          ${name} is a green performer and their revenue is growing versus the 12-month average — this isn't a
+          "what's wrong" situation. The fundamentals are healthy, so the real opportunity here is likely to
+          <strong>increase service prices</strong> and maximize the value of every visit (see the Price Increase tab).
+          The two checks below simply confirm the foundation is solid.
+        </p>
+      </div>`;
+  } else {
+    diagHtml += `
+      <div class="info-box" style="margin-bottom:14px;">
+        <strong>Why isn't ${name}'s business growing?</strong> Coach through two questions, in order:
+        <strong>1) Are clients returning?</strong> then <strong>2) Are they busy enough?</strong>
+        Retention always comes first — if guests aren't returning, more new guests won't grow the business.
+      </div>`;
+  }
+
+  if (!rrKnown) {
+    diagHtml += `
+      <div class="root-cause-card" style="background:#FAFAF9; border-left-color:#CCC; margin-bottom:14px;">
+        <div class="rc-sub">Question 1 · Retention</div>
+        <div class="rc-title">Are clients returning?</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          Enter Repeat Rate in Step 2 to answer this question — it determines the entire coaching sequence.
+        </p>
+      </div>`;
+  } else if (retentionHealthy) {
+    diagHtml += `
+      <div class="root-cause-card success" style="margin-bottom:14px;">
+        <div class="rc-sub">Question 1 · Retention</div>
+        <div class="rc-title">Are clients returning? — ✅ Yes</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          Repeat rate is ${fp(m.repeatRate.r)} vs. the ${bm.rrStr} target for ${catLabel}${tr.repeatRate==='up' ? ', and trending up' : ''}.
+          Guests are coming back — retention is healthy. Move to Question 2.
+        </p>
+      </div>`;
+  } else {
+    const yellowRR = s.repeatRate === 'yellow';
+    const q1Signals = [];
+    if (m.repeatRate.r != null) q1Signals.push(`Repeat rate is ${fp(m.repeatRate.r)} vs. the ${bm.rrStr} target for ${catLabel}`);
+    if (tr.repeatRate === 'down') q1Signals.push('Repeat rate is declining vs. the 12-month average');
+    if (tr.repeatVisits === 'down') q1Signals.push('Returning visit count is declining');
+    diagHtml += `
+      <div class="root-cause-card retention" style="margin-bottom:14px;">
+        <div class="rc-sub">Question 1 · Retention — Owned by the Technician</div>
+        <div class="rc-title">Are clients returning? — ${yellowRR ? '⚠️ Not consistently' : '❌ No'}</div>
+        <ul class="rc-signals">${q1Signals.map(x=>`<li>${x}</li>`).join('')}</ul>
+        <p style="font-size:13px; color:#333; line-height:1.55; margin:10px 0;">
+          <strong>Stop here.</strong> Don't focus on bringing in more new clients until you understand why existing
+          guests aren't returning. Retention is fully owned by the technician — coach, brainstorm, and support,
+          but ownership lies with them.
+        </p>
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#7B5A00; margin-bottom:6px;">Areas to Investigate</div>
+        <ul class="rc-signals">
+          <li>Guest experience</li>
+          <li>Consultation quality</li>
+          <li>Technical skill</li>
+          <li>Personal presentation — professional appearance, grooming, and how the technician carries themselves</li>
+          <li>Relationship building</li>
+          <li>Rebooking habits</li>
+          <li>Schedule availability — enough hours? working when guests want appointments?</li>
+          <li>Price positioning — too expensive for demand?</li>
+          <li>Service timing — taking too long to complete services?</li>
+        </ul>
+        <p style="font-size:13px; color:#333; line-height:1.55; margin-top:10px;">
+          <strong>Coaching priority:</strong> improve retention first before increasing new guest traffic.
+        </p>
+      </div>`;
+  }
+
+  if (retentionBelow) {
+    diagHtml += `
+      <div class="root-cause-card" style="background:#FAFAF9; border-left-color:#DDD; margin-bottom:14px; opacity:0.8;">
+        <div class="rc-sub">Question 2 · Client Acquisition</div>
+        <div class="rc-title">Are they busy enough? — ⏸ On Hold</div>
+        <p style="font-size:13px; color:#555; line-height:1.55;">
+          Revisit this question after retention improves. Driving more new guests to a technician who isn't
+          retaining them damages the guest experience and brand.
+        </p>
+      </div>`;
+  } else if (!prodKnown) {
+    diagHtml += `
+      <div class="root-cause-card" style="background:#FAFAF9; border-left-color:#CCC; margin-bottom:14px;">
+        <div class="rc-sub">Question 2 · Client Acquisition</div>
+        <div class="rc-title">Are they busy enough?</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          Enter Productivity in Step 2 to answer this question.${!rrKnown ? ' (And confirm retention in Question 1 first — that sequence matters.)' : ''}
+        </p>
+      </div>`;
+  } else if (busyEnough) {
+    diagHtml += `
+      <div class="root-cause-card success" style="margin-bottom:14px;">
+        <div class="rc-sub">Question 2 · Client Acquisition</div>
+        <div class="rc-title">Are they busy enough? — ✅ Yes</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          Productivity is ${fp(m.productivity.r)} vs. the 70% target${atCapacity ? ' — at or near full capacity' : ''}.
+          ${retentionHealthy
+            ? `Both answers are yes — ${name}'s business fundamentals are healthy. Growth now comes from the three proven pathways: increasing service revenue (add-ons, upgrades, strategic price increases), expanding booked hours, and driving retail performance — plus title promotion progress and career milestones.`
+            : `The book is filling — once retention is confirmed healthy, growth comes from maximizing the value of every booked hour.`}
+        </p>
+      </div>`;
+  } else {
+    const q2Signals = [];
+    if (m.productivity.r != null) q2Signals.push(`Productivity is ${fp(m.productivity.r)} vs. the 70% target`);
+    if (!atCapacity && tr.newVisits === 'down') q2Signals.push('New client visits are declining vs. the 12-month average');
+    if (!atCapacity && tr.totalVisits === 'down') q2Signals.push('Total visit count is declining vs. the 12-month average');
+    if (tr.productivity === 'down') q2Signals.push('Productivity is trending downward over time');
+    if (retentionHealthy) q2Signals.push('Retention is green — clients love the work; the book just needs more volume');
+    if (lowRPH && m.totalRPH.r != null) q2Signals.push(`Revenue/hr is ${fcD(m.totalRPH.r)} — likely a symptom of unbooked hours, not a pricing problem; filling the book comes first`);
+    diagHtml += `
+      <div class="root-cause-card acquisition" style="margin-bottom:14px;">
+        <div class="rc-sub">Question 2 · Client Acquisition</div>
+        <div class="rc-title">Are they busy enough? — ❌ Not yet</div>
+        <ul class="rc-signals">${q2Signals.map(x=>`<li>${x}</li>`).join('')}</ul>
+        <p style="font-size:13px; color:#333; line-height:1.55; margin:10px 0;">
+          ${retentionHealthy ? `Retention is healthy, so this is a <strong>build-new-business</strong> situation — ${name} simply needs more opportunities, not a service-experience fix.` : `${name} needs more opportunities to fill the book.`}
+        </p>
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#7A1A1A; margin-bottom:6px;">Focus On</div>
+        <ul class="rc-signals">
+          <li>New guest acquisition</li>
+          <li>Referrals — including internal referrals from team members across the club</li>
+          <li>Online booking — complete profile with a professional headshot</li>
+          <li>Marketing — social posting, Google reviews, digital visibility</li>
+          <li>Visibility inside the club</li>
+          <li>Schedule optimization — see the Heatmap section below</li>
+        </ul>
+      </div>`;
+  }
+
+  fallingOff = (s.repeatRate === 'green' || s.repeatRate === 'yellow') &&
+    lowProd && (tr.hoursBooked === 'down' || tr.hoursBooked === 'stable');
+  if (fallingOff) {
+    diagHtml += `
+      <div class="root-cause-card retention" style="margin-bottom:14px;">
+        <div class="rc-icon">🔁</div>
+        <div class="rc-title">Returning — But Not Sticking</div>
+        <div class="rc-sub">Repeat rate looks ${s.repeatRate === 'green' ? 'healthy' : 'close to benchmark'}, but the book isn't growing</div>
+        <p style="font-size:13px; color:#333; line-height:1.55;">
+          ${name}'s repeat rate is ${fp(m.repeatRate.r)}, but productivity is low and booked hours are not growing.
+          Clients may be coming back once, twice, maybe even three times — then falling off after that.
+          Read this as: <strong>${name} is not actually growing a business of retained guests.</strong>
+          Dig into what happens after the first few visits — are guests on a treatment plan with a standing
+          rebooking cycle, or drifting away? Coach long-term relationship building, personalization, and
+          rebooking at <em>every</em> visit, not just the first.
+        </p>
+      </div>`;
+  }
+
+  const contribSignals = [];
+  if (spbhFlag) contribSignals.push(`Sales per booked hour is ${fcD(spbhAvg)} vs. the $${spbhThreshold} minimum for ${catLabel} — investigate potential low pricing or long service times`);
+  if (lowRPH && !lowProd && m.totalRPH.r != null) contribSignals.push(`Revenue/hr is ${fcD(m.totalRPH.r)} vs. the $${bm.rph}/hr target for ${catLabel}`);
+  if (goodProd && lowRev) contribSignals.push('Schedule is filling but revenue per visit is below benchmark');
+  if (tr.totalRPH === 'down' && !lowProd) contribSignals.push('Revenue per hour is declining vs. the 12-month average');
+  if (m.retailRevenue.r != null && m.totalRevenue.r != null && m.totalRevenue.r > 0) {
+    const rp = (m.retailRevenue.r / m.totalRevenue.r * 100);
+    if (rp < 12) contribSignals.push(`Retail is ${rp.toFixed(1)}% of total revenue — below the 15% company target`);
+  }
+  if (contribSignals.length) {
+    diagHtml += `
+      <div class="root-cause-card revenue">
+        <div class="rc-icon">💸</div>
+        <div class="rc-title">Revenue Quality — a Contributor, Not a Root Cause</div>
+        <div class="rc-sub">Pricing · Service Times · Availability</div>
+        <p style="font-size:13px; color:#333; line-height:1.55; margin-bottom:8px;">
+          Weak revenue quality isn't a separate root cause — it's a possible contributor to
+          ${retentionBelow ? 'poor retention (e.g., price positioning above demand)' : busyEnough || !prodKnown ? 'the issues above' : 'low productivity'}${retentionBelow && prodKnown && !busyEnough ? ' and low productivity' : ''}.
+          Review these signals alongside Questions 1 and 2:
+        </p>
+        <ul class="rc-signals">${contribSignals.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>`;
+  }
+
+  }
+
+  document.getElementById('diagnosisContent').innerHTML = diagHtml;
+
+  const recs = [];
+  const retentionFirst = rootCauses.includes('retention') && months !== null && months > 3;
+
+  const qualLockAns = gs('qualifiesLevelLock');
+  const noteCtx = {
+    name: name,
+    lockNotQualified: qualLockAns === 'no' || (qualLockAns !== 'yes' && primaryStatus !== 'green'),
+    retentionLow: s.repeatRate === 'red' || s.repeatRate === 'yellow',
+  };
+
+  if (notes) {
+    const noteActions = notesCoachingActions(notes, noteCtx);
+    recs.push({
+      p:0, cls:'notes-card',
+      cat:'Leader Context', title:'Personalized Coaching Considerations',
+      isNotes: true, notesText: notes,
+      actions: noteActions.length ? noteActions : [
+        'Use the context above to guide the tone and focus of your 1:1 conversation',
+        'Connect the performance data to what you know about this technician personally',
+      ],
+    });
+  }
+
+  let nextP = 1;
+
+  if (retentionFirst) {
+    recs.push({ p: nextP++, cls:'p1', cat:'Guest Experience & Retention — ⚠️ Top Priority', title:'Retention Must Be the #1 Focus', actions:[
+      `Repeat rate is below the ${bm.rrStr} benchmark for ${catLabel} — after ${months} months on the team, this is the most critical issue to address`,
+      'Set the expectation clearly: per the playbook, client retention is fully owned by the technician — coach, brainstorm, and support, but reinforce their accountability',
+      'Role-play the pre-booking close at every service — rebooking at the chair or treatment room before the client leaves must be non-negotiable',
+      'Build a future service plan into every consultation using typical rebooking cycles (see table below)',
+      'Review consultation structure: are expectations being set clearly at the start of each visit?',
+      'Improve personalization: use client notes in the Stylist App, remember preferences, build genuine connection',
+      'Run the lapsed guest report — outreach to guests at 0–8 weeks past their rebooking window before they become lost guests (3+ months)',
+      'If retention KPIs stay red, initiate a structured coaching plan with clear improvement expectations and timelines — consecutive red months warrant a formal HR-approved performance plan',
+    ], rebookTable: true });
+  }
+
+  if (isNew) {
+    recs.push({ p: nextP++, cls: retentionFirst ? 'p2' : 'p1', cat:'New Technician Development', title:'Build Momentum from Day One', actions:[
+      'Follow the onboarding playbook and First 50 Clients strategy',
+      'Coordinate leader-assisted bookings and internal referrals to jumpstart the schedule',
+      'Schedule must include Wed–Sat, minimum 20 hrs/week, 3+ shifts of 5 hours or longer',
+      'Set introductory pricing that invites trial and builds momentum — use the per-minute model and Price Setting Calculator',
+      'Consider a Level Lock (12-week commission lock) for income stability during ramp',
+      'Review month-over-month ramp benchmarks weekly — consistent momentum in booked hours and RPH is the goal',
+      'Connect them with the front desk concierge team and new member tours for early visibility',
+    ]});
+  }
+
+  if (rootCauses.includes('acquisition')) {
+    const cls = nextP === 1 ? 'p1' : nextP === 2 ? 'p2' : 'p3';
+    recs.push({ p: nextP++, cls, cat:'Client Acquisition & Productivity', title:'Fill the Book (Playbook Plays)', actions:[
+      'Review the Heatmap together — find high-demand windows (Thursday evenings, Fridays, Saturdays) and shift their schedule toward them; even small adjustments boost visibility and client acquisition',
+      'Turn downtime into business-building: reach out to new members about the $50 credit, offer Express Rituals to walk-ins, host mini workshops or pop-up demos in the club',
+      'Run the lapsed guest report and follow up with guests who haven\'t rebooked — use the playbook phone script ("We want to make sure you\'re feeling your best…")',
+      'Offer complimentary mini services to team members across the club (trainers, group fitness, concierge) so they can authentically refer',
+      'Build social proof: consistent Instagram posting of before/afters, and actively request Google reviews from happy guests',
+      'Verify their online booking profile is complete with a professional headshot — photos increase bookings in the LT app',
+      'Confirm schedule meets minimums: 20+ hrs/week, 3+ days, 5-hour shifts, Wed–Sat priority coverage',
+      'If asking for a schedule or behavior change, a Level Lock can be a tradeoff tool to meet them halfway — but never for technicians struggling with retention',
+    ]});
+  }
+
+  if (rootCauses.includes('retention') && !retentionFirst) {
+    const cls = nextP === 1 ? 'p1' : nextP === 2 ? 'p2' : 'p3';
+    recs.push({ p: nextP++, cls, cat:'Guest Experience & Retention', title:'Turn Visits into Loyalty', actions:[
+      'Role-play the pre-booking close — rebooking at the chair or treatment room, before the client leaves, must be non-negotiable',
+      'Build a future service plan into every consultation using typical rebooking cycles (see table below)',
+      'Set the expectation: retention is fully owned by the technician — leaders support, but ownership lies with them',
+      'Review consultation structure: are client expectations being set clearly at the start?',
+      'Improve personalization: use client notes in the Stylist App, remember details, build genuine connection',
+      'Run the lapsed guest report — outreach before guests hit the 3-month lost-guest mark',
+      'Add client education to every service: what to use at home, why it matters for their results',
+    ], rebookTable: true });
+  }
+
+  if (rootCauses.includes('revenue')) {
+    const cls = nextP === 1 ? 'p1' : nextP === 2 ? 'p2' : 'p3';
+    const revActions = [
+      'Review service times — are services running over their booked length? Tightening timing increases capacity',
+      `Pricing check against the per-minute model (${cat==='hair'?'$1.05/min':cat==='nails'?'$1.00/min':'$1.23/min'} minimum for ${catLabel}) — round to the nearest $5; use the Price Setting Calculator`,
+      'Coach the three pathways: add-ons (enhancements with a fee), upgrades (basic → premium versions), and strategic price increases where demand supports it',
+      'Drive retail with the playbook approach: educate during/after service, ask about client goals, share personal favorites, review at-home routines',
+      'No discounts on bundle services (e.g., Color + Cut) — reinforce full pricing',
+      'If booked and retaining clients consistently, discuss a price increase (see readiness section below)',
+    ];
+    if (considerPriceValue) {
+      revActions.push('⚠️ Value-gap check: retention and productivity are both stagnant — per the playbook, the price point itself may be the barrier. If their price is above $100, consider a strategic decrease to $80–$95 with targeted outreach to lapsed clients; if bookings don\'t improve after the decrease, the issue is performance or fit, not price');
+    }
+    recs.push({ p: nextP++, cls, cat:'Revenue Quality', title:'Maximize Revenue Per Visit', actions: revActions });
+  }
+
+  if (!recs.filter(r=>!r.isNotes).length && primaryStatus==='green') {
+    const greenActions = [
+      'Coach with freedom and flexibility — 1:1s monthly or quarterly based on their preference; a walk-and-talk may beat a formal sit-down',
+      'Review the three pathways to continued growth: service revenue (add-ons, upgrades, price increases), booked hours, and retail',
+      `Discuss title promotion progress (see tracker below) — Senior, Master, and Elite titles reward consistent results`,
+      'Consider a quarterly pre-calculated Level Lock as a reward — a safety net for green performers during time off or slower weeks',
+      'Explore advanced education, specialty certifications, or premium service offerings',
+      'Celebrate wins visibly — MVP recognition, Leaderboard, and milestone anniversaries keep top performers connected',
+      'Leverage as a mentor for newer team members and a practical-interview partner for casting',
+    ];
+    if (atCapacity) {
+      greenActions.splice(1, 0, `At ${fp(m.productivity.r)} booked, growth comes from value per hour — not more clients. Focus on add-ons, upgrades, retail attach, and price increase timing`);
+    }
+    recs.push({ p:1, cls:'p3', cat:'Successful Performer Coaching', title:'Growth & Career Development', actions: greenActions });
+  }
+
+  if (m.retailRevenue.r!=null && m.totalRevenue.r!=null && m.totalRevenue.r>0) {
+    const rp = m.retailRevenue.r/m.totalRevenue.r*100;
+    if (rp<12 && !rootCauses.includes('revenue')) {
+      recs.push({ p: nextP++, cls:'p4', cat:'Additional Opportunity', title:'Grow Retail Revenue', actions:[
+        `Retail is currently ${rp.toFixed(1)}% of total revenue — the company target is 15% of total revenue`,
+        'Educate clients during and after the service about the products being used and recommended',
+        'Ask questions to understand client goals, then align product suggestions accordingly',
+        'Share personal favorites — clients value authentic, professional recommendations',
+        'Review guest routines and offer improvements that support at-home care and extend service results',
+      ]});
+    }
+  }
+
+  let pCounter = 0;
+  recs.forEach(r => { if (!r.isNotes) r.p = ++pCounter; });
+
+  const rebookTableHtml = `
+    <table class="cycle-table">
+      <thead><tr><th>Service Type</th><th>Typical Rebooking Cycle</th></tr></thead>
+      <tbody>${REBOOK_CYCLES.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td></tr>`).join('')}</tbody>
+    </table>`;
+
+  const coachHtml = recs.length
+    ? recs.map(rec => {
+        const notesBlock = rec.isNotes ? `<div class="notes-text">"${rec.notesText}"</div>` : '';
+        return `
+          <div class="coaching-card ${rec.cls}">
+            <div class="cc-category">${rec.isNotes ? '📝 From Your Notes' : `Priority ${rec.p} · ${rec.cat}`}</div>
+            <div class="cc-title">${rec.title}</div>
+            ${notesBlock}
+            ${rec.actions.length ? `<ul class="cc-list">${rec.actions.map(a=>`<li>${a}</li>`).join('')}</ul>` : ''}
+            ${rec.rebookTable ? rebookTableHtml : ''}
+          </div>`;
+      }).join('')
+    : '<p style="font-size:13px; color:#888;">Enter metrics to receive coaching recommendations.</p>';
+
+  document.getElementById('coachingContent').innerHTML = coachHtml;
+
+  const goalMode    = document.getElementById('goalMode').value;
+  const recentRev   = m.totalRevenue.r;
+  const growthPct   = gv('goalGrowthPct');
+  const growthUsed  = growthPct != null ? growthPct : 10;
+  const customGoal  = gv('goalCustom');
+  const goalProfessional = document.getElementById('goalProfessional').value.trim();
+
+  let goalMonthly = null, goalBasisNote = '';
+  if (goalMode === 'custom') {
+    if (customGoal != null) { goalMonthly = customGoal; goalBasisNote = `Custom goal set with ${name}.`; }
+  } else {
+    if (recentRev != null) {
+      goalMonthly = Math.round((recentRev * (1 + growthUsed/100)) / 50) * 50;
+      goalBasisNote = `Suggested — ${fc(recentRev)} most recent month + ${growthUsed}% growth.`;
+    }
+  }
+
+  const GOAL_DAYS = [['sun','Sun'],['mon','Mon'],['tue','Tue'],['wed','Wed'],['thu','Thu'],['fri','Fri'],['sat','Sat']];
+  const workingDayNames = GOAL_DAYS.filter(d => { const v = gv('heatmapTech_'+d[0]); return v != null && v > 0; }).map(d => d[1]);
+  const workDaysWk = workingDayNames.length;
+  const WEEKS_PER_MONTH = 52/12;
+  let goalDaily = null;
+  if (goalMonthly != null && workDaysWk > 0) {
+    goalDaily = Math.round((goalMonthly / (workDaysWk * WEEKS_PER_MONTH)) / 5) * 5;
+  }
+
+  const goalHeader = `
+    <div style="background:#FDF6E3; border:1.5px solid #E8D49A; border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+      <div style="font-size:16px; font-weight:800; color:#1A1A1A;">${name} — Revenue Goal</div>
+      <div style="font-size:12px; color:#888; margin-top:2px;">${genDate} · ${catLabel} · ${isPT ? 'Part Time' : 'Full Time'}</div>
+    </div>`;
+
+  const proGoalBlock = goalProfessional ? `
+    <div class="root-cause-card" style="background:#EFF6FF; border-left-color:#3B82F6; margin-top:14px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#1E3A5F; margin-bottom:6px;">🌱 Professional Growth Goal</div>
+      <p style="font-size:13px; color:#333; line-height:1.55;">${goalProfessional}</p>
+    </div>` : '';
+
+  let goalHtml;
+  if (goalMonthly == null) {
+    goalHtml = goalHeader + (goalMode === 'custom'
+      ? `<div class="info-box">Enter a custom monthly goal in Step 6 to set ${name}'s target.</div>`
+      : `<div class="info-box">Enter Total Revenue for the most recent month in Step 2 (or switch to a custom goal in Step 6) to generate a suggested goal.</div>`) + proGoalBlock;
+  } else {
+    const monthlyTile = `
+      <div class="goal-tile primary">
+        <div class="g-label">Monthly Revenue Goal</div>
+        <div class="g-value">${fc(goalMonthly)}</div>
+        <div class="g-sub">${goalMode==='custom' ? 'Set with the technician' : `+${growthUsed}% over ${fc(recentRev)}`}</div>
+      </div>`;
+    let dailyTile, scheduleNote = '';
+    if (goalDaily != null) {
+      dailyTile = `
+        <div class="goal-tile">
+          <div class="g-label">Daily Goal (per working day)</div>
+          <div class="g-value">${fc(goalDaily)}</div>
+          <div class="g-sub">~${workDaysWk} day${workDaysWk!==1?'s':''}/week · ~${Math.round(workDaysWk*WEEKS_PER_MONTH)} days/month</div>
+        </div>`;
+      scheduleNote = `<div class="goal-days">${workingDayNames.map(d=>`<span class="goal-day-pill">${d}</span>`).join('')}</div>
+        <p style="font-size:12px; color:#888; margin-top:10px;">${name}'s daily goal is the monthly goal spread evenly across the ${workDaysWk} day${workDaysWk!==1?'s':''} a week they're scheduled (from the Step 3 Heatmap). Use it as an average target per shift — busier days can carry more, slower days less.</p>`;
+    } else {
+      dailyTile = `
+        <div class="goal-tile" style="background:#F5F5F4; border-color:#E5E1DA;">
+          <div class="g-label" style="color:#999;">Daily Goal</div>
+          <div class="g-value" style="color:#BBB; font-size:16px; padding:6px 0;">Add a schedule</div>
+          <div class="g-sub">Fill in Schedule Optimization (Step 3)</div>
+        </div>`;
+      scheduleNote = `<p style="font-size:12px; color:#888; margin-top:4px;">💡 Fill in the <strong>Schedule Optimization</strong> section (Step 3) with the days ${name} works and the tool will break this monthly goal into a daily goal for each working day.</p>`;
+    }
+    goalHtml = goalHeader + `
+      <p style="font-size:12.5px; color:#666; margin-bottom:10px;">${goalBasisNote} Set goals collaboratively and document them in the Technician Business Plan.</p>
+      <div class="goal-grid">${monthlyTile}${dailyTile}</div>
+      ${scheduleNote}` + proGoalBlock;
+  }
+  document.getElementById('goalContent').innerHTML = goalHtml;
+
+  const T = TITLES[cat];
+  let highestQualified = null;
+  let highestViaOverride = false;
+  const includeTitle = [1,2,3].some(n => gv('titleRevenue_m'+n)!=null || gv('titleRPH_m'+n)!=null || gv('titleRR_m'+n)!=null);
+  document.getElementById('titleCard').style.display = includeTitle ? '' : 'none';
+  if (includeTitle) {
+  const monthLabels = ['3 Mo Ago', '2 Mo Ago', 'Most Recent'];
+  const revVals = [1,2,3].map(n => gv('titleRevenue_m'+n));
+  const rphVals = [1,2,3].map(n => gv('titleRPH_m'+n));
+  const rrVals  = [1,2,3].map(n => gv('titleRR_m'+n));
+  const qualVals = isPT ? rphVals : revVals;
+
+  function pathResult(vals, req) {
+    if (vals.some(v => v == null)) return 'incomplete';
+    return vals.every(v => v >= req) ? 'qualifies' : 'fails';
+  }
+
+  let titleHtml = '';
+  if (months !== null && months < 3) {
+    titleHtml = `<div class="info-box">Title promotion eligibility begins after 3 full months with LifeSpa. ${name} is at month ${months} — revisit this tracker once eligible.</div>`;
+  } else if (revVals.every(v => v == null) && rphVals.every(v => v == null) && rrVals.every(v => v == null)) {
+    titleHtml = `<div class="info-box">Enter revenue, revenue per hour, and repeat rate for the last 3 months in the Title Promotion Data section above to see progress.</div>`;
+  } else {
+    const allMonthsEntered = qualVals.every(v => v != null);
+    const rrAllEntered = rrVals.every(v => v != null);
+    const rrResult = pathResult(rrVals, T.rrQ);
+
+    function chip(label, v, req, fmt) {
+      const cls = v == null ? 'na' : (v >= req ? 'ok' : 'bad');
+      const val = v == null ? '—' : fmt(v) + (v >= req ? ' ✓' : ' ✗');
+      return `<div class="m-chip ${cls}"><div class="m-label">${label}</div><div class="m-val">${val}</div></div>`;
+    }
+    const metCount = (vals, req) => vals.filter(v => v != null && v >= req).length;
+
+    const rrPill = rrResult === 'qualifies' ? `<span class="tier-pill q">✓ Met in all 3 months</span>`
+                 : rrResult === 'fails' ? `<span class="tier-pill f">✗ Not met</span>`
+                 : `<span class="tier-pill i">Incomplete data</span>`;
+    const rrCard = `
+      <div class="tt-step">Step 2 · Repeat Rate Qualifier — required alongside every tier</div>
+      <div class="tier-card ${rrResult === 'qualifies' ? 'q' : ''}">
+        <div class="tier-head">
+          <div><span class="tier-name">Repeat Rate — ${T.rrQ}%+ each month</span></div>
+          ${rrPill}
+        </div>
+        <p style="font-size:11.5px; color:#888; margin-bottom:8px;">Required alongside every tier above — if any month falls below ${T.rrQ}%, no title can be earned regardless of revenue.</p>
+        <div class="month-chips">${rrVals.map((v,i) => chip(monthLabels[i], v, T.rrQ, fp)).join('')}</div>
+      </div>`;
+
+    const tierCards = T.tiers.map(t => {
+      const req = isPT ? t.pt : t.ft;
+      const reqStr = isPT ? '$' + req + '+/hr' : '$' + t.ft.toLocaleString() + '+/mo';
+      const primaryRes = pathResult(qualVals, req);
+      const overrideRes = isPT ? pathResult(revVals, t.ft) : null;
+
+      let tierState;
+      let viaOverride = false;
+      if (rrResult === 'fails') tierState = 'fails';
+      else if (rrResult === 'incomplete') tierState = 'incomplete';
+      else if (!isPT) {
+        tierState = primaryRes;
+      } else {
+        if (primaryRes === 'qualifies' || overrideRes === 'qualifies') {
+          tierState = 'qualifies';
+          viaOverride = overrideRes === 'qualifies' && primaryRes !== 'qualifies';
+        } else if (primaryRes === 'fails' && overrideRes === 'fails') {
+          tierState = 'fails';
+        } else {
+          tierState = 'incomplete';
+        }
+      }
+
+      if (tierState === 'qualifies') { highestQualified = t.name; highestViaOverride = viaOverride; }
+
+      let pill;
+      if (tierState === 'qualifies') pill = `<span class="tier-pill q">✓ Qualifies${viaOverride ? ' — via Total Revenue' : ''}</span>`;
+      else if (rrResult === 'fails') pill = `<span class="tier-pill f">Blocked — repeat rate not met</span>`;
+      else if (tierState === 'incomplete') pill = `<span class="tier-pill i">Incomplete data</span>`;
+      else pill = `<span class="tier-pill f">Not yet</span>`;
+
+      const primaryPath = `
+        <div class="path-label">${isPT ? 'Revenue Per Hour' : 'Total Revenue'} — needs ${reqStr} · ${metCount(qualVals, req)} of 3 months met</div>
+        <div class="month-chips">${qualVals.map((v,i) => chip(monthLabels[i], v, req, isPT ? fcD : fc)).join('')}</div>`;
+
+      let overridePath = '';
+      if (isPT) {
+        overridePath = `
+        <div class="path-label" style="margin-top:10px;">OR Total Revenue override — needs $${t.ft.toLocaleString()}+/mo · ${metCount(revVals, t.ft)} of 3 months met</div>
+        <div class="month-chips">${revVals.map((v,i) => chip(monthLabels[i], v, t.ft, fc)).join('')}</div>`;
+      }
+
+      return `
+      <div class="tier-card ${tierState === 'qualifies' ? 'q' : ''}">
+        <div class="tier-head">
+          <div><span class="tier-name">${t.name} ${T.role}</span></div>
+          ${pill}
+        </div>
+        ${primaryPath}${overridePath}
+      </div>`;
+    }).join('');
+
+    let headline;
+    const dataMissing = !allMonthsEntered || !rrAllEntered;
+    if (highestQualified) {
+      const overrideNote = highestViaOverride
+        ? ` ${name}'s Total Revenue met the Full Time benchmark in all 3 months, which overrides the RPH check for a part-time technician.`
+        : '';
+      const eliteNote = highestQualified === 'Elite'
+        ? ` Elite is the highest title there is — there's nothing above it, so recognize this as the top achievement rather than coaching toward a next tier.`
+        : '';
+      headline = `<div class="root-cause-card success" style="margin-bottom:12px;"><div class="rc-icon">🏆</div><div class="rc-title">${name} Qualifies for ${highestQualified} ${T.role}</div><p style="font-size:12.5px; color:#333; margin-top:4px;">All 3 months meet the ${highestQualified} threshold and the repeat rate qualifier.${overrideNote}${eliteNote} Cross-check in DOMO before announcing.</p></div>`;
+    } else if (dataMissing) {
+      headline = `<div class="info-box" style="margin-bottom:12px;">Enter all 3 months of ${isPT ? 'revenue per hour (and optionally total revenue for the override check)' : 'total revenue'} and repeat rate for a complete title determination. The cards below reflect the data entered so far.</div>`;
+    } else {
+      headline = `<div class="info-box" style="margin-bottom:12px;">${name} does not yet qualify for a title — all 3 months must clear a tier's threshold (or, for part-time, the Total Revenue override) and the repeat rate qualifier together. See progress below.</div>`;
+    }
+
+    titleHtml = `
+      ${headline}
+      <p style="font-size:12px; color:#888; margin-bottom:4px;">
+        Checking <strong>${T.role}</strong> (${catLabel}) — primary metric: <strong>${isPT ? 'Revenue Per Hour' : 'Total Revenue'}</strong>, based on the ${isPT ? 'Part Time' : 'Full Time'} Employment Type selected in Step 1.
+        ${isPT ? ' Part-time technicians can also qualify through the Total Revenue override, shown inside each tier card.' : ''}
+        Green cells met the mark for that month; red cells fell short.
+      </p>
+      <div class="tt-step">Step 1 · Revenue Tiers — every month must clear the tier</div>
+      ${tierCards}
+      ${rrCard}`;
+  }
+  document.getElementById('titleContent').innerHTML = titleHtml;
+  }
+
+  let priceHtml = '';
+  if (isNew) {
+    priceHtml = `
+      <div class="price-card na">
+        <div class="pc-icon">🌱</div>
+        <div class="pc-title">Not Yet Applicable</div>
+        <div class="pc-body">
+          ${name} is still in the ramp-up phase. Per the playbook, starting pricing should invite trial and build
+          momentum — even experienced technicians new to the market won't gain traction at premium rates.
+          Price increases are earned later through strong demand and returning clients, and are not recommended
+          inside of 12 months.
+        </div>
+      </div>`;
+  } else if (piReady) {
+    const spbhFlat = m.salesPerBookedHr.r != null && m.salesPerBookedHr.y != null && m.salesPerBookedHr.r <= m.salesPerBookedHr.y;
+    const spbhCallout = spbhFlat ? `
+        <div class="price-guide" style="background:#FDF6E3; border-color:#E8D49A;">
+          <div class="price-guide-title" style="color:#7B5A00;">⏰ Extra Signal — Likely Overdue for an Increase</div>
+          <p style="font-size:12.5px; color:#333; line-height:1.5;">${name}'s sales per booked hour in the most recent month (${fcD(m.salesPerBookedHr.r)}) is at or below their 12-month average (${fcD(m.salesPerBookedHr.y)}). That usually means they <strong>haven't had a price increase in the last 12 months</strong> — it's very likely time. Prioritize this conversation.</p>
+        </div>` : '';
+    priceHtml = `
+      <div class="price-card ready">
+        <div class="pc-icon">✅</div>
+        <div class="pc-title">${name} May Be Ready for a Price Increase!</div>
+        <div class="pc-body">
+          The playbook formula: <strong>Busy (Productivity green) + Busy with loyal repeat clients (Repeat rate green) = a sustainable
+          price increase that is unlikely to hurt retention.</strong> ${name} checks both boxes now and over the 12-month view.
+          Remember — it's not good enough to just be booked; being booked <em>with returning clients</em> for several months
+          (12-month average recommended) is what earns the increase. Don't wait for them to ask — leaders should initiate
+          this conversation in a 1:1.
+        </div>
+        ${spbhCallout}
+        <div class="price-guide">
+          <div class="price-guide-title">How to Execute (Playbook Do's &amp; Don'ts)</div>
+          <ul>
+            <li><strong>Minimum increase: 10%</strong> — smaller increases rarely create a meaningful income impact</li>
+            <li><strong>Round up</strong> — always end the price in 0 or 5 (e.g., $80 → $88 → round to $90)</li>
+            <li><strong>Frequency:</strong> 12–18 months between price increases; never inside 12 months</li>
+            <li><strong>Do NOT</strong> post signs, notify clients in advance, or announce on social media — it creates anxiety and client resistance</li>
+            <li>Brief Service Coordinators so they can respond if a guest is surprised: <em>"Oh! I'm so sorry — [Name] has been doing amazing and recently earned a price increase. Let me adjust today's price back to what you paid before and just note this is their new price going forward."</em></li>
+          </ul>
+        </div>
+      </div>`;
+  } else {
+    const missing = [];
+    if (s.productivity!=='green') missing.push(`Productivity must reach 70%+ — ideally 75–80% booked (currently ${m.productivity.r!=null?fp(m.productivity.r):'not entered'})`);
+    else if (!sustainedProd) missing.push('Productivity is green now but not sustained over the 12-month view — several consistent months are needed');
+    if (s.repeatRate!=='green') missing.push(`Repeat rate must reach ${bm.rrStr} for ${catLabel} (currently ${m.repeatRate.r!=null?fp(m.repeatRate.r):'not entered'})`);
+    else if (!sustainedRR) missing.push('Repeat rate is green now but not sustained over the 12-month view — consistency earns the increase');
+
+    priceHtml = `
+      <div class="price-card not-ready">
+        <div class="pc-icon">⏳</div>
+        <div class="pc-title">Not Yet Ready for a Price Increase</div>
+        <div class="pc-body">
+          The playbook formula: <strong>Busy (Productivity) + Busy with loyal repeat clients (Repeat visit rate) = Price Increase Opportunity.</strong>
+          If they're not busy, raising prices will not help. Encouraging an underproductive technician with a small client base
+          to raise prices too soon can stall their progress.
+        </div>
+        ${missing.length?`
+        <div class="price-guide" style="background:#FFFBEB; border-color:#F5CC6E;">
+          <div class="price-guide-title" style="color:#7B5A00;">What Needs to Improve First</div>
+          <ul class="criteria-list">${missing.map(c=>`<li>${c}</li>`).join('')}</ul>
+          <p style="font-size:11px; color:#888; margin-top:8px; font-style:italic;">Both metrics must be green and sustained (12-month average recommended) before initiating a price increase.</p>
+        </div>`:''}
+      </div>`;
+  }
+  document.getElementById('priceContent').innerHTML = priceHtml;
+
+  const includePayroll = ['onLevelLock','qualifiesLevelLock','lockRateComparison','mwaRecent'].some(id => gs(id)!=null);
+  document.getElementById('payrollCard').style.display = includePayroll ? '' : 'none';
+  if (includePayroll) {
+  const onLock   = gs('onLevelLock');
+  const qualLock = gs('qualifiesLevelLock');
+  const lockRate = gs('lockRateComparison');
+  const mwa      = gs('mwaRecent');
+
+  let payrollHtml = '';
+  if (!onLock && !qualLock && !lockRate && !mwa) {
+    payrollHtml = `<div class="info-box">Enter Level Lock and MWA information in Step 4 to see payroll insights.</div>`;
+  } else {
+    const payrollFlags = [];
+    if (onLock === 'no' && qualLock === 'yes') {
+      payrollFlags.push({ icon:'🔓', text:`${name} qualifies for a Level Lock but is not currently on one. Per the playbook, locks are typically a 12-week new-hire lock or a quarterly pre-calculated lock for consistent green performers — review the Compensation Dashboard and consider whether a lock makes sense now.` });
+    }
+    if (onLock === 'yes' && qualLock === 'no') {
+      payrollFlags.push({ icon:'🔒', text:`${name} is currently on a Level Lock but does not currently qualify. Per the playbook, level locks should never be used for technicians struggling with retention — revisit in the Compensation Dashboard whether this lock is still appropriate.` });
+    }
+    if (onLock === 'yes' && lockRate === 'above') {
+      payrollFlags.push({ icon:'📈', text:`${name}'s locked rate is above the suggested rate. Per the playbook, never lock a technician at a rate higher than what they consistently earn (unless part-time and calibrated accordingly) — confirm in the Compensation Dashboard that this is still justified.` });
+    }
+    if (onLock === 'yes' && lockRate === 'below') {
+      payrollFlags.push({ icon:'📉', text:`${name}'s locked rate is below the suggested rate. Consider whether an adjustment is appropriate — verify in the Compensation Dashboard.` });
+    }
+    const topPerformerLock = primaryStatus === 'green' && qualLock === 'yes';
+    if (onLock === 'yes' && topPerformerLock) {
+      payrollFlags.push({ icon:'✅', text:`${name} is a consistent green performer who qualifies for a Level Lock. Per the playbook, top performers' locks are evaluated <strong>quarterly</strong> (pre-calculated from their service revenue per hour), so being on a lock past 6 months is expected and appropriate here — there's no need to taper it off. Re-verify the pre-calculated rate each quarter in the Compensation Dashboard.` });
+    } else if (onLock === 'yes') {
+      payrollFlags.push({ icon:'⏳', text:`Duration check (playbook): for a <em>ramping</em> technician, level locks are recommended for a maximum of about 6 months, and any lock extended past the first 12 weeks should be gradually tapered based on booked hours and client retention. (Consistent green performers who qualify are the exception — their locks are evaluated quarterly and can continue past 6 months.) Confirm how long ${name}'s lock has been in place and which case applies.` });
+    }
+    if (mwa === 'yes') {
+      payrollFlags.push({ icon:'⚠️', text:`${name} has received a Minimum Wage Adjustment in the past 4 weeks — commission-based pay fell below minimum wage for hours worked. Per the playbook, persistent MWA signals a lack of bookings, productivity, or effective pricing — coach with urgency on booked hours, productivity, and client retention, and review the weekly Compensation Dashboard together.` });
+    }
+    if (retentionFirst && onLock === 'yes') {
+      payrollFlags.push({ icon:'🚫', text:`Retention is currently the #1 coaching priority for ${name}. Per the playbook, level locks should never be used for technicians struggling with retention — review in the Compensation Dashboard whether this lock should continue.` });
+    }
+
+    const summaryPills = `
+      <div class="status-meta" style="margin-bottom:${payrollFlags.length?'14px':'0'};">
+        ${onLock ? `<span class="meta-pill">${onLock==='yes'?'🔒 On Level Lock':'🔓 Not on Level Lock'}</span>` : ''}
+        ${qualLock ? `<span class="meta-pill">${qualLock==='yes'?'✅ Qualifies for Lock':'— Does Not Qualify for Lock'}</span>` : ''}
+        ${lockRate ? `<span class="meta-pill">Rate: ${lockRate==='above'?'Above Suggested':lockRate==='at'?'At Suggested':'Below Suggested'}</span>` : ''}
+        ${mwa && mwa!=='na' ? `<span class="meta-pill">${mwa==='yes'?'⚠️ MWA in Last 4 Weeks':'No Recent MWA'}</span>` : ''}
+        ${mwa === 'na' ? `<span class="meta-pill">MWA: N/A (California)</span>` : ''}
+      </div>`;
+
+    payrollHtml = summaryPills + (payrollFlags.length
+      ? payrollFlags.map(f => `<div class="root-cause-card" style="background:#FFF8E7; border-left-color:#F0B429; margin-bottom:10px;"><div class="rc-icon">${f.icon}</div><p style="font-size:12.5px; color:#333; line-height:1.55;">${f.text}</p></div>`).join('')
+      : `<div class="info-box">No payroll flags — nothing further to review this month.</div>`);
+  }
+  document.getElementById('payrollContent').innerHTML = payrollHtml;
+  }
+
+  const DAYS = [['sun','Sunday'],['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday']];
+  const LESS_DESIRABLE = cat === 'body' ? ['Monday','Tuesday'] : ['Sunday','Monday','Tuesday'];
+  const heatTech = DAYS.map(d => gv('heatmapTech_'+d[0]));
+  const heatCat  = DAYS.map(d => gv('heatmapCat_'+d[0]));
+  const heatEntered = heatTech.some(v=>v!=null) || heatCat.some(v=>v!=null);
+  const HIGH_DEMAND_THRESHOLD = 70;
+
+  let heatmapHtml = '';
+  if (!heatEntered) {
+    heatmapHtml = `<div class="info-box">Enter the technician's and category's % booked by day of week in Step 3 (from the Heatmap tool's 10-week lookback) to see schedule optimization suggestions. Enter 0% for days the technician is not scheduled.</div>`;
+  } else {
+    const rrStatus = s.repeatRate;
+
+    const notScheduled = (i) => heatTech[i] == null || heatTech[i] === 0;
+    const working = (i) => heatTech[i] != null && heatTech[i] > 0;
+
+    const lessDesirableWorked = DAYS.filter((d,i) => LESS_DESIRABLE.includes(d[1]) && working(i)).map(d => d[1]);
+    const workedCatDemands = DAYS.map((d,i) => heatCat[i]).filter((c,i) => working(i) && heatCat[i] != null);
+    const minWorkedDemand = workedCatDemands.length ? Math.min(...workedCatDemands) : null;
+    const DEMAND_GAP = 10;
+    const targetDays = DAYS.filter((d,i) =>
+      heatCat[i] != null && heatCat[i] >= HIGH_DEMAND_THRESHOLD && notScheduled(i) &&
+      (minWorkedDemand == null || heatCat[i] - minWorkedDemand >= DEMAND_GAP)
+    ).map(d => d[1]);
+
+    const workedDayIdx = DAYS.map((d,i) => i).filter(i => working(i));
+    const allWorkedAbove80 = workedDayIdx.length > 0 && workedDayIdx.every(i => heatTech[i] > 80);
+    const wellBookedGreen = primaryStatus === 'green' && allWorkedAbove80;
+
+    let guidanceHtml = '';
+    let flagDays = [];
+    let slowDays = [];
+
+    if (wellBookedGreen) {
+      guidanceHtml = `
+        <div class="root-cause-card success" style="margin-bottom:14px;">
+          <div class="rc-icon">✅</div>
+          <div class="rc-title">Schedule Already Optimized — No Change Needed</div>
+          <p style="font-size:12.5px; color:#333; line-height:1.55;">
+            ${name} is a green performer and is booked above 80% on <strong>every day they work</strong> — their schedule
+            is already well-optimized. There's no need to recommend a schedule change here. Growth now comes from
+            maximizing the value of each visit (add-ons, upgrades, retail) and a possible price increase.
+          </p>
+        </div>`;
+    } else if (rrStatus === 'red') {
+      guidanceHtml = `
+        <div class="root-cause-card retention" style="margin-bottom:14px;">
+          <div class="rc-icon">🔄</div>
+          <div class="rc-title">Address Retention — Not a Schedule Change</div>
+          <p style="font-size:12.5px; color:#333; line-height:1.55;">
+            ${name}'s repeat rate is in the red (${m.repeatRate.r!=null?fp(m.repeatRate.r):'not entered'} vs. ${bm.rrStr} target for ${catLabel}).
+            Per the playbook, adding more new guests to a schedule that isn't retaining clients doesn't fix the underlying
+            problem — it just grows the number of guests who won't return. Focus the 1:1 on retention (see Coaching
+            Recommendations above). Revisit schedule optimization for new guests once repeat rate improves.
+          </p>
+        </div>`;
+    } else if (targetDays.length && (lessDesirableWorked.length || rrStatus === 'yellow')) {
+      flagDays = targetDays;
+      slowDays = lessDesirableWorked;
+      const rrCaveat = rrStatus === 'neutral'
+        ? ` Repeat rate wasn't entered in Step 2 — confirm retention is on track before making the change, since a busier schedule won't help a technician who is struggling to retain guests.`
+        : '';
+      const yellowNote = rrStatus === 'yellow'
+        ? ` ${name}'s repeat rate is in the yellow (${fp(m.repeatRate.r)} vs. ${bm.rrStr} target) — close enough to benchmark that adding new guests is a reasonable focus, but keep retention coaching in the conversation too.`
+        : '';
+      const workingContext = lessDesirableWorked.length
+        ? `${name} is currently working <strong>${lessDesirableWorked.join(', ')}</strong> — typically less in-demand
+            day${lessDesirableWorked.length>1?'s':''} — while ${catLabel} demand at this location is high`
+        : `${catLabel} demand at this location is high`;
+      guidanceHtml = `
+        <div class="root-cause-card acquisition" style="margin-bottom:14px;">
+          <div class="rc-icon">🗓</div>
+          <div class="rc-title">Review a Schedule Change With ${name}</div>
+          <p style="font-size:12.5px; color:#333; line-height:1.55;">
+            ${workingContext}
+            (${HIGH_DEMAND_THRESHOLD}%+ booked) on <strong>${targetDays.join(', ')}</strong>, ${targetDays.length>1?'days':'a day'} ${name} isn't
+            currently scheduled${minWorkedDemand!=null?` — at least ${DEMAND_GAP} points more in-demand than the slowest day they currently work`:''}. Review a schedule change with ${name} to see if switching to ${targetDays.length>1?'these more in-demand days':'this more in-demand day'}
+            can help them get busier.${yellowNote}${rrCaveat}
+          </p>
+        </div>`;
+    } else if (targetDays.length) {
+      flagDays = targetDays;
+      guidanceHtml = `<div class="info-box" style="margin-bottom:14px;">${catLabel} demand is high (${HIGH_DEMAND_THRESHOLD}%+ booked) on <strong>${targetDays.join(', ')}</strong> — ${targetDays.length>1?'days':'a day'} ${name} isn't currently scheduled. Worth exploring if ${name} has flexibility to add availability there.</div>`;
+    } else if (lessDesirableWorked.length) {
+      slowDays = lessDesirableWorked;
+      guidanceHtml = `<div class="info-box" style="margin-bottom:14px;">${name} is working <strong>${lessDesirableWorked.join(', ')}</strong> — typically less in-demand day${lessDesirableWorked.length>1?'s':''} — but no high-demand category day (${HIGH_DEMAND_THRESHOLD}%+ booked) was found where ${name} isn't already scheduled, so there's no clear switch to suggest from this data.</div>`;
+    } else {
+      guidanceHtml = `<div class="info-box" style="margin-bottom:14px;">${name}'s schedule looks well aligned with demand — no less-desirable days worked and no high-demand day missing from their schedule.</div>`;
+    }
+
+    const rows = DAYS.map((d,i) => {
+      const t = heatTech[i], c = heatCat[i];
+      let gapCell = '<td style="text-align:center; color:#BBB;">—</td>';
+      if (t != null && c != null) {
+        const gap = c - t;
+        const color = gap >= 15 ? '#9B1C1C' : gap <= -15 ? '#1A6B30' : '#666';
+        gapCell = `<td style="text-align:center; color:${color}; font-weight:600;">${gap>0?'+':''}${gap.toFixed(0)} pts</td>`;
+      }
+      let flag = '';
+      if (flagDays.includes(d[1])) flag = `<span style="color:#9B1C1C; font-weight:600;">📈 In-demand day — not scheduled</span>`;
+      else if (slowDays.includes(d[1])) flag = `<span style="color:#B5890C; font-weight:600;">📉 Less-desirable day — currently working</span>`;
+      const techCell = t == null ? '—' : (t === 0 ? '<span style="color:#BBB;">Not scheduled</span>' : fp(t));
+      return `<tr><td>${d[1]}</td><td style="text-align:center;">${techCell}</td><td style="text-align:center;">${c!=null?fp(c):'—'}</td>${gapCell}<td style="font-size:11.5px;">${flag}</td></tr>`;
+    }).join('');
+
+    heatmapHtml = guidanceHtml + `
+      <table class="cycle-table">
+        <thead><tr><th>Day</th><th>Technician %</th><th>Category %</th><th>Gap</th><th>Signal</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+  document.getElementById('heatmapContent').innerHTML = heatmapHtml;
+
+  const lines = [];
+  lines.push(`COACHING CONVERSATION — ${name.toUpperCase()}`);
+  lines.push('─'.repeat(54));
+  lines.push(`Date: ${genDate}`);
+  lines.push(`Category: ${catLabel}  |  ${isPT?'Part Time':'Full Time'}  |  Status: ${isNew?'🌱 New Technician':primaryStatus==='green'?'🟢 Green':primaryStatus==='yellow'?'🟡 Yellow':primaryStatus==='red'?'🔴 Red':'Pending data'}`);
+  if (months!==null) lines.push(`Time on team: ${months} month${months!==1?'s':''}`);
+  lines.push(`Coaching cadence (playbook): ${isNew||primaryStatus==='red'?'Weekly 1:1s required':primaryStatus==='yellow'?'Weekly 1:1s while yellow — review KPIs, update business plan, set monthly goals':'Optional monthly/quarterly, based on technician preference'}`);
+  lines.push('');
+  lines.push('BEFORE THE 1:1 (playbook prep)');
+  lines.push('  • Pre-plan, don\'t pre-schedule — connect when no clients will be impacted');
+  lines.push('  • Preload KPI data into the Technician Business Plan, but leave goal-setting blank — fill it out together to promote ownership');
+  lines.push('');
+
+  if (notes) {
+    lines.push('LEADER CONTEXT (from your notes)');
+    lines.push(`"${notes}"`);
+    const noteActs = notesCoachingActions(notes, noteCtx);
+    if (noteActs.length) {
+      lines.push('');
+      lines.push('Consider weaving this context into your conversation:');
+      noteActs.forEach(a => lines.push(`  • ${a}`));
+    }
+    lines.push('');
+  }
+
+  lines.push('SUGGESTED OPENING');
+  if (isNew) {
+    lines.push(`"${name}, I want to sit down with you at the ${months}-month mark and look at your numbers together. I also want to hear how you're feeling about things and set some clear goals for the next phase."`);
+  } else if (primaryStatus==='green') {
+    lines.push(`"${name}, I've been reviewing your performance and I want to start by recognizing what you're doing well. You're hitting your ${isPT?'revenue-per-hour':'revenue'} benchmark for ${catLabel}, and that's not by accident. Let's talk about how we keep that going and what the next level looks like for you."`);
+  } else {
+    lines.push(`"${name}, I want to have an honest and supportive conversation today. I've pulled your numbers and I'd like us to look at them together — not to put you on the spot, but so we can build a clear plan to get you where you need to be."`);
+  }
+  lines.push('');
+
+  lines.push('WHERE THEY STAND — KEY NUMBERS');
+  const primaryStat = primaryStatus==='green'?'✅ On track':primaryStatus==='yellow'?'🟡 Getting close':primaryStatus==='red'?'🔴 Below target':'—';
+  lines.push(`  • ${primaryLabel}: ${primaryFmt}  →  Target: ${primaryBMStr}  [${primaryStat}]`);
+  if (ptRevOverride) lines.push('    (Part-time — Total Revenue meets the full-time benchmark, so it overrides RPH for status)');
+  if (m.productivity.r!=null) lines.push(`  • Productivity: ${fp(m.productivity.r)}  →  Target: 70%  [${s.productivity==='green'?'✅ On track':s.productivity==='yellow'?'🟡 Getting close':'🔴 Below target'}]${atCapacity?'  ← at/near full capacity':''}`);
+  if (m.repeatRate.r!=null)   lines.push(`  • Repeat Rate: ${fp(m.repeatRate.r)}  →  Target: ${bm.rrStr} for ${catLabel}  [${s.repeatRate==='green'?'✅ On track':s.repeatRate==='yellow'?'🟡 Getting close':'🔴 Below target'}]`);
+  if (m.totalRPH.r!=null && !isPT) lines.push(`  • Revenue / Hr: ${fcD(m.totalRPH.r)}  →  Target: ${bm.rphStr}`);
+  lines.push('');
+
+  const trendCallouts = [];
+  if (tr.totalRevenue==='up')   trendCallouts.push('Revenue is up vs. the 12-month average — momentum is building');
+  if (tr.totalRevenue==='down') trendCallouts.push('Revenue is declining vs. the 12-month average — worth discussing what changed');
+  if (tr.repeatRate==='down')   trendCallouts.push('Repeat rate is trending downward — rebooking habits need attention');
+  if (tr.repeatRate==='up')     trendCallouts.push('Repeat rate is improving — reinforce what\'s driving client loyalty');
+  if (tr.productivity==='down') trendCallouts.push('Productivity is declining — review the Heatmap and schedule alignment');
+  if (atCapacity && tr.newVisits==='down') trendCallouts.push(`New client count is down — but at ${fp(m.productivity.r)} booked this is expected; there's simply no room to add many new clients. Not a concern.`);
+  if (fallingOff) trendCallouts.push('Repeat rate looks fine on paper, but booked hours aren\'t growing — clients may return a few times and then fall off. Discuss building a base of long-term retained guests, not just second visits.');
+  if (trendCallouts.length) {
+    lines.push('TREND CALLOUTS (12-month comparison)');
+    trendCallouts.forEach(t => lines.push(`  • ${t}`));
+    lines.push('');
+  }
+
+  if (rootCauses.length || isNew) {
+    lines.push('COACHING CONVERSATION STARTERS (ask, don\'t tell — co-create the plan)');
+    if (isNew) lines.push(`  • "Walk me through how you're building your book right now. What's working and what feels hard?"`);
+    if (retentionFirst) lines.push(`  • "I want to start with retention because it's our number one focus right now. Retention is yours to own — let's role-play your end-of-service close. Are you rebooking every client at the chair or treatment room?"`);
+    if (rootCauses.includes('acquisition')) lines.push(`  • "Let's look at the Heatmap together — where are the busy windows you're missing? And how are you using downtime: new member outreach, Express Rituals, lapsed guest follow-ups?"`);
+    if (rootCauses.includes('retention') && !retentionFirst) lines.push(`  • "I want to role-play your end-of-service consultation. Are you consistently asking clients to rebook before they leave?"`);
+    if (rootCauses.includes('revenue'))     lines.push(`  • "You're getting clients in the chair or treatment room — now let's talk about maximizing what each visit is worth through add-ons, upgrades, and retail."`);
+    lines.push('');
+  }
+  if (!rootCauses.length && primaryStatus==='green' && !isNew) {
+    lines.push('GROWTH CONVERSATION STARTERS');
+    if (atCapacity) lines.push(`  • "Your book is essentially full — that's a huge accomplishment. Growth for you now means value per hour: add-ons, upgrades, retail, and possibly a price increase. Which feels most natural to you?"`);
+    lines.push(`  • "Where do you want to be a year from now — title, income, services? Let's map the path."`);
+    lines.push('');
+  }
+
+  if (goalProfessional) {
+    lines.push('PROFESSIONAL GROWTH GOAL');
+    lines.push(`  ${name}'s goal: "${goalProfessional}"`);
+    lines.push('  How to address it (from the playbook):');
+    const proTips = notesCoachingActions(goalProfessional, noteCtx);
+    if (proTips.length) {
+      proTips.forEach(t => lines.push(`  • ${t}`));
+    } else {
+      lines.push('  • Connect this goal to the Technician Business Plan and the growth pathways — advanced education, specialty certifications, and premium/new service offerings.');
+      lines.push('  • Break it into measurable steps with a timeline, revisit progress each 1:1, and recognize milestones visibly.');
+    }
+    lines.push('  • Ask: "What support do you need from me to get there, and what\'s the first step this month?"');
+    lines.push('');
+  }
+
+  lines.push('CLOSE & NEXT STEPS');
+  lines.push('  • Co-create 1–2 specific, measurable action items — document them in the Technician Business Plan');
+  lines.push(`  • Set the follow-up: ${isNew||primaryStatus==='red'?'next weekly 1:1':primaryStatus==='yellow'?'next weekly 1:1':'next check-in per their preference'}`);
+  if (!isNew && piReady) lines.push('  • Initiate the price increase conversation — both key metrics are green and sustained ✅');
+  if (!isNew && !piReady && (s.productivity!=='green' || s.repeatRate!=='green'))
+    lines.push('  • Set milestone targets for productivity and repeat rate on the path to price increase eligibility');
+  lines.push('');
+  lines.push('"I\'m committed to your success here. Let\'s leave today with a clear plan and a shared understanding of what we\'re working toward together."');
+  lines.push('');
+  lines.push('─'.repeat(54));
+  lines.push('Reminder: Use this tool as a guide. Use your own judgment and verify with the Leadership Playbook, your Lead General, or a Center of Excellence Leader if unsure.');
+
+  document.getElementById('talkingPointsContent').textContent = lines.join('\n');
+
+  const kpiChecks = [
+    { label: primaryLabel, target: primaryBMStr, rFmt: primaryFmt, yFmt: primaryFmtY, yStatus: primaryStatusY, trendDir: primaryUsesRevenue ? tr.totalRevenue : tr.totalRPH },
+  ];
+  if (!isPT) {
+    kpiChecks.push({ label:'Revenue Per Hour', target: bm.rphStr, rFmt: fcD(m.totalRPH.r), yFmt: fcD(m.totalRPH.y), yStatus: sy.totalRPH, trendDir: tr.totalRPH });
+  }
+  kpiChecks.push({ label:'Productivity', target:'70%', rFmt: fp(m.productivity.r), yFmt: fp(m.productivity.y), yStatus: sy.productivity, trendDir: tr.productivity });
+  kpiChecks.push({ label:'Repeat Rate', target: bm.rrStr, rFmt: fp(m.repeatRate.r), yFmt: fp(m.repeatRate.y), yStatus: sy.repeatRate, trendDir: tr.repeatRate });
+
+  const redKpiNotes = [];
+  kpiChecks.forEach(k => {
+    if (k.yStatus === 'red') {
+      let note = `<strong>${k.label}</strong> is below target on your 12-month average (${k.yFmt} vs. ${k.target}) — improvement here is essential.`;
+      if (k.trendDir === 'up') {
+        note += ` Your most recent month (${k.rFmt}) is trending better than your average — that's real progress, but sustained improvement over time is still needed.`;
+      }
+      redKpiNotes.push(note);
+    }
+  });
+
+  const strugglingOverall = primaryStatus === 'red' || redKpiNotes.length > 0;
+
+  const wins = [];
+  if (primaryStatus === 'green') wins.push(`You're hitting your ${primaryUsesRevenue?'revenue':'revenue-per-hour'} goal for ${catLabel} — ${primaryFmt} vs. a target of ${primaryBMStr}. Great work!`);
+  if (s.repeatRate === 'green') wins.push(`Your repeat rate is strong at ${fp(m.repeatRate.r)} — clients keep coming back to you.`);
+  else if (tr.repeatRate === 'up') wins.push(`Your repeat rate is trending up — keep building those client relationships!`);
+  if (tr.totalRevenue === 'up') wins.push(`Your revenue is trending up compared to your 12-month average — nice momentum!`);
+  if (s.productivity === 'green') wins.push(`Your schedule is well booked at ${fp(m.productivity.r)} — you're in demand!`);
+  if (atCapacity) wins.push(`Your schedule is nearly full — that's something to be proud of.`);
+  if (isNew) wins.push(`You're building strong momentum in your first few months with us.`);
+  if (highestQualified) wins.push(highestQualified === 'Elite'
+    ? `You qualify for the Elite ${T.role} title — the highest title there is. Incredible work!`
+    : `You qualify for the ${highestQualified} ${T.role} title — awesome progress!`);
+  if (!wins.length) wins.push(`Thank you for the work you put in for our guests every day.`);
+
+  const focusAreas = [];
+  if (retentionFirst || rootCauses.includes('retention')) focusAreas.push('Helping more clients rebook with you before they leave');
+  if (rootCauses.includes('acquisition')) focusAreas.push('Filling more of your schedule with new and returning guests');
+  if (rootCauses.includes('revenue')) focusAreas.push('Growing the value of each visit through add-ons, upgrades, and retail');
+  if (!focusAreas.length && primaryStatus === 'green') focusAreas.push('Continuing to grow toward your next title and career milestone');
+  if (!focusAreas.length) focusAreas.push('Building consistency across your key numbers');
+
+  const actionItems = [];
+  if (retentionFirst || rootCauses.includes('retention')) {
+    actionItems.push('Ask every client to rebook before they leave your chair or treatment room');
+    actionItems.push('Personalize each visit — use client notes and remember what matters to them');
+  }
+  if (rootCauses.includes('acquisition')) {
+    actionItems.push('Use downtime to reach out to guests who haven\'t booked in a while');
+    actionItems.push('Build your personal brand and professional authority — both in person with every guest and online (consistent posts of your work, an up-to-date profile, and requesting reviews)');
+  }
+  if (rootCauses.includes('revenue')) {
+    actionItems.push('Talk with clients about add-ons and upgrades that fit their goals');
+    actionItems.push('Share product recommendations that support their at-home routine');
+  }
+  if (primaryStatus === 'green') {
+    actionItems.push('Keep sharing your needs and goals with your leader — tell them what you\'re working toward (income, schedule, titles, education) so they can help you get there');
+  }
+  if (!actionItems.length) {
+    actionItems.push('Keep doing what you\'re doing — consistency builds a great career here');
+  }
+
+  const goalsForSheet = [];
+  if (goalMonthly != null) {
+    let g = `Monthly revenue goal: <strong>${fc(goalMonthly)}</strong>`;
+    if (goalDaily != null) g += ` — about <strong>${fc(goalDaily)}</strong> per day you work`;
+    goalsForSheet.push(g);
+  }
+  if (goalProfessional) goalsForSheet.push(`Professional growth goal: ${goalProfessional}`);
+
+  const tkStat = (label, valStr, st, target) => {
+    const map = {
+      green:  { bg:'#EBF7F0', bd:'#A3D9B1', txt:'#1A6B30', word:'✅ Hitting Goal' },
+      yellow: { bg:'#FFF8E7', bd:'#F5CC6E', txt:'#7B5A00', word:'⚡ Almost There' },
+      red:    { bg:'#FEF0EE', bd:'#F5A89A', txt:'#9B1C1C', word:'🎯 Growth Area' },
+      neutral:{ bg:'#FAFAF9', bd:'#EAE4DC', txt:'#999',    word:'— No data' },
+    };
+    const c = map[st] || map.neutral;
+    return `<div style="flex:1; min-width:150px; border:1.5px solid ${c.bd}; background:${c.bg}; border-radius:10px; padding:12px 14px; text-align:center;">
+      <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:#888; margin-bottom:5px;">${label}</div>
+      <div style="font-size:22px; font-weight:800; color:#1A1A1A; line-height:1;">${valStr}</div>
+      <div style="font-size:10px; color:#999; margin-top:3px;">Goal: ${target}</div>
+      <div style="font-size:11.5px; font-weight:700; color:${c.txt}; margin-top:5px;">${c.word}</div>
+    </div>`;
+  };
+  const takeawayStats = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">📊 Your 12-Month Averages</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        ${tkStat(primaryLabel, primaryMetricY!=null ? primaryFmtY : '—', primaryStatusY, primaryBMStr)}
+        ${tkStat('Productivity', m.productivity.y!=null ? fp(m.productivity.y) : '—', sy.productivity, '70%')}
+        ${tkStat('Retention (Repeat Rate)', m.repeatRate.y!=null ? fp(m.repeatRate.y) : '—', sy.repeatRate, bm.rrStr)}
+      </div>
+      <p style="font-size:11px; color:#888; margin-top:8px;">These boxes use your <strong>12-month averages</strong> — they show your overall trend across the past year, not just one month.</p>
+    </div>`;
+
+  const takeawayHtml = `
+    <div style="background:#FDF6E3; border:1.5px solid #E8D49A; border-radius:10px; padding:18px 20px; margin-bottom:16px;">
+      <div style="font-size:16px; font-weight:800; color:#1A1A1A; margin-bottom:4px;">${strugglingOverall ? `Let's Grow Together, ${name}` : `Great job, ${name}!`}</div>
+      <div style="font-size:12px; color:#888;">${genDate} · ${catLabel}</div>
+    </div>
+    ${takeawayStats}
+    ${goalsForSheet.length ? `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">🎯 Your Goals</div>
+      <ul class="cc-list">${goalsForSheet.map(g=>`<li>${g}</li>`).join('')}</ul>
+    </div>` : ''}
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#1A6B30; margin-bottom:8px;">🌟 What's Going Well</div>
+      <ul class="cc-list">${wins.map(w=>`<li>${w}</li>`).join('')}</ul>
+    </div>
+    ${redKpiNotes.length ? `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#9B1C1C; margin-bottom:8px;">📌 Essential Focus Areas</div>
+      <ul class="cc-list">${redKpiNotes.map(n=>`<li>${n}</li>`).join('')}</ul>
+    </div>` : ''}
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#B5890C; margin-bottom:8px;">🎯 Where We're Focusing Next</div>
+      <ul class="cc-list">${focusAreas.map(f=>`<li>${f}</li>`).join('')}</ul>
+    </div>
+    <div style="margin-bottom:4px;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#1E3A5F; margin-bottom:8px;">✅ Your Action Items</div>
+      <ul class="cc-list">${actionItems.map(a=>`<li>${a}</li>`).join('')}</ul>
+    </div>
+    <p style="font-size:12.5px; color:#666; font-style:italic; margin-top:16px;">${strugglingOverall ? `We believe in your ability to turn this around, ${name} — let's work through it together.` : `Thanks for everything you bring to the team, ${name}. Let's keep building on this together!`}</p>`;
+
+  document.getElementById('takeawayContent').innerHTML = takeawayHtml;
+
+  document.getElementById('titleEmpty').style.display = includeTitle ? 'none' : 'block';
+
+  document.getElementById('activitiesCard').style.display =
+    (m.productivity.r != null && m.productivity.r < 70) ? '' : 'none';
+
+  document.getElementById('resultsSection').style.display = 'block';
+  document.querySelectorAll('.rpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === 'overview'));
+  document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
+  document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function scrollToResults() {
+  const r = document.getElementById('resultsSection');
+  if (r.style.display !== 'none') r.scrollIntoView({ behavior:'smooth' });
+}
+function editInputs() {
+  document.getElementById('inputSection').scrollIntoView({ behavior:'smooth' });
+}
+function showTab(name) {
+  document.querySelectorAll('.rpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+  document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  const rs = document.getElementById('resultsSection');
+  if (rs) rs.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function goalModeChange() {
+  const mode = document.getElementById('goalMode').value;
+  document.getElementById('goalGrowthGroup').style.display = mode === 'suggest' ? '' : 'none';
+  document.getElementById('goalCustomGroup').style.display = mode === 'custom' ? '' : 'none';
+}
+function printTakeaway() {
+  // Print ONLY the Technician Takeaway sheet (hide the leader report).
+  document.body.classList.add('printing-takeaway');
+  // Give the browser two paint cycles before invoking print. Some browsers can otherwise
+  // capture a stale layout if window.print() fires in the same tick as the class change —
+  // that stale capture is what causes the site header to still show up on the printed PDF
+  // even though the CSS says to hide it, producing an extra near-blank first page.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
+    });
+  });
+}
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('printing-takeaway');
+});
+</script>
+</body>
+</html>
