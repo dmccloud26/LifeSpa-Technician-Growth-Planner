@@ -336,7 +336,7 @@
  @page { size: portrait; margin: 0.5in; }
  body { background: #fff; }
  header { position: static; box-shadow: none; }
- .header-actions, .gen-btn, .results-actions, #inputSection, .result-tabs { display: none !important; }
+ .header-actions, .gen-btn, .results-actions, #inputSection, #rosterPanel, #validationSummary, .result-tabs { display: none !important; }
  .card { box-shadow: none; border: 1px solid var(--border); break-inside: avoid; }
  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
  .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
@@ -353,7 +353,41 @@
  body.printing-takeaway #takeawayCard { margin-top: 0 !important; border: none; }
  body.printing-takeaway .rpanel[data-panel="takeaway"] .results-btn { display: none !important; }
  }
- 
+
+ /* ── Team Roster & Saved Data panel ── */
+ #rosterPanel .card-title { margin-bottom: 4px; }
+ .roster-help { background: var(--accent-light); border: 1px solid var(--tip-border); color: var(--accent); font-size: 13px; line-height: 1.5; padding: 12px 14px; border-radius: 10px; margin: 12px 0 16px; }
+ .roster-grid { display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 16px; align-items: end; }
+ .roster-save-btn { background: var(--accent); color: #fff; border: 1.5px solid var(--accent); padding: 11px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; white-space: nowrap; transition: background .15s; }
+ .roster-save-btn:hover { background: var(--accent-dark); }
+ .roster-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+ .roster-actions .danger { border-color: var(--red); color: var(--red); }
+ .roster-actions .danger:hover { background: var(--red); color: #fff; }
+ #rosterStatus { margin-top: 12px; font-size: 13px; color: var(--text-muted); min-height: 18px; }
+ #rosterStatus.ok { color: var(--green); font-weight: 600; }
+ #rosterStatus.err { color: var(--red); font-weight: 600; }
+ #rosterUnavailable { background: var(--yellow-bg); border: 1px solid var(--yellow-border); color: var(--yellow); font-size: 13px; line-height: 1.5; padding: 12px 14px; border-radius: 10px; margin: 12px 0 0; }
+ @media (max-width: 700px) { .roster-grid { grid-template-columns: 1fr; } }
+
+ /* ── Stale results flag ── */
+ .stale-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: var(--yellow-bg); border: 1px solid var(--yellow-border); color: var(--yellow); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; }
+ .stale-update-btn { background: var(--accent); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; font-size: 13px; transition: background .15s; }
+ .stale-update-btn:hover { background: var(--accent-dark); }
+ .gen-btn.stale { box-shadow: 0 0 0 3px var(--yellow-border); }
+
+ /* ── Input validation ── */
+ .v-box { border-radius: 10px; padding: 14px 16px; margin: 0 0 16px; font-size: 14px; line-height: 1.5; }
+ .v-box-err { background: var(--red-bg); border: 1px solid var(--red-border); }
+ .v-box-warn { background: var(--yellow-bg); border: 1px solid var(--yellow-border); }
+ .v-title { font-weight: 800; margin-bottom: 6px; }
+ .v-err-title { color: var(--red); }
+ .v-warn-title { color: var(--yellow); }
+ .v-box-err .v-warn-title { margin-top: 12px; }
+ .v-list { margin: 0 0 0 20px; padding: 0; }
+ .v-list li { margin: 3px 0; color: var(--text); }
+ input.input-error { border-color: var(--red) !important; box-shadow: 0 0 0 2px var(--red-bg); }
+ input.input-warn { border-color: var(--yellow) !important; box-shadow: 0 0 0 2px var(--yellow-bg); }
+
  </style>
 </head>
 <body>
@@ -375,6 +409,39 @@
  <div class="disclaimer">
  <div class="d-icon"></div>
  <div><strong>Use this tool as a guide.</strong> Use your own judgment and double-check recommendations with the Leadership Playbook, your Lead General, or a Center of Excellence Leader if you are unsure.</div>
+ </div>
+
+ <!-- ═══════════════════ TEAM ROSTER & SAVED DATA ═══════════════════ -->
+ <div class="card" id="rosterPanel">
+ <div class="card-title">Team Roster &amp; Saved Data</div>
+ <div class="roster-help">
+ Save each technician's numbers month by month. Pick a saved technician to review or update them, or choose <strong>New technician</strong> and fill in the form below, then click <strong>Save This Month</strong>. Your data is stored in this browser on this computer. Use <strong>Back Up All Data</strong> to keep a copy or move it to another computer.
+ </div>
+ <div class="roster-grid">
+ <div class="form-group">
+ <label>Saved Technician</label>
+ <select id="rosterTech" onchange="rosterOnTechChange()">
+ <option value="__new__">New technician (fill in the form below)</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label>Reporting Month</label>
+ <input type="month" id="rosterMonth" onchange="rosterOnMonthChange()">
+ </div>
+ <div class="form-group">
+ <button type="button" class="roster-save-btn" onclick="rosterSave()">Save This Month</button>
+ </div>
+ </div>
+ <div id="rosterStatus"></div>
+ <div class="roster-actions">
+ <button type="button" class="results-btn" onclick="rosterExport()">Back Up All Data</button>
+ <button type="button" class="results-btn" onclick="document.getElementById('rosterImportFile').click()">Restore From Backup</button>
+ <input type="file" id="rosterImportFile" accept="application/json,.json" style="display:none" onchange="rosterImport(event)">
+ <button type="button" class="results-btn danger" id="rosterDeleteBtn" onclick="rosterDelete()">Delete Technician</button>
+ </div>
+ <div id="rosterUnavailable" style="display:none;">
+ Saving is unavailable in this preview, so entries will only last for this session. The tool still works fully — to keep data between visits, open the downloaded file in your own browser and use <strong>Back Up All Data</strong>.
+ </div>
  </div>
 
  <!-- ═══════════════════ INPUT SECTION ═══════════════════ -->
@@ -412,14 +479,14 @@
  </div>
 
  <!-- Live benchmark reference bar -->
- <div id="benchmarkBar" style="display:none; background:var(--text); color:#FFF; border-radius:8px; padding:10px 16px; font-size:12px; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:6px;">
- <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent);">Benchmarks:</span>
+ <div id="benchmarkBar" style="display:none; background:#ccb7a7; color:var(--text); border-radius:8px; padding:10px 16px; font-size:12px; flex-wrap:wrap; gap:6px 20px; align-items:center; margin-top:6px;">
+ <span style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--text);">Benchmarks:</span>
  <span id="bmPrimary"></span>
- <span style="color:var(--text);">·</span>
+ <span style="color:var(--accent-dark);">·</span>
  <span id="bmRPH"></span>
- <span style="color:var(--text);">·</span>
+ <span style="color:var(--accent-dark);">·</span>
  <span id="bmProd"></span>
- <span style="color:var(--text);">·</span>
+ <span style="color:var(--accent-dark);">·</span>
  <span id="bmRR"></span>
  </div>
 
@@ -435,7 +502,7 @@
  <div class="card">
  <div class="card-title"><span class="step-num">2</span> Performance Metrics</div>
  <div class="metrics-intro">
- Enter the technician's data for the most recent month and 12-month average. Trends compare the two to show direction of movement. Leave fields blank if data is unavailable.
+ Enter the technician's data for the most recent month and 12-month average. Trends compare the two to show direction of movement. All fields in Steps 1–3 are required before generating a plan — enter 0 for any value that is truly none.
  </div>
 
  <table class="metrics-table">
@@ -465,7 +532,7 @@
  <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="retailRevenue_y" placeholder="0" min="0" step="1"></div></td>
  </tr>
 
- <tr class="group-row"><td colspan="3">⏱ Revenue Per Hour</td></tr>
+ <tr class="group-row"><td colspan="3">Revenue Per Hour</td></tr>
  <tr class="data-row">
  <td><span class="metric-label">Total Revenue Per Hour</span><span class="metric-hint" id="hint-totalRPH">Select a category to see benchmark</span></td>
  <td><div class="input-wrap"><span class="sym">$</span><input type="number" id="totalRPH_r" placeholder="0.00" min="0" step="0.01"></div></td>
@@ -726,12 +793,17 @@
  </div>
 
 
+ <div id="validationSummary" class="v-box" style="display:none;"></div>
  <button class="gen-btn" onclick="runAnalysis()">Generate Growth Plan &amp; Coaching Recommendations</button>
  </div><!-- /inputSection -->
 
 
  <!-- ═══════════════════ RESULTS SECTION ═══════════════════ -->
  <div id="resultsSection">
+ <div id="staleBanner" class="stale-banner" style="display:none;">
+ <span>Inputs have changed since this plan was generated — the results below may be out of date.</span>
+ <button type="button" class="stale-update-btn" onclick="runAnalysis()">Update Growth Plan</button>
+ </div>
  <div class="results-header">
  <div>
  <h2 id="resultsTechName">Growth Plan</h2>
@@ -949,13 +1021,13 @@ function updateBenchmarkBar() {
  const isPT = empType === 'parttime';
  bar.style.display = 'flex';
  document.getElementById('bmPrimary').innerHTML =
- `<span style="color:var(--text-muted); font-size:11px;">Primary (${isPT ? 'Part-Time' : 'Full-Time'}):</span> <span style="color:var(--accent); font-weight:700;">${isPT ? b.rphStr : b.revenueStr+'/mo'}</span>`;
+ `<span style="color:var(--text); font-size:11px;">Primary (${isPT ? 'Part-Time' : 'Full-Time'}):</span> <span style="color:var(--accent-dark); font-weight:800;">${isPT ? b.rphStr : b.revenueStr+'/mo'}</span>`;
  document.getElementById('bmRPH').innerHTML =
- `<span style="color:var(--text-muted); font-size:11px;">RPH:</span> <span style="color:var(--accent); font-weight:700;">${b.rphStr}</span>`;
+ `<span style="color:var(--text); font-size:11px;">RPH:</span> <span style="color:var(--accent-dark); font-weight:800;">${b.rphStr}</span>`;
  document.getElementById('bmProd').innerHTML =
- `<span style="color:var(--text-muted); font-size:11px;">Productivity:</span> <span style="color:var(--accent); font-weight:700;">70%</span>`;
+ `<span style="color:var(--text); font-size:11px;">Productivity:</span> <span style="color:var(--accent-dark); font-weight:800;">70%</span>`;
  document.getElementById('bmRR').innerHTML =
- `<span style="color:var(--text-muted); font-size:11px;">Repeat Rate:</span> <span style="color:var(--accent); font-weight:700;">${b.rrStr}</span>`;
+ `<span style="color:var(--text); font-size:11px;">Repeat Rate:</span> <span style="color:var(--accent-dark); font-weight:800;">${b.rrStr}</span>`;
  document.getElementById('hint-totalRevenue').textContent = `Benchmark: ${b.revenueStr}/month (full-time)`;
  document.getElementById('hint-totalRPH').textContent = `Benchmark: ${b.rphStr}`;
  document.getElementById('hint-repeatRate').textContent = `Benchmark: ${b.rrStr}`;
@@ -1168,13 +1240,20 @@ function notesCoachingActions(notes, ctx) {
 // MAIN ANALYSIS
 // ============================================================
 function runAnalysis() {
+ const _v = validateInputs();
+ renderValidation(_v);
+ if (_v.errors.length) {
+ document.getElementById('validationSummary').scrollIntoView({ behavior:'smooth', block:'center' });
+ return;
+ }
+
  const name = document.getElementById('techName').value.trim() || 'This Technician';
  const hireDate = document.getElementById('hireDate').value;
  const cat = document.getElementById('category').value;
  const isPT = document.getElementById('empType').value === 'parttime';
  const notes = document.getElementById('leaderNotes').value.trim();
 
- if (!cat) { alert('Please select a Service Category before generating the growth plan.'); return; }
+ if (!cat) return;
 
  const bm = BM[cat];
  const catLabel = bm.label;
@@ -1236,6 +1315,19 @@ function runAnalysis() {
 
  const tr = {};
  Object.keys(m).forEach(k => tr[k] = trend(m[k].r, m[k].y));
+
+ // ── Strong-performer framing (used by the diagnosis and stagnation checks) ──
+ // greenGrowing: green primary status AND revenue trending up.
+ // strongStable: 12-month-average productivity above 80% AND the three core 12-month KPIs
+ // (primary Revenue/RPH, Productivity, Repeat Rate) all at/above benchmark — even if revenue
+ // isn't trending up. Either way, this is a high-performing book — don't flag it as a problem.
+ const greenGrowing = primaryStatus === 'green' && tr.totalRevenue === 'up';
+ const strongStable = !greenGrowing &&
+ m.productivity.y != null && m.productivity.y > 80 &&
+ primaryStatusY === 'green' &&
+ sy.productivity === 'green' &&
+ sy.repeatRate === 'green';
+ const strongNoConcern = greenGrowing || strongStable;
 
  // ── Booked capacity (top-performer new-client logic) ──
  // At 80%+ booked there is little room to add new clients — a dip in new client count is expected.
@@ -1325,7 +1417,7 @@ function runAnalysis() {
 
  // Performer Status box shows only tenure, category, and employment type.
  let pills = '';
- if (months!==null) pills+=`<span class="meta-pill">⏳ ${months} month${months!==1?'s':''} on team</span>`;
+ if (months!==null) pills+=`<span class="meta-pill">${months} month${months!==1?'s':''} on team</span>`;
  pills+=`<span class="meta-pill">${catLabel}</span>`;
  pills+=`<span class="meta-pill">${isPT?'Part Time':'Full Time'}</span>`;
 
@@ -1436,7 +1528,7 @@ function runAnalysis() {
  const days = daysSince(hireDate);
  const growthTrends = [tr.hoursBooked, tr.totalRevenue, tr.repeatRate];
  const hasGrowthData = growthTrends.some(t => t !== 'neutral');
- const stagnant90 = days !== null && days > 90 && hasGrowthData && !growthTrends.includes('up');
+ const stagnant90 = days !== null && days > 90 && hasGrowthData && !growthTrends.includes('up') && !strongNoConcern;
 
  if (stagnant90) {
  diagHtml += `
@@ -1520,7 +1612,6 @@ function runAnalysis() {
 
  // Green performer whose revenue is genuinely growing year over year → this isn't a "what's wrong"
  // situation. Don't frame it as a problem; frame it as an opportunity (e.g., a price increase).
- const greenGrowing = primaryStatus === 'green' && tr.totalRevenue === 'up';
  if (greenGrowing) {
  diagHtml += `
  <div class="root-cause-card success" style="margin-bottom:14px;">
@@ -1530,6 +1621,18 @@ function runAnalysis() {
  ${name} is a green performer and their revenue is growing versus the 12-month average — this isn't a
  "what's wrong" situation. The fundamentals are healthy, so the real opportunity here is likely to
  <strong>increase service prices</strong> and maximize the value of every visit (see the Price Increase tab).
+ The two checks below simply confirm the foundation is solid.
+ </p>
+ </div>`;
+ } else if (strongStable) {
+ diagHtml += `
+ <div class="root-cause-card success" style="margin-bottom:14px;">
+ <div class="rc-icon"></div>
+ <div class="rc-title">Strong &amp; Steady — Look for Opportunity, Not Problems</div>
+ <p style="font-size:13px; color:var(--text); line-height:1.55;">
+ ${name}'s 12-month averages are at or above benchmark for ${primaryUsesRevenue ? 'revenue' : 'revenue per hour'}, productivity, and repeat rate, and productivity is running above 80%. This is a healthy,
+ high-performing book — nothing here signals a problem. The opportunity now is to <strong>maximize the value
+ of every visit</strong>: price increase timing, add-ons, upgrades, and retail (see the Price Increase tab).
  The two checks below simply confirm the foundation is solid.
  </p>
  </div>`;
@@ -1601,7 +1704,7 @@ function runAnalysis() {
  diagHtml += `
  <div class="root-cause-card" style="background:var(--surface2); border-left-color:#DDD; margin-bottom:14px; opacity:0.8;">
  <div class="rc-sub">Question 2 · Client Acquisition</div>
- <div class="rc-title">Are they busy enough? — ⏸ On Hold</div>
+ <div class="rc-title">Are they busy enough? — On Hold</div>
  <p style="font-size:13px; color:var(--text-muted); line-height:1.55;">
  Revisit this question after retention improves. Driving more new guests to a technician who isn't
  retaining them damages the guest experience and brand.
@@ -1898,10 +2001,18 @@ function runAnalysis() {
  </div>`;
 
  // Professional growth goal block (shown whenever the leader entered one)
+ let proGoalTipsList = performerGoalTips(goalProfessional);
+ if (!proGoalTipsList.length && goalProfessional) proGoalTipsList = notesCoachingActions(goalProfessional, noteCtx);
+ proGoalTipsList = proGoalTipsList.slice(0, 5);
+ const proGoalTipsHtml = proGoalTipsList.length
+ ? `<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--accent); margin:12px 0 6px;">How to Support It — Performer Playbook</div>
+ <ul class="rc-signals">${proGoalTipsList.map(t => `<li>${t}</li>`).join('')}</ul>`
+ : (goalProfessional ? `<p style="font-size:12.5px; color:var(--text-muted); margin-top:10px;">Connect this goal to the Technician Business Plan and the growth pathways — advanced education, specialty certifications, and premium/new service offerings — and break it into measurable steps you revisit each 1:1.</p>` : '');
  const proGoalBlock = goalProfessional ? `
  <div class="root-cause-card" style="background:var(--sage-bg); border-left-color:var(--sage); margin-top:14px;">
  <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text); margin-bottom:6px;">Professional Growth Goal</div>
  <p style="font-size:13px; color:var(--text); line-height:1.55;">${goalProfessional}</p>
+ ${proGoalTipsHtml}
  </div>` : '';
 
  let goalHtml;
@@ -2106,7 +2217,7 @@ function runAnalysis() {
  const spbhFlat = m.salesPerBookedHr.r != null && m.salesPerBookedHr.y != null && m.salesPerBookedHr.r <= m.salesPerBookedHr.y;
  const spbhCallout = spbhFlat ? `
  <div class="price-guide" style="background:var(--yellow-bg); border-color:var(--tip-border);">
- <div class="price-guide-title" style="color:var(--yellow);">⏰ Extra Signal — Likely Overdue for an Increase</div>
+ <div class="price-guide-title" style="color:var(--yellow);">Extra Signal — Likely Overdue for an Increase</div>
  <p style="font-size:12.5px; color:var(--text); line-height:1.5;">${name}'s sales per booked hour in the most recent month (${fcD(m.salesPerBookedHr.r)}) is at or below their 12-month average (${fcD(m.salesPerBookedHr.y)}). That usually means they <strong>haven't had a price increase in the last 12 months</strong> — it's very likely time. Prioritize this conversation.</p>
  </div>` : '';
  priceHtml = `
@@ -2141,7 +2252,7 @@ function runAnalysis() {
 
  priceHtml = `
  <div class="price-card not-ready">
- <div class="pc-icon">⏳</div>
+ <div class="pc-icon"></div>
  <div class="pc-title">Not Yet Ready for a Price Increase</div>
  <div class="pc-body">
  The playbook formula: <strong>Busy (Productivity) + Busy with loyal repeat clients (Repeat visit rate) = Price Increase Opportunity.</strong>
@@ -2189,7 +2300,7 @@ function runAnalysis() {
  if (onLock === 'yes' && topPerformerLock) {
  payrollFlags.push({ icon:'', text:`${name} is a consistent green performer who qualifies for a Level Lock. Per the playbook, top performers' locks are evaluated <strong>quarterly</strong> (pre-calculated from their service revenue per hour), so being on a lock past 6 months is expected and appropriate here — there's no need to taper it off. Re-verify the pre-calculated rate each quarter in the Compensation Dashboard.` });
  } else if (onLock === 'yes') {
- payrollFlags.push({ icon:'⏳', text:`Duration check (playbook): for a <em>ramping</em> technician, level locks are recommended for a maximum of about 6 months, and any lock extended past the first 12 weeks should be gradually tapered based on booked hours and client retention. (Consistent green performers who qualify are the exception — their locks are evaluated quarterly and can continue past 6 months.) Confirm how long ${name}'s lock has been in place and which case applies.` });
+ payrollFlags.push({ icon:'', text:`Duration check (playbook): for a <em>ramping</em> technician, level locks are recommended for a maximum of about 6 months, and any lock extended past the first 12 weeks should be gradually tapered based on booked hours and client retention. (Consistent green performers who qualify are the exception — their locks are evaluated quarterly and can continue past 6 months.) Confirm how long ${name}'s lock has been in place and which case applies.` });
  }
  if (mwa === 'yes') {
  payrollFlags.push({ icon:'⚠️', text:`${name} has received a Minimum Wage Adjustment in the past 4 weeks — commission-based pay fell below minimum wage for hours worked. Per the playbook, persistent MWA signals a lack of bookings, productivity, or effective pricing — coach with urgency on booked hours, productivity, and client retention, and review the weekly Compensation Dashboard together.` });
@@ -2427,8 +2538,10 @@ function runAnalysis() {
  if (goalProfessional) {
  lines.push('PROFESSIONAL GROWTH GOAL');
  lines.push(` ${name}'s goal: "${goalProfessional}"`);
- lines.push(' How to address it (from the playbook):');
- const proTips = notesCoachingActions(goalProfessional, noteCtx);
+ lines.push(' How to address it (from the Performer Playbook):');
+ let proTips = performerGoalTips(goalProfessional);
+ if (!proTips.length) proTips = notesCoachingActions(goalProfessional, noteCtx);
+ proTips = proTips.slice(0, 6);
  if (proTips.length) {
  proTips.forEach(t => lines.push(` • ${t}`));
  } else {
@@ -2601,6 +2714,8 @@ function runAnalysis() {
  document.getElementById('resultsSection').style.display = 'block';
  document.querySelectorAll('.rpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === 'overview'));
  document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
+ resultsGenerated = true;
+ clearStale();
  document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
@@ -2630,6 +2745,549 @@ function printTakeaway() {
 window.addEventListener('afterprint', () => {
  document.body.classList.remove('printing-takeaway');
 });
+
+// ============================================================
+// TEAM ROSTER & SAVED DATA (per-leader, this browser)
+// Stores each technician's monthly snapshots in localStorage.
+// All storage is guarded so the tool never breaks if storage
+// is unavailable (e.g. a sandboxed preview). No auto-average —
+// the leader enters the 12-month average themselves.
+// ============================================================
+const ROSTER_KEY = 'lifespa_tgp_v1';
+const ROSTER_PROFILE = ['techName','hireDate','category','empType'];
+let rosterData = { v:1, techs:[] };
+let rosterMem = null;         // in-memory fallback when storage is blocked
+let rosterCurrentId = null;   // id of the loaded technician (null = new)
+let rosterDelPending = false;
+
+function rosterStorageOK() {
+ try { const k='__lstest__'; localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }
+ catch(e) { return false; }
+}
+const ROSTER_STORAGE = rosterStorageOK();
+
+function rosterLoad() {
+ if (ROSTER_STORAGE) {
+ try { const raw = localStorage.getItem(ROSTER_KEY); rosterData = raw ? JSON.parse(raw) : { v:1, techs:[] }; }
+ catch(e) { rosterData = { v:1, techs:[] }; }
+ } else {
+ rosterData = rosterMem || { v:1, techs:[] };
+ }
+ if (!rosterData || typeof rosterData !== 'object') rosterData = { v:1, techs:[] };
+ if (!Array.isArray(rosterData.techs)) rosterData.techs = [];
+}
+function rosterPersist() {
+ if (ROSTER_STORAGE) {
+ try { localStorage.setItem(ROSTER_KEY, JSON.stringify(rosterData)); return true; }
+ catch(e) { return false; }
+ }
+ rosterMem = rosterData;
+ return false;
+}
+
+function rosterFields() {
+ return document.querySelectorAll('#inputSection input, #inputSection select, #inputSection textarea');
+}
+function rosterCollect() {
+ const d = {};
+ rosterFields().forEach(el => { if (el.id) d[el.id] = el.value; });
+ return d;
+}
+function rosterApply(snapshot) {
+ rosterFields().forEach(el => {
+ if (!el.id) return;
+ el.value = (snapshot && snapshot[el.id] != null) ? snapshot[el.id] : '';
+ });
+ if (typeof updateBenchmarkBar === 'function') updateBenchmarkBar();
+ if (typeof goalModeChange === 'function') goalModeChange();
+ if (typeof markStale === 'function') markStale();
+}
+function rosterClearMonthly() {
+ rosterFields().forEach(el => {
+ if (!el.id || ROSTER_PROFILE.indexOf(el.id) !== -1) return;
+ el.value = '';
+ });
+ if (typeof goalModeChange === 'function') goalModeChange();
+ if (typeof markStale === 'function') markStale();
+}
+function rosterClearAll() {
+ rosterFields().forEach(el => { if (el.id) el.value = ''; });
+ if (typeof updateBenchmarkBar === 'function') updateBenchmarkBar();
+ if (typeof goalModeChange === 'function') goalModeChange();
+ if (typeof markStale === 'function') markStale();
+}
+
+function rosterStatus(msg, kind) {
+ const el = document.getElementById('rosterStatus');
+ if (!el) return;
+ el.textContent = msg || '';
+ el.className = kind || '';
+}
+function rosterCatLabel(cat) {
+ return (typeof BM !== 'undefined' && BM[cat]) ? BM[cat].label : (cat || '');
+}
+function rosterCurrentMonth() {
+ const d = new Date();
+ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+}
+function rosterTechById(id) { return rosterData.techs.find(t => t.id === id) || null; }
+function rosterMonthsCount(t) { return t && t.months ? Object.keys(t.months).length : 0; }
+function rosterLatestMonth(t) {
+ const keys = t && t.months ? Object.keys(t.months) : [];
+ return keys.length ? keys.sort().slice(-1)[0] : rosterCurrentMonth();
+}
+
+function rosterRefreshDropdown() {
+ const sel = document.getElementById('rosterTech');
+ if (!sel) return;
+ const prev = rosterCurrentId;
+ sel.innerHTML = '<option value="__new__">New technician (fill in the form below)</option>';
+ rosterData.techs.slice().sort((a,b)=> (a.name||'').localeCompare(b.name||'')).forEach(t => {
+ const opt = document.createElement('option');
+ opt.value = t.id;
+ const n = rosterMonthsCount(t);
+ opt.textContent = (t.name || 'Unnamed') + ' — ' + rosterCatLabel(t.category) + ' (' + n + ' month' + (n===1?'':'s') + ')';
+ sel.appendChild(opt);
+ });
+ sel.value = (prev && rosterTechById(prev)) ? prev : '__new__';
+}
+
+function rosterOnTechChange() {
+ const sel = document.getElementById('rosterTech');
+ const val = sel.value;
+ rosterDelPending = false;
+ document.getElementById('rosterDeleteBtn').textContent = 'Delete Technician';
+ if (val === '__new__') {
+ rosterCurrentId = null;
+ rosterClearAll();
+ document.getElementById('rosterMonth').value = rosterCurrentMonth();
+ rosterStatus('Enter this technician’s details and numbers, then click Save This Month.');
+ return;
+ }
+ const t = rosterTechById(val);
+ if (!t) { rosterCurrentId = null; return; }
+ rosterCurrentId = t.id;
+ const month = rosterLatestMonth(t);
+ document.getElementById('rosterMonth').value = month;
+ rosterLoadMonth(t, month);
+}
+
+function rosterOnMonthChange() {
+ if (rosterCurrentId == null) return; // new technician: month is just a label
+ const t = rosterTechById(rosterCurrentId);
+ if (!t) return;
+ rosterLoadMonth(t, document.getElementById('rosterMonth').value);
+}
+
+function rosterLoadMonth(t, month) {
+ if (t.months && t.months[month]) {
+ rosterApply(t.months[month]);
+ rosterStatus('Loaded ' + (t.name || '') + ' — ' + rosterFormatMonth(month) + '. Edit and Save to update.', 'ok');
+ } else {
+ // Keep profile, clear monthly metrics for fresh entry
+ rosterApply({ techName: t.name, category: t.category, empType: t.empType, hireDate: t.hireDate });
+ rosterClearMonthly();
+ rosterStatus('No data saved for ' + rosterFormatMonth(month) + ' yet — enter the numbers and click Save This Month.');
+ }
+}
+
+function rosterFormatMonth(m) {
+ if (!m) return '';
+ const parts = m.split('-'); if (parts.length !== 2) return m;
+ const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+ const idx = parseInt(parts[1],10) - 1;
+ return (names[idx] || parts[1]) + ' ' + parts[0];
+}
+
+function rosterSave() {
+ const name = (document.getElementById('techName').value || '').trim();
+ const cat = document.getElementById('category').value;
+ const empType = document.getElementById('empType').value;
+ const hireDate = document.getElementById('hireDate').value;
+ let month = document.getElementById('rosterMonth').value || rosterCurrentMonth();
+ document.getElementById('rosterMonth').value = month;
+
+ if (!name) { rosterStatus('Please enter a Technician Name before saving.', 'err'); return; }
+ const _v = validateInputs();
+ renderValidation(_v);
+ if (_v.errors.length) {
+ document.getElementById('validationSummary').scrollIntoView({ behavior:'smooth', block:'center' });
+ rosterStatus('Please fix the highlighted issues before saving.', 'err');
+ return;
+ }
+
+ let t = rosterCurrentId != null ? rosterTechById(rosterCurrentId) : null;
+ if (!t) {
+ t = { id: 't_' + new Date().getTime() + '_' + Math.floor(new Date().getTime()%100000), name:name, category:cat, empType:empType, hireDate:hireDate, months:{} };
+ rosterData.techs.push(t);
+ rosterCurrentId = t.id;
+ }
+ // Update profile from the form each save
+ t.name = name; t.category = cat; t.empType = empType; t.hireDate = hireDate;
+ if (!t.months) t.months = {};
+ t.months[month] = rosterCollect();
+
+ const persisted = rosterPersist();
+ rosterRefreshDropdown();
+ document.getElementById('rosterTech').value = t.id;
+ const n = rosterMonthsCount(t);
+ if (persisted) {
+ rosterStatus('Saved ' + name + ' — ' + rosterFormatMonth(month) + '. ' + n + ' month' + (n===1?'':'s') + ' on record.', 'ok');
+ } else {
+ rosterStatus('Saved for this session only (storage is blocked here). Use Back Up All Data to keep a copy.', 'err');
+ }
+}
+
+function rosterDelete() {
+ if (rosterCurrentId == null) { rosterStatus('Select a saved technician first.', 'err'); return; }
+ const btn = document.getElementById('rosterDeleteBtn');
+ if (!rosterDelPending) {
+ rosterDelPending = true;
+ btn.textContent = 'Click again to confirm';
+ setTimeout(() => { rosterDelPending = false; btn.textContent = 'Delete Technician'; }, 4000);
+ return;
+ }
+ rosterData.techs = rosterData.techs.filter(t => t.id !== rosterCurrentId);
+ rosterPersist();
+ rosterCurrentId = null;
+ rosterDelPending = false;
+ btn.textContent = 'Delete Technician';
+ rosterRefreshDropdown();
+ document.getElementById('rosterTech').value = '__new__';
+ rosterClearAll();
+ document.getElementById('rosterMonth').value = rosterCurrentMonth();
+ rosterStatus('Technician deleted.');
+}
+
+function rosterExport() {
+ rosterData.exportedAt = new Date().toISOString();
+ const blob = new Blob([JSON.stringify(rosterData, null, 2)], { type:'application/json' });
+ const url = URL.createObjectURL(blob);
+ const a = document.createElement('a');
+ const d = new Date();
+ const stamp = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+ a.href = url;
+ a.download = 'lifespa-technician-data-' + stamp + '.json';
+ document.body.appendChild(a); a.click(); document.body.removeChild(a);
+ setTimeout(() => URL.revokeObjectURL(url), 1000);
+ const n = rosterData.techs.length;
+ rosterStatus('Backup downloaded — ' + n + ' technician' + (n===1?'':'s') + '. Keep this file safe.', 'ok');
+}
+
+function rosterImport(event) {
+ const file = event.target.files && event.target.files[0];
+ if (!file) return;
+ const reader = new FileReader();
+ reader.onload = function(e) {
+ let incoming;
+ try { incoming = JSON.parse(e.target.result); }
+ catch(err) { rosterStatus('That file could not be read as a valid backup.', 'err'); event.target.value=''; return; }
+ if (!incoming || !Array.isArray(incoming.techs)) { rosterStatus('That file doesn’t look like a technician backup.', 'err'); event.target.value=''; return; }
+ let added = 0, merged = 0;
+ incoming.techs.forEach(it => {
+ if (!it || !it.id) return;
+ const existing = rosterTechById(it.id);
+ if (existing) {
+ existing.name = it.name; existing.category = it.category; existing.empType = it.empType; existing.hireDate = it.hireDate;
+ existing.months = Object.assign({}, existing.months || {}, it.months || {});
+ merged++;
+ } else {
+ rosterData.techs.push(it);
+ added++;
+ }
+ });
+ rosterPersist();
+ rosterRefreshDropdown();
+ rosterStatus('Restored from backup — ' + added + ' added, ' + merged + ' updated.', 'ok');
+ event.target.value = '';
+ };
+ reader.readAsText(file);
+}
+
+function rosterInit() {
+ rosterLoad();
+ rosterRefreshDropdown();
+ const mEl = document.getElementById('rosterMonth');
+ if (mEl && !mEl.value) mEl.value = rosterCurrentMonth();
+ if (!ROSTER_STORAGE) {
+ const u = document.getElementById('rosterUnavailable');
+ if (u) u.style.display = 'block';
+ }
+ rosterStatus(rosterData.techs.length
+ ? 'Pick a saved technician above, or choose New technician to add one.'
+ : 'No technicians saved yet. Fill in the form below and click Save This Month.');
+}
+rosterInit();
+
+// ============================================================
+// STALE RESULTS FLAG
+// After a plan is generated, if any input changes (typed edits
+// or a different technician/month loaded from the roster), warn
+// the leader that the visible results are out of date until they
+// regenerate.
+// ============================================================
+let resultsGenerated = false;
+let genBtnLabel = null;
+function markStale() {
+ if (!resultsGenerated) return;
+ const rs = document.getElementById('resultsSection');
+ if (!rs || getComputedStyle(rs).display === 'none') return;
+ const b = document.getElementById('staleBanner');
+ if (b) b.style.display = 'flex';
+ const g = document.querySelector('.gen-btn');
+ if (g) { g.textContent = 'Update Growth Plan — Inputs Changed'; g.classList.add('stale'); }
+}
+function clearStale() {
+ const b = document.getElementById('staleBanner');
+ if (b) b.style.display = 'none';
+ const g = document.querySelector('.gen-btn');
+ if (g && genBtnLabel !== null) { g.textContent = genBtnLabel; g.classList.remove('stale'); }
+}
+(function initStale() {
+ const g = document.querySelector('.gen-btn');
+ if (g) genBtnLabel = g.textContent;
+ const inp = document.getElementById('inputSection');
+ if (inp) {
+ inp.addEventListener('input', markStale);
+ inp.addEventListener('change', markStale);
+ // clear a field's validation highlight as soon as the leader edits it
+ inp.addEventListener('input', function(e) {
+ if (e.target && e.target.classList) e.target.classList.remove('input-error','input-warn');
+ });
+ }
+})();
+
+// ============================================================
+// INPUT VALIDATION
+// Blocks generating/saving on impossible values (negatives,
+// percentages over 100, hours booked over scheduled, component
+// totals exceeding their total), and warns on likely mistakes
+// (figures that don't reconcile) without blocking.
+// ============================================================
+const V_DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
+const V_PCT_FIELDS = [
+ 'productivity_r','productivity_y','repeatRate_r','repeatRate_y',
+ 'titleRR_m1','titleRR_m2','titleRR_m3'
+].concat(V_DAYS.map(d=>'heatmapTech_'+d)).concat(V_DAYS.map(d=>'heatmapCat_'+d));
+const V_BASE = {
+ totalRevenue:'Total Revenue', serviceRevenue:'Service Revenue', retailRevenue:'Retail Revenue',
+ totalRPH:'Total Revenue Per Hour', serviceRPH:'Service Revenue Per Hour', retailRPH:'Retail Revenue Per Hour',
+ salesPerBookedHr:'Sales Per Booked Hour', productivity:'Productivity', hoursBooked:'Hours Booked',
+ hoursScheduled:'Hours Scheduled', repeatRate:'Repeat Rate', newVisits:'New Client Visits',
+ repeatVisits:'Repeat Client Visits', totalVisits:'Total Client Visits',
+ heatmapTech:'Technician % Booked', heatmapCat:'Category % Booked',
+ titleRevenue:'Title Total Revenue', titleRPH:'Title Revenue Per Hour', titleRR:'Title Repeat Rate',
+ goalGrowthPct:'Goal Growth', goalCustom:'Custom Monthly Goal', category:'Service Category'
+};
+const V_SFX = {
+ r:'most recent month', y:'12-month average', m1:'3 months ago', m2:'2 months ago', m3:'most recent month',
+ sun:'Sunday', mon:'Monday', tue:'Tuesday', wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday'
+};
+// Sections 1–3 must be complete before generating or saving.
+const V_SEC2_BASE = ['totalRevenue','serviceRevenue','retailRevenue','totalRPH','serviceRPH','retailRPH','salesPerBookedHr','productivity','hoursBooked','hoursScheduled','repeatRate','newVisits','repeatVisits','totalVisits'];
+const V_REQ_SEC2 = [];
+V_SEC2_BASE.forEach(b => { V_REQ_SEC2.push(b + '_r', b + '_y'); });
+const V_REQ_SEC3 = V_DAYS.map(d => 'heatmapTech_' + d).concat(V_DAYS.map(d => 'heatmapCat_' + d));
+function vNum(id) {
+ const el = document.getElementById(id);
+ if (!el || el.value === '') return null;
+ const n = parseFloat(el.value);
+ return isNaN(n) ? null : n;
+}
+function vLabel(id) {
+ const p = id.split('_');
+ const base = V_BASE[p[0]] || p[0];
+ return (p.length > 1 && V_SFX[p[1]]) ? base + ' (' + V_SFX[p[1]] + ')' : base;
+}
+function vMoney(n) { return '$' + Math.round(n).toLocaleString(); }
+
+function validateInputs() {
+ clearValidation();
+ const errors = [], warnings = [], badIds = [], warnIds = [];
+
+ if (!document.getElementById('category').value) {
+ errors.push('Select a Service Category (Step 1).');
+ badIds.push('category');
+ }
+
+ // ── Sections 1–3 are required before generating or saving ──
+ if (!document.getElementById('techName').value.trim()) {
+ errors.push('Enter the Technician Name (Step 1).');
+ badIds.push('techName');
+ }
+ if (!document.getElementById('hireDate').value) {
+ errors.push('Enter the Hire Date (Step 1).');
+ badIds.push('hireDate');
+ }
+ const miss2 = V_REQ_SEC2.filter(id => { const el = document.getElementById(id); return !el || el.value === ''; });
+ if (miss2.length) {
+ errors.push('Complete all Performance Metrics in Step 2 — ' + miss2.length + ' field' + (miss2.length === 1 ? '' : 's') + ' still empty (enter 0 if the value is truly none).');
+ miss2.forEach(id => badIds.push(id));
+ }
+ const miss3 = V_REQ_SEC3.filter(id => { const el = document.getElementById(id); return !el || el.value === ''; });
+ if (miss3.length) {
+ errors.push('Complete all Schedule Optimization cells in Step 3 — ' + miss3.length + ' still empty (enter 0 for any day the technician is not scheduled).');
+ miss3.forEach(id => badIds.push(id));
+ }
+
+ // Negatives / invalid numbers on any numeric field
+ document.querySelectorAll('#inputSection input[type=number]').forEach(el => {
+ if (el.value === '') return;
+ const n = parseFloat(el.value);
+ if (isNaN(n)) { errors.push(vLabel(el.id) + ' isn’t a valid number.'); badIds.push(el.id); }
+ else if (n < 0) { errors.push(vLabel(el.id) + ' can’t be negative.'); badIds.push(el.id); }
+ });
+
+ // Percentages must be 0–100
+ V_PCT_FIELDS.forEach(id => {
+ const n = vNum(id);
+ if (n != null && n > 100) { errors.push(vLabel(id) + ' can’t be over 100%.'); badIds.push(id); }
+ });
+
+ // Cross-field checks for both the recent-month and 12-month columns
+ [['_r','most recent month'], ['_y','12-month average']].forEach(pair => {
+ const sfx = pair[0], lbl = pair[1];
+ const b = vNum('hoursBooked'+sfx), s = vNum('hoursScheduled'+sfx), p = vNum('productivity'+sfx);
+ if (b != null && s != null && b > s) {
+ errors.push('Hours Booked can’t be more than Hours Scheduled (' + lbl + ').');
+ badIds.push('hoursBooked'+sfx, 'hoursScheduled'+sfx);
+ } else if (p != null && b != null && s != null && s > 0) {
+ const calc = b / s * 100;
+ if (Math.abs(calc - p) > 2) {
+ warnings.push('Productivity (' + p + '%) doesn’t match Hours Booked ÷ Hours Scheduled (' + calc.toFixed(1) + '%) for the ' + lbl + '.');
+ warnIds.push('productivity'+sfx);
+ }
+ }
+
+ const tot = vNum('totalRevenue'+sfx), sv = vNum('serviceRevenue'+sfx), rt = vNum('retailRevenue'+sfx);
+ if (tot != null && sv != null && rt != null) {
+ const sum = sv + rt;
+ if (sum > tot + 0.5) {
+ errors.push('Service + Retail Revenue (' + vMoney(sum) + ') is more than Total Revenue (' + vMoney(tot) + ') for the ' + lbl + '.');
+ badIds.push('serviceRevenue'+sfx, 'retailRevenue'+sfx, 'totalRevenue'+sfx);
+ } else if (Math.abs(sum - tot) > Math.max(1, tot * 0.01)) {
+ warnings.push('Service + Retail Revenue (' + vMoney(sum) + ') doesn’t add up to Total Revenue (' + vMoney(tot) + ') for the ' + lbl + '.');
+ warnIds.push('totalRevenue'+sfx);
+ }
+ }
+
+ const tv = vNum('totalVisits'+sfx), nv = vNum('newVisits'+sfx), rv = vNum('repeatVisits'+sfx);
+ if (tv != null && nv != null && rv != null) {
+ const sum = nv + rv;
+ if (sum > tv) {
+ errors.push('New + Repeat Client Visits (' + sum + ') is more than Total Client Visits (' + tv + ') for the ' + lbl + '.');
+ badIds.push('newVisits'+sfx, 'repeatVisits'+sfx, 'totalVisits'+sfx);
+ } else if (sum !== tv) {
+ warnings.push('New + Repeat Client Visits (' + sum + ') doesn’t equal Total Client Visits (' + tv + ') for the ' + lbl + '.');
+ warnIds.push('totalVisits'+sfx);
+ }
+ }
+ });
+
+ // Goal growth sanity (allowed, but flag if unusually high)
+ const gg = vNum('goalGrowthPct');
+ if (gg != null && gg > 100) {
+ warnings.push('Goal growth of ' + gg + '% over one month is unusually high — double-check the number.');
+ warnIds.push('goalGrowthPct');
+ }
+
+ return { errors: errors, warnings: warnings, badIds: badIds, warnIds: warnIds };
+}
+
+function renderValidation(res) {
+ const box = document.getElementById('validationSummary');
+ if (!box) return;
+ let html = '';
+ if (res.errors.length) {
+ html += '<div class="v-title v-err-title">Please fix these before continuing:</div><ul class="v-list">'
+ + res.errors.map(e => '<li>' + e + '</li>').join('') + '</ul>';
+ }
+ if (res.warnings.length) {
+ html += '<div class="v-title v-warn-title">Double-check these' + (res.errors.length ? '' : ' (you can still generate)') + ':</div><ul class="v-list">'
+ + res.warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>';
+ }
+ box.innerHTML = html;
+ box.className = 'v-box ' + (res.errors.length ? 'v-box-err' : (res.warnings.length ? 'v-box-warn' : ''));
+ box.style.display = (res.errors.length || res.warnings.length) ? 'block' : 'none';
+ res.badIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('input-error'); });
+ res.warnIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('input-warn'); });
+}
+
+function clearValidation() {
+ document.querySelectorAll('#inputSection .input-error').forEach(el => el.classList.remove('input-error'));
+ document.querySelectorAll('#inputSection .input-warn').forEach(el => el.classList.remove('input-warn'));
+ const box = document.getElementById('validationSummary');
+ if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+}
+
+// ============================================================
+// PERFORMER PLAYBOOK — PROFESSIONAL GROWTH GOAL GUIDANCE
+// When the leader types a professional growth goal (Step 6),
+// it's matched against these topics drawn from the LifeSpa
+// Performer Playbook, and the relevant development guidance is
+// surfaced on the Goal page and in the 1:1 talking points.
+// ============================================================
+const PERFORMER_PLAYBOOK_KB = [
+ { re: /\btitle\b|senior|master|elite|promot/, tips: [
+ 'Title path (Playbook, Pillar 5): Senior, Master, and Elite titles require hitting the category revenue benchmark (full-time) or Revenue Per Hour (part-time) AND holding the minimum repeat-client rate — eligibility begins after 3 full months.',
+ 'Both the revenue benchmark and the repeat-rate minimum must be met (Hair 55% · Body 50% · Skin 55% · Nails 55%). Map their current numbers to the next tier and name the exact gap — cross-check DOMO before promising a title.',
+ 'Grow toward the number using the three revenue pathways: service revenue (add-ons, upgrades, price increases), more booked hours, and retail.',
+ ]},
+ { re: /retail|product sale|product knowledge|homecare|home care|sell/, tips: [
+ 'Retail (Pillar 2): the target is 15% of total revenue. Coach "Recommend, Don\'t Sell" — narrate products during the service ("I\'m using this heat protectant so your color stays vibrant") so it lands as education, then reference it back at checkout.',
+ 'Recommend inside the service, not after — weaving products into the time the guest is already spending feels natural; introducing them cold at the register feels like an upsell.',
+ '"Use what you sell" (Pillar 4): have them try the products personally so recommendations sound like real experience, not a script.',
+ ]},
+ { re: /educat|certif|\blearn\b|technique|\bskill|craft|balayage|advanced|\bclass(es)?\b|\bcourse\b|training/, tips: [
+ 'Master Your Craft (Pillar 4): use the Self-Guided Technical Onboarding Guide and the Learning Well for category education, then add vendor product knowledge and the LTH Nutrition Supplement Certification.',
+ 'Prioritize Your Growth (Pillar 1): ongoing internal (Learning Well) and external (vendor trainings, certifications) education keeps craft current and confidence high — lean on the category mentor for a success tip.',
+ 'Update the SalonBiz bio as new skills and certifications are earned so guests searching for that specialty find them.',
+ ]},
+ { re: /retention|repeat|rebook|loyal|retain|drift|lapsed/, tips: [
+ 'Improving Retention (Pillar 3): audit the four areas — Personal Presentation, Communication, Technical Ability, and Availability — and use the Learning Well "Improving Client Retention" videos.',
+ 'Always Rebook: every guest leaves with a specific recommended return time. Set the plan during the service and hand off to the coordinator with a clear timeline — never a vague "see you soon."',
+ 'Reconnect with drifted guests: pull the lapsed and lost lists from SmartWeb weekly — a light-touch reminder for lapsed guests, more personal outreach plus an incentive for lost ones.',
+ ]},
+ { re: /productiv|\bbusy\b|clientele|new client|acquisition|fill.*book|grow.*book|booked/, tips: [
+ 'Get Busy — the 70% booked goal (Pillar 2): build a first-clientele plan using the five connectivity strategies — Friends & Family, team member services, social media, club member outreach, and a scripted referral ask.',
+ 'Business Building Programs: New Guest, New Member, Referral, and VIP cards — carry the ones that fit the goal and use them consistently, not just when reminded.',
+ 'Build a schedule that grows the business (Pillar 5): work Wed–Sat (highest-demand days), 20+ hours/week, shifts of 5+ hours, 3+ days — and check the Heatmap for the busiest windows.',
+ ]},
+ { re: /brand|social|instagram|google review|\breview|\bbio\b|visib|market|\bfollow/, tips: [
+ 'Build Your Personal Brand (Pillar 1): keep the SalonBiz bio current and specialty-led ("precision color," "deep tissue"), ask happy guests for a Google Review in the moment, and keep the social presence polished.',
+ 'Show up across the club (Pillar 1): take classes, attend events, and get to know the concierge, Dynamic Personal Training, and LifeCafe teams by name — every relationship is a potential client.',
+ 'Make sure the online booking profile is complete with a professional headshot — photos increase bookings in the Life Time app.',
+ ]},
+ { re: /price increase|raise.*price|pricing/, tips: [
+ 'Price for Growth (Pillar 5): a price increase is earned when BOTH productivity and repeat-client rate are green, sustained over roughly a 12-month average — being busy alone isn\'t enough.',
+ 'Do\'s: minimum 10% increase, round up to end in 0 or 5, every 12–18 months. Don\'ts: never post signs or notify guests in advance — if a guest reacts at checkout, the coordinator adjusts today\'s price and notes it as the new rate going forward.',
+ ]},
+ { re: /income|\bearn|commission|money|\bpay\b/, tips: [
+ 'Earnings (Pillar 5): the plan has eight commission levels (35%–70%), with service and retail tracked separately — greater availability opens higher earnings without a cap.',
+ 'Grow earnings through the three pathways: service revenue (add-ons, upgrades, price increases), more booked hours, and retail at 15% of revenue.',
+ ]},
+ { re: /mentor|\blead\b|leadership|teach|train other|help.*team/, tips: [
+ 'Lean into mentorship and recognition: strong performers make great mentors for newer techs, and onboarding is designed to pair each new technician with a category mentor who shares a success tip.',
+ 'The Artist Achievement Awards (MVP, Emerging, Century Club) recognize standout performers — a visible milestone to work toward.',
+ ]},
+ { re: /consult|guest experience|\bexperience\b/, tips: [
+ 'Consultation That Delivers Results (Pillar 3): observe before you ask, separate the want from the need, build the plan out loud, and set realistic expectations as part of the plan — not as a disclaimer afterward.',
+ 'Deliver the Guest Experience Service Wheel steps 3–6 consistently, offer the Aroma Journey, and send every guest home with a specific, personalized homecare plan.',
+ ]},
+ { re: /supplement|nutrition|\blth\b|wellness/, tips: [
+ 'Helping Members Use LTH Supplements (Pillar 4): if LTH Nutrition Supplement certified, tie a product to the guest\'s stated goal the same way you\'d recommend retail; if not certified, refer to a certified team member.',
+ 'Keep language accurate: LTH statements are dietary-supplement claims, not medical claims — not intended to diagnose, treat, cure, or prevent any disease.',
+ ]},
+];
+function performerGoalTips(text) {
+ if (!text) return [];
+ const t = text.toLowerCase();
+ const out = [];
+ PERFORMER_PLAYBOOK_KB.forEach(e => {
+ if (e.re.test(t)) e.tips.forEach(tip => { if (out.indexOf(tip) === -1) out.push(tip); });
+ });
+ return out;
+}
 </script>
 </body>
 </html>
