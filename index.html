@@ -240,6 +240,8 @@
  .coaching-card.p3 { border-top-color: var(--green); }
  .coaching-card.p4 { border-top-color: var(--accent); }
  .coaching-card.notes-card { border-top-color: var(--sage); background: var(--sage-bg); border-color: var(--sage); }
+ .coaching-card.playbook-card { border-top-color: var(--accent); background: var(--accent-light); border-color: var(--tip-border); }
+ .coaching-card.playbook-card .cc-category { color: var(--accent-dark); }
  .cc-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 4px; }
  .cc-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
  .cc-list { padding-left: 14px; }
@@ -1937,9 +1939,58 @@ function runAnalysis() {
  }
  }
 
- // Renumber priorities sequentially (1, 2, 3 …) in display order, skipping the leader-notes card.
+ // ── Performer Playbook plays ──
+ // Surface specific plays from the LifeSpa Performer Playbook, matched to this technician's
+ // focus areas (root causes / status), to complement the priority coaching above.
+ const retailPct = (m.retailRevenue.r != null && m.totalRevenue.r != null && m.totalRevenue.r > 0)
+ ? (m.retailRevenue.r / m.totalRevenue.r * 100) : null;
+ const pbPush = (cat, title, actions) => recs.push({ isPlaybook: true, cls: 'playbook-card', cat: cat, title: title, actions: actions });
+
+ if (isNew) {
+ pbPush('Performer Playbook · Pillars 1–2', 'Build the Book from Day One', [
+ 'Get Busy — the 70% booked goal: build a first-clientele plan using the five connectivity strategies (Friends & Family, team member services, social media, club member outreach, and a scripted referral ask).',
+ 'Use the Business Building Programs — New Guest, New Member, Referral, and VIP cards — consistently, not just when reminded.',
+ 'Build a Highly Effective Schedule (HES): Wed–Sat, 20+ hours/week, shifts of 5+ hours, 3+ days — use the Heatmap to find the busiest windows.',
+ ]);
+ }
+ if (rootCauses.includes('retention')) {
+ pbPush('Performer Playbook · Pillar 3', 'Deliver Experiences That Bring Guests Back', [
+ 'Improving Retention: audit the four areas — Personal Presentation, Communication, Technical Ability, and Availability (Learning Well "Improving Client Retention" videos).',
+ 'Always Rebook: every guest leaves with a specific recommended return time — set the plan during the service and hand off to the coordinator with a clear timeline.',
+ 'Reconnect with drifted guests: pull the lapsed and lost lists from SmartWeb weekly — a light-touch reminder for lapsed guests, more personal outreach plus an incentive for lost ones.',
+ ]);
+ }
+ if (rootCauses.includes('acquisition')) {
+ pbPush('Performer Playbook · Pillar 2', 'Fill the Book — Connectivity & Acquisition', [
+ 'Connect beyond the spa walls (fitness floor, LifeCafe, pool) and offer one specific next step — an Express Ritual, a booking, or an intro to the right technician.',
+ 'Turn downtime into business-building: new-member outreach, Express Rituals for walk-ins, lapsed-guest follow-up, and posting to a polished professional social presence.',
+ 'Build a schedule that grows the business: Wed–Sat priority, 20+ hours/week, 5-hour+ shifts — check the Heatmap for the high-demand windows they\'re missing.',
+ ]);
+ }
+ if (rootCauses.includes('revenue')) {
+ pbPush('Performer Playbook · Pillar 5', 'Grow Revenue the Three Ways', [
+ 'Three pathways to more revenue: (1) service revenue — add-ons, upgrades, strategic price increases; (2) more booked hours; (3) retail at 15% of total revenue.',
+ 'Price for Growth: LifeSpa prices by the minute (Hair $1.05 · Skin & Body $1.23 · Nails $1.00), rounded to the nearest $5 — and tighten any service times that run long.',
+ 'Retail, "Recommend Don\'t Sell": narrate the products during the service and reference them at checkout, so it lands as expertise rather than a cold upsell.',
+ ]);
+ }
+ if (retailPct != null && retailPct < 15 && !rootCauses.includes('revenue')) {
+ pbPush('Performer Playbook · Pillar 2', 'Grow Retail Toward 15%', [
+ 'Retail should be 15% of total revenue — educate during and after the service about the products used, review the guest\'s at-home routine, and share honest, personal recommendations.',
+ 'Recommend inside the service, not after — weaving products into the time the guest is already spending feels like expertise, not an upsell.',
+ ]);
+ }
+ if (!rootCauses.includes('retention') && !rootCauses.includes('acquisition') && !rootCauses.includes('revenue') && !isNew && primaryStatus === 'green') {
+ pbPush('Performer Playbook · Pillars 1, 4 & 5', 'Keep a Strong Performer Growing', [
+ 'Title path: map current numbers toward the next tier (Senior, Master, or Elite) — both the category revenue benchmark and the repeat-rate minimum must be met.',
+ 'Prioritize growth: advanced education (Learning Well, vendor trainings, certifications) and premium or new service offerings keep craft and confidence high.',
+ 'Personal brand: keep the SalonBiz bio specialty-led and current, ask happy guests for Google Reviews in the moment, and mentor newer technicians.',
+ ]);
+ }
+
+ // Renumber priorities sequentially (1, 2, 3 …) in display order, skipping the leader-notes and playbook cards.
  let pCounter = 0;
- recs.forEach(r => { if (!r.isNotes) r.p = ++pCounter; });
+ recs.forEach(r => { if (!r.isNotes && !r.isPlaybook) r.p = ++pCounter; });
 
  const rebookTableHtml = `
  <table class="cycle-table">
@@ -1952,7 +2003,7 @@ function runAnalysis() {
  const notesBlock = rec.isNotes ? `<div class="notes-text">"${rec.notesText}"</div>` : '';
  return `
  <div class="coaching-card ${rec.cls}">
- <div class="cc-category">${rec.isNotes ? 'From Your Notes' : `Priority ${rec.p} · ${rec.cat}`}</div>
+ <div class="cc-category">${rec.isNotes ? 'From Your Notes' : rec.isPlaybook ? rec.cat : `Priority ${rec.p} · ${rec.cat}`}</div>
  <div class="cc-title">${rec.title}</div>
  ${notesBlock}
  ${rec.actions.length ? `<ul class="cc-list">${rec.actions.map(a=>`<li>${a}</li>`).join('')}</ul>` : ''}
