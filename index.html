@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Technician Analysis Tool",
+  "schemaVersion": 1,
+  "description": "LifeSpa Technician Performance Analysis Tool — enter a technician's metrics across three time periods to generate R/Y/G KPI status, performance diagnosis, root-cause coaching recommendations, price increase readiness, and 1:1 talking points.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
 <html lang="en">
 <head>
  <meta charset="UTF-8">
@@ -32,8 +41,7 @@
  header {
  background: var(--sage);
  padding: 22px 36px;
- display: flex; align-items: center; justify-content: space-between; gap: 16px;
- position: sticky; top: 0; z-index: 100;
+ display: flex; align-items: center; gap: 16px;
  box-shadow: var(--shadow);
  }
  .header-eyebrow {
@@ -42,7 +50,7 @@
  }
  header h1 { font-size: 19px; font-weight: 700; color: #fff; }
  header p { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
- .header-actions { display: flex; gap: 8px; }
+ .header-actions { display: flex; gap: 8px; margin-left: auto; }
  .header-btn {
  padding: 8px 14px; border-radius: 8px;
  border: 1.5px solid rgba(255,255,255,0.6); background: transparent; color: #fff;
@@ -140,6 +148,11 @@
 
  /* ── RESULTS ── */
  #resultsSection { display: none; }
+ #noDataNote { display: none; }
+ body:not(.generated) #resultsSection .results-header,
+ body:not(.generated) #resultsSection #staleBanner,
+ body:not(.generated) #resultsSection .rpanel { display: none !important; }
+ body:not(.generated) #noDataNote { display: block; }
  .results-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; gap: 12px; }
  .results-header h2 { font-size: 19px; font-weight: 700; color: var(--text); }
  .results-header p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
@@ -150,25 +163,50 @@
  }
  .results-btn:hover { background: var(--accent); color: #fff; }
 
- /* Result page tabs */
+ /* Result page tabs — sticky underline bar directly below the (non-sticky) header */
  .result-tabs {
- display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
- background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
- padding: 6px; margin-bottom: 20px; box-shadow: var(--shadow);
+ position: sticky; top: 0; z-index: 100;
+ width: 100vw; margin-left: calc(50% - 50vw);
+ background: var(--surface); border-bottom: 1px solid var(--border);
+ box-shadow: 0 2px 8px rgba(44,36,32,0.06); margin-bottom: 20px;
+ }
+ .result-tabs-inner {
+ max-width: 1060px; margin: 0 auto; padding: 0 16px;
+ display: flex; flex-wrap: nowrap; overflow-x: auto; align-items: stretch; gap: 0;
  }
  .rtab {
- padding: 9px 15px; border: none; background: transparent; font-size: 13px; font-weight: 600;
- color: var(--text-muted); cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap;
+ padding: 15px 8px; border: none; background: transparent; border-bottom: 3px solid transparent;
+ font-size: 12.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; font-family: inherit;
+ transition: color 0.15s, border-color 0.15s; white-space: nowrap;
  }
- .rtab:hover { background: var(--surface2); color: var(--accent); }
- .rtab.active { background: var(--accent); color: #fff; }
+ .rtab:hover { color: var(--accent); }
+ .rtab.active { color: var(--accent); font-weight: 800; border-bottom-color: var(--accent); }
+ .rtab:disabled { opacity: 0.4; cursor: not-allowed; }
+ .rtab:disabled:hover { color: var(--text-muted); }
  .rtab-print {
- margin-left: auto; padding: 9px 15px; border: 1.5px solid var(--accent); background: transparent;
+ margin-left: auto; align-self: center; padding: 8px 15px; border: 1.5px solid var(--accent); background: transparent;
  font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap;
  }
  .rtab-print:hover { background: var(--accent); color: #fff; }
  .rpanel { display: none; }
  .rpanel.active { display: block; }
+
+ /* Price Increase calculator */
+ .pcalc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+ .pcalc-input { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; }
+ .pcalc-input label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 8px; }
+ .pcalc-field { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1.5px solid var(--accent); border-radius: 10px; padding: 8px 12px; }
+ .pcalc-field .sym { font-size: 24px; font-weight: 700; color: var(--text-muted); }
+ .pcalc-field input { border: none; outline: none; background: transparent; font-size: 28px; font-weight: 800; color: var(--text); width: 100%; font-family: inherit; }
+ .pcalc-steps { margin-top: 14px; }
+ .pcalc-step { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+ .pcalc-step:last-child { border-bottom: none; }
+ .pcalc-step .v { font-weight: 700; color: var(--text); }
+ .pcalc-result { background: var(--accent); border-radius: 12px; padding: 18px; color: #fff; display: flex; flex-direction: column; justify-content: center; }
+ .pcalc-result .r-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.85); }
+ .pcalc-result .r-price { font-size: 40px; font-weight: 800; line-height: 1.05; margin: 4px 0 2px; }
+ .pcalc-result .r-sub { font-size: 12.5px; color: rgba(255,255,255,0.85); }
+ @media (max-width: 640px) { .pcalc-grid { grid-template-columns: 1fr; } }
 
  /* Status Banner */
  .status-banner { border-radius: 14px; padding: 22px 26px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 18px; border: 1.5px solid transparent; }
@@ -372,7 +410,7 @@
  @media (max-width: 700px) { .roster-grid { grid-template-columns: 1fr; } }
 
  /* ── Stale results flag ── */
- .stale-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: var(--yellow-bg); border: 1px solid var(--yellow-border); color: var(--yellow); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; }
+ .stale-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: var(--yellow-bg); border: 1px solid var(--yellow-border); color: var(--yellow); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14px; font-weight: 600; position: sticky; top: var(--tabbar-h, 52px); z-index: 89; }
  .stale-update-btn { background: var(--accent); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; font-size: 13px; transition: background .15s; }
  .stale-update-btn:hover { background: var(--accent-dark); }
  .gen-btn.stale { box-shadow: 0 0 0 3px var(--yellow-border); }
@@ -406,8 +444,23 @@
  </div>
 </header>
 
+<nav class="result-tabs" id="resultTabs">
+ <div class="result-tabs-inner">
+ <button class="rtab active" data-tab="setup" onclick="showTab('setup')">Business Review</button>
+ <button class="rtab" data-tab="overview" onclick="showTab('overview')">Overview</button>
+ <button class="rtab" data-tab="diagnosis" onclick="showTab('diagnosis')">Diagnosis</button>
+ <button class="rtab" data-tab="recs" onclick="showTab('recs')">Recommendations</button>
+ <button class="rtab" data-tab="price" onclick="showTab('price')">Price Increases</button>
+ <button class="rtab" data-tab="schedule" onclick="showTab('schedule')">Schedule</button>
+ <button class="rtab" data-tab="goalstitles" onclick="showTab('goalstitles')">Goals &amp; Titles</button>
+ <button class="rtab" data-tab="takeaway" onclick="showTab('takeaway')">Takeaway</button>
+ <button class="rtab-print" onclick="window.print()">Print / Save PDF</button>
+ </div>
+</nav>
+
 <div class="container">
 
+ <div class="rpanel active" data-panel="setup">
  <div class="disclaimer">
  <div class="d-icon"></div>
  <div><strong>Use this tool as a guide.</strong> Use your own judgment and double-check recommendations with the Leadership Playbook, your Lead General, or a Center of Excellence Leader if you are unsure.</div>
@@ -504,7 +557,7 @@
  <div class="card">
  <div class="card-title"><span class="step-num">2</span> Performance Metrics</div>
  <div class="metrics-intro">
- Enter the technician's data for the most recent month and 12-month average. Trends compare the two to show direction of movement. All fields in Steps 1–3 are required before generating a plan — enter 0 for any value that is truly none.
+ Enter the technician's data for the most recent month and 12-month average. Trends compare the two to show direction of movement. All fields in Steps 1–2 are required, and Step 3 (Heatmap) is required too — unless productivity is above 80% for both the recent month and the 12-month average, in which case Step 3 is optional. Enter 0 for any value that is truly none.
  </div>
 
  <table class="metrics-table">
@@ -603,7 +656,7 @@
  <div class="card">
  <div class="card-title"><span class="step-num">3</span> Heatmap Schedule Optimization</div>
  <div class="metrics-intro">
- Pull this data from the <strong>Heatmap tool using the 10-week lookback</strong>. Enter the technician's % booked for each day of the week, and the % booked for their <strong>service category at this location</strong> for the same days. <strong>Enter 0% for any day the technician is not scheduled</strong> — the tool treats 0% as not working that day. If the technician is working less-desirable days (Sunday–Tuesday for most categories; Monday–Tuesday for Body, since Sunday can be a desirable massage day) while category demand is high (70%+) on days they're not scheduled, the tool will suggest reviewing a schedule change to help them get busier.
+ Pull this data from the <strong>Heatmap tool using the 10-week lookback</strong>. Enter the technician's % booked for each day of the week, and the % booked for their <strong>service category at this location</strong> for the same days. <strong>Enter 0% for any day the technician is not scheduled</strong> — the tool treats 0% as not working that day. If the technician is working less-desirable days (Sunday–Tuesday for most categories; Monday–Tuesday for Body, since Sunday can be a desirable massage day) while category demand is high (70%+) on days they're not scheduled, the tool will suggest reviewing a schedule change to help them get busier — unless the technician is already booked 65%+ on that less-desirable day, in which case it's left alone. This section is optional when the technician's productivity is above 80% for both the recent month and the 12-month average.
  </div>
  <table class="metrics-table">
  <thead>
@@ -798,13 +851,15 @@
  <div id="validationSummary" class="v-box" style="display:none;"></div>
  <button class="gen-btn" onclick="runAnalysis()">Generate Growth Plan &amp; Coaching Recommendations</button>
  </div><!-- /inputSection -->
+ </div><!-- /setup panel -->
 
 
  <!-- ═══════════════════ RESULTS SECTION ═══════════════════ -->
  <div id="resultsSection">
- <div id="staleBanner" class="stale-banner" style="display:none;">
- <span>Inputs have changed since this plan was generated — the results below may be out of date.</span>
- <button type="button" class="stale-update-btn" onclick="runAnalysis()">Update Growth Plan</button>
+ <div id="noDataNote" class="card" style="text-align:center; padding:40px 26px;">
+ <div style="font-size:16px; font-weight:800; color:var(--text); margin-bottom:6px;">No data yet</div>
+ <p style="font-size:13px; color:var(--text-muted); line-height:1.55; max-width:440px; margin:0 auto;">Complete the <strong>Business Review</strong> tab and click <strong>Generate Growth Plan &amp; Coaching Recommendations</strong> to populate this section.</p>
+ <button type="button" class="results-btn" style="margin-top:16px;" onclick="showTab('setup'); window.scrollTo({top:0,behavior:'smooth'});">Go to Business Review</button>
  </div>
  <div class="results-header">
  <div>
@@ -816,21 +871,13 @@
  </div>
  </div>
 
- <!-- Page navigation -->
- <nav class="result-tabs" id="resultTabs">
- <button class="rtab active" data-tab="overview" onclick="showTab('overview')">Overview</button>
- <button class="rtab" data-tab="diagnosis" onclick="showTab('diagnosis')">Diagnosis</button>
- <button class="rtab" data-tab="recs" onclick="showTab('recs')">Recommendations</button>
- <button class="rtab" data-tab="price" onclick="showTab('price')">Price Increase</button>
- <button class="rtab" data-tab="schedule" onclick="showTab('schedule')">Schedule</button>
- <button class="rtab" data-tab="titles" onclick="showTab('titles')">Titles</button>
- <button class="rtab" data-tab="goal" onclick="showTab('goal')">Goal Setting</button>
- <button class="rtab" data-tab="takeaway" onclick="showTab('takeaway')">Takeaway</button>
- <button class="rtab-print" onclick="window.print()">Print / Save PDF</button>
- </nav>
+ <div id="staleBanner" class="stale-banner" style="display:none;">
+ <span>Inputs have changed since this plan was generated — the results below may be out of date.</span>
+ <button type="button" class="stale-update-btn" onclick="runAnalysis()">Update Growth Plan</button>
+ </div>
 
  <!-- ── Overview page ── -->
- <div class="rpanel active" data-panel="overview">
+ <div class="rpanel" data-panel="overview">
  <div id="overallStatus"></div>
  <div class="card">
  <div class="card-title">KPI Trend Dashboard <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:4px;">— trend compares most recent month to 12-month average</span></div>
@@ -866,11 +913,31 @@
  </div>
  </div>
 
- <!-- ── Price Increase page ── -->
+ <!-- ── Price Increases page ── -->
  <div class="rpanel" data-panel="price">
  <div class="card">
  <div class="card-title">Price Increase Readiness</div>
  <div id="priceContent"></div>
+ </div>
+ <div class="card" id="priceCalcCard">
+ <div class="card-title">Price Increase Calculator</div>
+ <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Enter a service's current price. The tool adds 10% and rounds <strong>up</strong> to a guest-friendly price ending in 0 or 5. Per the playbook: minimum 10%, round up to end in 0 or 5, and never post signs or notify clients in advance.</p>
+ <div class="pcalc-grid">
+ <div class="pcalc-input">
+ <label for="priceCurrent">Current Service Price</label>
+ <div class="pcalc-field"><span class="sym">$</span><input type="number" id="priceCurrent" min="0" step="1" placeholder="0" oninput="priceCalc()"></div>
+ <div class="pcalc-steps">
+ <div class="pcalc-step"><span>Current price</span><span class="v" id="pcS0">—</span></div>
+ <div class="pcalc-step"><span>+ 10% increase</span><span class="v" id="pcS1">—</span></div>
+ <div class="pcalc-step"><span>Rounded up to end in 0 or 5</span><span class="v" id="pcS2">—</span></div>
+ </div>
+ </div>
+ <div class="pcalc-result">
+ <div class="r-label">New Recommended Price</div>
+ <div class="r-price" id="pcNew">—</div>
+ <div class="r-sub" id="pcSub">Enter a current price to calculate</div>
+ </div>
+ </div>
  </div>
  </div>
 
@@ -930,8 +997,12 @@
  </div>
  </div>
 
- <!-- ── Titles page ── -->
- <div class="rpanel" data-panel="titles">
+ <!-- ── Goals & Titles page ── -->
+ <div class="rpanel" data-panel="goalstitles">
+ <div class="card" id="goalCard">
+ <div class="card-title">Goal Setting <span style="font-size:11px; font-weight:400; color:var(--text-muted);">— optional</span></div>
+ <div id="goalContent"></div>
+ </div>
  <div class="card" id="titleCard">
  <div class="card-title">Title Promotion Tracker</div>
  <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Technicians can earn Senior, Master, or Elite titles by hitting the category's revenue benchmark <strong>in each of the last 3 months</strong> (no averaging) while maintaining the minimum repeat rate. Eligibility begins after 3 full months with LifeSpa. This tracker checks the 3 individual months entered in Step 5 above against the Employment Type selected in Step 1.</p>
@@ -942,14 +1013,6 @@
  </div>
  </div>
  <div class="info-box" id="titleEmpty" style="display:none;">Title Promotion is optional. Fill in Step 5 to see the tracker.</div>
- </div>
-
- <!-- ── Goal Setting page (final page before Takeaway) ── -->
- <div class="rpanel" data-panel="goal">
- <div class="card" id="goalCard">
- <div class="card-title">Goal Setting <span style="font-size:11px; font-weight:400; color:var(--text-muted);">— optional</span></div>
- <div id="goalContent"></div>
- </div>
  </div>
 
  <!-- ── Takeaway page ── -->
@@ -1245,6 +1308,7 @@ function runAnalysis() {
  const _v = validateInputs();
  renderValidation(_v);
  if (_v.errors.length) {
+ showTab('setup');
  document.getElementById('validationSummary').scrollIntoView({ behavior:'smooth', block:'center' });
  return;
  }
@@ -1376,10 +1440,12 @@ function runAnalysis() {
  (lowRR || tr.repeatRate==='stable' || tr.repeatRate==='down');
 
  // ── Price increase readiness (playbook: productivity green — typically 75-80%+ — AND repeat rate green, sustained; 12-mo avg recommended) ──
- const sustainedProd = status(m.productivity.y, bm.productivity)==='green' || tr.productivity==='up' || tr.productivity==='stable';
+ const PI_PROD_MIN = 75; // playbook: typically 75–80%+ booked
+ const prodReadyNow = m.productivity.r != null && m.productivity.r >= PI_PROD_MIN;
+ const prodReadySustained = (m.productivity.y != null && m.productivity.y >= PI_PROD_MIN) || tr.productivity==='up' || tr.productivity==='stable';
  const sustainedRR = status(m.repeatRate.y, bm.repeatRate)==='green' || tr.repeatRate==='up' || tr.repeatRate==='stable';
  const piReady = !isNew &&
- s.productivity === 'green' && sustainedProd &&
+ prodReadyNow && prodReadySustained &&
  s.repeatRate === 'green' && sustainedRR;
 
  // ============================================================
@@ -2276,7 +2342,7 @@ function runAnalysis() {
  <div class="pc-icon"></div>
  <div class="pc-title">${name} May Be Ready for a Price Increase!</div>
  <div class="pc-body">
- The playbook formula: <strong>Busy (Productivity green) + Busy with loyal repeat clients (Repeat rate green) = a sustainable
+ The playbook formula: <strong>Busy (Productivity 75–80%+ booked) + Busy with loyal repeat clients (Repeat rate green) = a sustainable
  price increase that is unlikely to hurt retention.</strong> ${name} checks both boxes now and over the 12-month view.
  Remember — it's not good enough to just be booked; being booked <em>with returning clients</em> for several months
  (12-month average recommended) is what earns the increase. Don't wait for them to ask — leaders should initiate
@@ -2296,8 +2362,8 @@ function runAnalysis() {
  </div>`;
  } else {
  const missing = [];
- if (s.productivity!=='green') missing.push(`Productivity must reach 70%+ — ideally 75–80% booked (currently ${m.productivity.r!=null?fp(m.productivity.r):'not entered'})`);
- else if (!sustainedProd) missing.push('Productivity is green now but not sustained over the 12-month view — several consistent months are needed');
+ if (!prodReadyNow) missing.push(`Productivity should reach 75–80%+ booked (currently ${m.productivity.r!=null?fp(m.productivity.r):'not entered'})`);
+ else if (!prodReadySustained) missing.push('Productivity is 75%+ now but not yet sustained over the 12-month view — several consistent months are needed');
  if (s.repeatRate!=='green') missing.push(`Repeat rate must reach ${bm.rrStr} for ${catLabel} (currently ${m.repeatRate.r!=null?fp(m.repeatRate.r):'not entered'})`);
  else if (!sustainedRR) missing.push('Repeat rate is green now but not sustained over the 12-month view — consistency earns the increase');
 
@@ -2380,7 +2446,9 @@ function runAnalysis() {
  // Logic: analyze the entered schedule data. A technician with 0% (or blank) on a day is treated
  // as NOT scheduled that day. If the technician is working a less-desirable day (Sunday, Monday,
  // Tuesday) and the location category shows high demand (70%+ booked) on a day the technician is
- // not working, recommend reviewing a schedule change to move them toward more in-demand days —
+ // not working, recommend reviewing a schedule change to move them toward more in-demand days.
+ // EXCEPTION: a less-desirable day the technician is already booked 65%+ on is productive, so it is
+ // NOT flagged as a day to switch away from —
  // as long as they are not struggling with retention (red repeat rate). If repeat rate is red,
  // do NOT suggest a schedule change; recommend improving retention instead.
  const DAYS = [['sun','Sunday'],['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday']];
@@ -2404,7 +2472,8 @@ function runAnalysis() {
  const working = (i) => heatTech[i] != null && heatTech[i] > 0;
 
  // Less-desirable days the technician is currently working
- const lessDesirableWorked = DAYS.filter((d,i) => LESS_DESIRABLE.includes(d[1]) && working(i)).map(d => d[1]);
+ const LESS_DESIRABLE_KEEP = 65; // if the tech is booked >= this % on a less-desirable day, don't recommend switching away from it
+ const lessDesirableWorked = DAYS.filter((d,i) => LESS_DESIRABLE.includes(d[1]) && working(i) && heatTech[i] < LESS_DESIRABLE_KEEP).map(d => d[1]);
  // Category demand on the least in-demand day the technician currently works (the day they'd give up)
  const workedCatDemands = DAYS.map((d,i) => heatCat[i]).filter((c,i) => working(i) && heatCat[i] != null);
  const minWorkedDemand = workedCatDemands.length ? Math.min(...workedCatDemands) : null;
@@ -2499,6 +2568,7 @@ function runAnalysis() {
  let flag = '';
  if (flagDays.includes(d[1])) flag = `<span style="color:var(--red); font-weight:600;">In-demand day — not scheduled</span>`;
  else if (slowDays.includes(d[1])) flag = `<span style="color:var(--accent); font-weight:600;">Less-desirable day — currently working</span>`;
+ else if (LESS_DESIRABLE.includes(d[1]) && t != null && t >= LESS_DESIRABLE_KEEP) flag = `<span style="color:var(--green); font-weight:600;">Less-desirable day — well booked, keep</span>`;
  const techCell = t == null ? '—' : (t === 0 ? '<span style="color:var(--text-muted);">Not scheduled</span>' : fp(t));
  return `<tr><td>${d[1]}</td><td style="text-align:center;">${techCell}</td><td style="text-align:center;">${c!=null?fp(c):'—'}</td>${gapCell}<td style="font-size:11.5px;">${flag}</td></tr>`;
  }).join('');
@@ -2607,7 +2677,7 @@ function runAnalysis() {
  lines.push(' • Co-create 1–2 specific, measurable action items — document them in the Technician Business Plan');
  lines.push(` • Set the follow-up: ${isNew||primaryStatus==='red'?'next weekly 1:1':primaryStatus==='yellow'?'next weekly 1:1':'next check-in per their preference'}`);
  if (!isNew && piReady) lines.push(' • Initiate the price increase conversation — both key metrics are green and sustained');
- if (!isNew && !piReady && (s.productivity!=='green' || s.repeatRate!=='green'))
+ if (!isNew && !piReady)
  lines.push(' • Set milestone targets for productivity and repeat rate on the path to price increase eligibility');
  lines.push('');
  lines.push('"I\'m committed to your success here. Let\'s leave today with a clear plan and a shared understanding of what we\'re working toward together."');
@@ -2761,33 +2831,64 @@ function runAnalysis() {
  document.getElementById('activitiesCard').style.display =
  (m.productivity.r != null && m.productivity.r < 70) ? '' : 'none';
 
- // Reveal results and reset to the Overview page
- document.getElementById('resultsSection').style.display = 'block';
- document.querySelectorAll('.rpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === 'overview'));
- document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'overview'));
+ // Mark generated and switch to the Overview tab
+ document.body.classList.add('generated');
  resultsGenerated = true;
  clearStale();
- document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth', block:'start' });
+ setTabbarH();
+ showTab('overview');
+ window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function scrollToResults() {
- const r = document.getElementById('resultsSection');
- if (r.style.display !== 'none') r.scrollIntoView({ behavior:'smooth' });
+ if (resultsGenerated) { showTab('overview'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 function editInputs() {
- document.getElementById('inputSection').scrollIntoView({ behavior:'smooth' });
+ showTab('setup');
+ window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function showTab(name) {
  document.querySelectorAll('.rpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
  document.querySelectorAll('.rtab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+ // Setup tab holds the input form; result tabs live in #resultsSection.
  const rs = document.getElementById('resultsSection');
- if (rs) rs.scrollIntoView({ behavior:'smooth', block:'start' });
+ if (rs) rs.style.display = (name === 'setup') ? 'none' : 'block';
+ const b = document.getElementById('staleBanner');
+ if (b) b.style.display = (name !== 'setup' && isStale) ? 'flex' : 'none';
 }
 function goalModeChange() {
  const mode = document.getElementById('goalMode').value;
  document.getElementById('goalGrowthGroup').style.display = mode === 'suggest' ? '' : 'none';
  document.getElementById('goalCustomGroup').style.display = mode === 'custom' ? '' : 'none';
 }
+// Price Increase calculator: +10%, then round UP to the next price ending in 0 or 5.
+function roundUp5(x) { return Math.ceil(x / 5) * 5; }
+function priceCalc() {
+ const el = document.getElementById('priceCurrent');
+ if (!el) return;
+ const cur = parseFloat(el.value);
+ const s0 = document.getElementById('pcS0'), s1 = document.getElementById('pcS1'), s2 = document.getElementById('pcS2');
+ const np = document.getElementById('pcNew'), sub = document.getElementById('pcSub');
+ if (isNaN(cur) || cur < 0) {
+ s0.textContent = '—'; s1.textContent = '—'; s2.textContent = '—';
+ np.textContent = '—'; sub.textContent = 'Enter a current price to calculate';
+ return;
+ }
+ const raw = cur * 1.10;
+ const rounded = roundUp5(raw);
+ s0.textContent = '$' + cur.toLocaleString();
+ s1.textContent = '$' + raw.toFixed(2);
+ s2.textContent = '$' + rounded.toLocaleString();
+ np.textContent = '$' + rounded.toLocaleString();
+ const pct = cur > 0 ? ((rounded - cur) / cur * 100) : 0;
+ sub.textContent = 'Up $' + (rounded - cur).toLocaleString() + ' from $' + cur.toLocaleString() + ' (+' + pct.toFixed(1) + '% after rounding)';
+}
+// Measure the sticky tab bar height so the stale banner can stack directly beneath it.
+function setTabbarH() {
+ const n = document.getElementById('resultTabs');
+ if (n && n.offsetHeight) document.documentElement.style.setProperty('--tabbar-h', n.offsetHeight + 'px');
+}
+window.addEventListener('resize', setTabbarH);
 function printTakeaway() {
  // Print ONLY the Technician Takeaway sheet (hide the leader report).
  document.body.classList.add('printing-takeaway');
@@ -3079,16 +3180,18 @@ rosterInit();
 // ============================================================
 let resultsGenerated = false;
 let genBtnLabel = null;
+let isStale = false;
 function markStale() {
  if (!resultsGenerated) return;
- const rs = document.getElementById('resultsSection');
- if (!rs || getComputedStyle(rs).display === 'none') return;
- const b = document.getElementById('staleBanner');
- if (b) b.style.display = 'flex';
+ isStale = true;
  const g = document.querySelector('.gen-btn');
  if (g) { g.textContent = 'Update Growth Plan — Inputs Changed'; g.classList.add('stale'); }
+ const rs = document.getElementById('resultsSection');
+ const b = document.getElementById('staleBanner');
+ if (b && rs && getComputedStyle(rs).display !== 'none') b.style.display = 'flex';
 }
 function clearStale() {
+ isStale = false;
  const b = document.getElementById('staleBanner');
  if (b) b.style.display = 'none';
  const g = document.querySelector('.gen-btn');
@@ -3175,10 +3278,14 @@ function validateInputs() {
  errors.push('Complete all Performance Metrics in Step 2 — ' + miss2.length + ' field' + (miss2.length === 1 ? '' : 's') + ' still empty (enter 0 if the value is truly none).');
  miss2.forEach(id => badIds.push(id));
  }
+ const _pR = vNum('productivity_r'), _pY = vNum('productivity_y');
+ const heatmapOptional = _pR != null && _pY != null && _pR > 80 && _pY > 80;
+ if (!heatmapOptional) {
  const miss3 = V_REQ_SEC3.filter(id => { const el = document.getElementById(id); return !el || el.value === ''; });
  if (miss3.length) {
- errors.push('Complete all Schedule Optimization cells in Step 3 — ' + miss3.length + ' still empty (enter 0 for any day the technician is not scheduled).');
+ errors.push('Complete all Schedule Optimization cells in Step 3 — ' + miss3.length + ' still empty (enter 0 for any day off). Step 3 is optional only when productivity is above 80% for both the recent month and the 12-month average.');
  miss3.forEach(id => badIds.push(id));
+ }
  }
 
  // Negatives / invalid numbers on any numeric field
