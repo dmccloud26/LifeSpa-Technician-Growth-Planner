@@ -249,6 +249,7 @@
  .trend-pill.neutral { background: #f0f0f0; color: #999; }
  .trend-pill.capacity { background: var(--sage-bg); color: var(--text); }
  .kpi-target { font-size: 10px; color: var(--text-muted); }
+ .kpi-avg { font-size: 10.5px; color: var(--text-muted); margin: -2px 0 6px; }
 
  /* Diagnosis */
  .root-cause-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 14px; }
@@ -880,9 +881,9 @@
  <div class="rpanel" data-panel="overview">
  <div id="overallStatus"></div>
  <div class="card">
- <div class="card-title">KPI Trend Dashboard <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:4px;">— trend compares most recent month to 12-month average</span></div>
+ <div class="card-title">KPI Trend Dashboard <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:4px;">— status color reflects the 12-month average vs. benchmark; the large number is the most recent month; the trend pill compares the two</span></div>
  <div id="kpiDashboard"></div>
- <p style="font-size:11px; color:var(--text-muted); margin-top:12px; line-height:1.5;"><strong>Sales per booked hour</strong> is the average revenue (service + retail) a technician generates for each hour they were actually booked with a guest — it shows how much they earn while in the chair or treatment room, separate from how full their schedule is. Low sales per booked hour can point to low pricing or services running long.</p>
+ <p style="font-size:11px; color:var(--text-muted); margin-top:12px; line-height:1.5;"><strong>Sales per booked hour</strong> is the average revenue (service + retail) a technician generates for each hour they were actually booked with a guest — it shows how much they earn while in the chair or treatment room, separate from how full their schedule is.</p>
  </div>
  </div>
 
@@ -890,7 +891,6 @@
  <div class="rpanel" data-panel="diagnosis">
  <div class="card">
  <div class="card-title">Business Growth Diagnosis</div>
- <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">For a technician whose business isn't growing, work two questions in order: <strong>1) Are clients returning?</strong> <strong>2) Are they busy enough?</strong> Retention first — if retention is healthy, increase demand. Green performers who are already growing get an opportunity view instead.</p>
  <div id="diagnosisContent"></div>
  </div>
  </div>
@@ -1344,11 +1344,13 @@ function runAnalysis() {
  totalVisits: gm('totalVisits'),
  };
 
+ // Recommendations are anchored to the 12-MONTH AVERAGE (sustained performance), not one recent
+ // month. The recent month is used only as a trend signal (see `tr`).
  const s = {
- totalRevenue: bandStatus(m.totalRevenue.r, bm.revYellow, bm.revenue),
- totalRPH: bandStatus(m.totalRPH.r, bm.rphYellow, bm.rph),
- productivity: status(m.productivity.r, bm.productivity),
- repeatRate: status(m.repeatRate.r, bm.repeatRate),
+ totalRevenue: bandStatus(m.totalRevenue.y, bm.revYellow, bm.revenue),
+ totalRPH: bandStatus(m.totalRPH.y, bm.rphYellow, bm.rph),
+ productivity: status(m.productivity.y, bm.productivity),
+ repeatRate: status(m.repeatRate.y, bm.repeatRate),
  };
 
  // Status of the 12-month average for the same benchmarked metrics (used to flag KPIs that
@@ -1397,7 +1399,7 @@ function runAnalysis() {
 
  // ── Booked capacity (top-performer new-client logic) ──
  // At 80%+ booked there is little room to add new clients — a dip in new client count is expected.
- const atCapacity = m.productivity.r != null && m.productivity.r >= CAPACITY_THRESHOLD;
+ const atCapacity = m.productivity.y != null && m.productivity.y >= CAPACITY_THRESHOLD;
 
  // ── Sales performance flag (sales per booked hour) ──
  // Hair, Body & Skin: flag if average sales per booked hour < $70. Nails: flag if < $50.
@@ -1456,22 +1458,28 @@ function runAnalysis() {
  `Generated ${genDate} · ${catLabel} · ${isPT ? 'Part Time' : 'Full Time'} · Primary benchmark: ${primaryBMStr}`;
 
  // ── 1. Status Banner ──
- // Status colors (red/yellow/green) reflect current performance against NATIONAL benchmarks and
- // are assigned from the technician's first month — they are not new-technician ramp targets.
+ // Status colors (red/yellow/green) reflect the 12-MONTH-AVERAGE performance vs. NATIONAL
+ // benchmarks (sustained performance), not one recent month. Not new-technician ramp targets.
  const newNote = isNew ? ` This status compares ${name} to national benchmarks, not new-technician ramp targets. As a technician in their first 6 months, expect them to grow into these benchmarks — focus on month-over-month improvement (see the Diagnosis tab).` : '';
+ const primaryTrendDir = primaryUsesRevenue ? tr.totalRevenue : tr.totalRPH;
+ const trendPhrase = (primaryMetricR != null && primaryMetricY != null)
+ ? (primaryTrendDir === 'up' ? ` Their most recent month (${primaryFmt}) is trending above the 12-month average — good momentum to reinforce.`
+ : primaryTrendDir === 'down' ? ` Their most recent month (${primaryFmt}) is running below the 12-month average — worth watching.`
+ : ` Their most recent month (${primaryFmt}) is holding steady with the 12-month average.`)
+ : '';
  let bCls, bEmoji, bTitle, bDesc;
  if (primaryStatus==='green') {
  bCls='green'; bEmoji='';
  bTitle='Successful Performer — Green Status';
- bDesc=name+' is meeting the '+(primaryUsesRevenue?'total revenue':'revenue-per-hour')+' national benchmark for '+catLabel+'. Coach with freedom and flexibility — 1:1s can be monthly or quarterly based on their preference, and a walk-and-talk touch base may be preferred over a formal sit-down.'+newNote;
+ bDesc=name+' is meeting the '+(primaryUsesRevenue?'total revenue':'revenue-per-hour')+' national benchmark for '+catLabel+' on the 12-month average ('+primaryFmtY+' vs. '+primaryBMStr+'). Coach with freedom and flexibility — 1:1s can be monthly or quarterly based on their preference, and a walk-and-talk touch base may be preferred over a formal sit-down.'+newNote+trendPhrase;
  } else if (primaryStatus==='yellow') {
  bCls='yellow'; bEmoji='';
  bTitle='Near Target — Yellow Status';
- bDesc=name+' is in the yellow range for '+(primaryUsesRevenue?'revenue':'RPH')+' ('+primaryFmt+' vs. green benchmark '+primaryBMStr+') — below the benchmark but above the red threshold. Per the playbook communication rhythm, weekly 1:1s are called for while scores are yellow — review KPIs, update the business plan, and set clear monthly goals to close the gap.'+newNote;
+ bDesc=name+' is in the yellow range for '+(primaryUsesRevenue?'revenue':'RPH')+' (12-month average '+primaryFmtY+' vs. green benchmark '+primaryBMStr+') — below the benchmark but above the red threshold. Per the playbook communication rhythm, weekly 1:1s are called for while scores are yellow — review KPIs, update the business plan, and set clear monthly goals to close the gap.'+newNote+trendPhrase;
  } else if (primaryStatus==='red') {
  bCls='red'; bEmoji='';
  bTitle='Struggling Performer — Red Status';
- bDesc=name+' is below the '+(primaryUsesRevenue?'revenue':'RPH')+' national benchmark ('+primaryFmt+' vs. target '+primaryBMStr+'). '+(isNew?'':'Weekly 1:1s are required per the coaching cadence. ')+'Use the diagnosis below to identify the root cause and set clear improvement expectations and timelines.'+newNote;
+ bDesc=name+' is below the '+(primaryUsesRevenue?'revenue':'RPH')+' national benchmark (12-month average '+primaryFmtY+' vs. target '+primaryBMStr+'). '+(isNew?'':'Weekly 1:1s are required per the coaching cadence. ')+'Use the diagnosis below to identify the root cause and set clear improvement expectations and timelines.'+newNote+trendPhrase;
  } else {
  bCls='blue'; bEmoji='';
  bTitle=name+' — Metrics Overview';
@@ -1500,7 +1508,7 @@ function runAnalysis() {
  </div>`;
 
  // ── 2. KPI Dashboard ──
- function kCard(label, val, st, tn, tgt, customPill) {
+ function kCard(label, val, st, tn, tgt, customPill, avgStr) {
  const cardCls = st && st!=='neutral' ? `bm-${st}` : '';
  const dotHtml = st && st!=='neutral' ? `<div class="kpi-dot ${st}"></div>` : '';
  const pill = customPill || `<span class="trend-pill ${tn}">${tIcon(tn)} ${tWord(tn)}</span>`;
@@ -1508,6 +1516,7 @@ function runAnalysis() {
  <div class="kpi-card ${cardCls}">
  <div class="kpi-label">${label}</div>
  <div class="kpi-value-row"><div class="kpi-value">${val}</div>${dotHtml}</div>
+ ${avgStr ? `<div class="kpi-avg">12-mo avg: <strong>${avgStr}</strong></div>` : ''}
  <div class="kpi-trend-row">
  ${pill}
  ${tgt ? `<span class="kpi-target">Target: ${tgt}</span>` : ''}
@@ -1523,26 +1532,26 @@ function runAnalysis() {
  // Rows: 1) Revenue 2) Revenue Per Hour 3) Productivity & Schedule 4) Client Metrics
  document.getElementById('kpiDashboard').innerHTML =
  '<div class="kpi-row cols-3">' +
- kCard('Total Revenue', fc(m.totalRevenue.r), primaryUsesRevenue?s.totalRevenue:null, tr.totalRevenue, bm.revenueStr+'/mo') +
- kCard('Service Revenue', fc(m.serviceRevenue.r), null, tr.serviceRevenue, null) +
- kCard('Retail Revenue', fc(m.retailRevenue.r), null, tr.retailRevenue, null) +
+ kCard('Total Revenue', fc(m.totalRevenue.r), primaryUsesRevenue?s.totalRevenue:null, tr.totalRevenue, bm.revenueStr+'/mo', null, fc(m.totalRevenue.y)) +
+ kCard('Service Revenue', fc(m.serviceRevenue.r), null, tr.serviceRevenue, null, null, fc(m.serviceRevenue.y)) +
+ kCard('Retail Revenue', fc(m.retailRevenue.r), null, tr.retailRevenue, null, null, fc(m.retailRevenue.y)) +
  '</div>' +
  '<div class="kpi-row cols-4">' +
- kCard('Total Revenue / Hr', fcD(m.totalRPH.r), s.totalRPH, tr.totalRPH, bm.rphStr) +
- kCard('Service Revenue / Hr', fcD(m.serviceRPH.r), null, tr.serviceRPH, null) +
- kCard('Retail Revenue / Hr', fcD(m.retailRPH.r), null, tr.retailRPH, null) +
- kCard('Sales / Booked Hour', fcD(m.salesPerBookedHr.r), null, tr.salesPerBookedHr, null) +
+ kCard('Total Revenue / Hr', fcD(m.totalRPH.r), s.totalRPH, tr.totalRPH, bm.rphStr, null, fcD(m.totalRPH.y)) +
+ kCard('Service Revenue / Hr', fcD(m.serviceRPH.r), null, tr.serviceRPH, null, null, fcD(m.serviceRPH.y)) +
+ kCard('Retail Revenue / Hr', fcD(m.retailRPH.r), null, tr.retailRPH, null, null, fcD(m.retailRPH.y)) +
+ kCard('Sales / Booked Hour', fcD(m.salesPerBookedHr.r), null, tr.salesPerBookedHr, null, null, fcD(m.salesPerBookedHr.y)) +
  '</div>' +
  '<div class="kpi-row cols-3">' +
- kCard('Productivity', fp(m.productivity.r), s.productivity, tr.productivity, '70%') +
- kCard('Hours Booked', fn(m.hoursBooked.r), null, tr.hoursBooked, null) +
- kCard('Hours Scheduled', fn(m.hoursScheduled.r), null, tr.hoursScheduled, null) +
+ kCard('Productivity', fp(m.productivity.r), s.productivity, tr.productivity, '70%', null, fp(m.productivity.y)) +
+ kCard('Hours Booked', fn(m.hoursBooked.r), null, tr.hoursBooked, null, null, fn(m.hoursBooked.y)) +
+ kCard('Hours Scheduled', fn(m.hoursScheduled.r), null, tr.hoursScheduled, null, null, fn(m.hoursScheduled.y)) +
  '</div>' +
  '<div class="kpi-row cols-4">' +
- kCard('Repeat Rate', fp(m.repeatRate.r), s.repeatRate, tr.repeatRate, bm.rrStr) +
- kCard('New Client Visits', fn(m.newVisits.r), null, tr.newVisits, null, newVisitsPill) +
- kCard('Repeat Client Visits', fn(m.repeatVisits.r), null, tr.repeatVisits, null) +
- kCard('Total Client Visits', fn(m.totalVisits.r), null, tr.totalVisits, null) +
+ kCard('Repeat Rate', fp(m.repeatRate.r), s.repeatRate, tr.repeatRate, bm.rrStr, null, fp(m.repeatRate.y)) +
+ kCard('New Client Visits', fn(m.newVisits.r), null, tr.newVisits, null, newVisitsPill, fn(m.newVisits.y)) +
+ kCard('Repeat Client Visits', fn(m.repeatVisits.r), null, tr.repeatVisits, null, null, fn(m.repeatVisits.y)) +
+ kCard('Total Client Visits', fn(m.totalVisits.r), null, tr.totalVisits, null, null, fn(m.totalVisits.y)) +
  '</div>';
 
  // ── 3. Diagnosis ──
@@ -1582,9 +1591,9 @@ function runAnalysis() {
  <div class="root-cause-card capacity" style="margin-bottom:14px;">
  <div class="rc-icon"></div>
  <div class="rc-title">Booked At or Near Capacity</div>
- <div class="rc-sub">${fp(m.productivity.r)} booked — new client count is not a concern</div>
+ <div class="rc-sub">${fp(m.productivity.y)} booked (12-mo avg) — new client count is not a concern</div>
  <p style="font-size:13px; color:var(--text); line-height:1.55;">
- ${name} is ${fp(m.productivity.r)} booked. At 80–85%+ booked, there simply isn't room to add many new
+ ${name} is ${fp(m.productivity.y)} booked on the 12-month average. At 80–85%+ booked, there simply isn't room to add many new
  clients — a flat or declining new client count is <strong>expected and healthy</strong> here, not a warning sign.
  The growth conversation shifts from filling the book to <strong>maximizing the value of every booked hour</strong>:
  add-ons, upgrades, retail, and — if repeat rate is also green — a price increase.
@@ -1729,14 +1738,14 @@ function runAnalysis() {
  <div class="rc-sub">Question 1 · Retention</div>
  <div class="rc-title">Are clients returning? — Yes</div>
  <p style="font-size:13px; color:var(--text); line-height:1.55;">
- Repeat rate is ${fp(m.repeatRate.r)} vs. the ${bm.rrStr} target for ${catLabel}${tr.repeatRate==='up' ? ', and trending up' : ''}.
+ Repeat rate is ${fp(m.repeatRate.y)} (12-mo avg) vs. the ${bm.rrStr} target for ${catLabel}${tr.repeatRate==='up' ? ', and the recent month is trending up' : ''}.
  Guests are coming back — retention is healthy. Move to Question 2.
  </p>
  </div>`;
  } else {
  const yellowRR = s.repeatRate === 'yellow';
  const q1Signals = [];
- if (m.repeatRate.r != null) q1Signals.push(`Repeat rate is ${fp(m.repeatRate.r)} vs. the ${bm.rrStr} target for ${catLabel}`);
+ if (m.repeatRate.y != null) q1Signals.push(`Repeat rate is ${fp(m.repeatRate.y)} (12-mo avg) vs. the ${bm.rrStr} target for ${catLabel}`);
  if (tr.repeatRate === 'down') q1Signals.push('Repeat rate is declining vs. the 12-month average');
  if (tr.repeatVisits === 'down') q1Signals.push('Returning visit count is declining');
  diagHtml += `
@@ -1793,7 +1802,7 @@ function runAnalysis() {
  <div class="rc-sub">Question 2 · Client Acquisition</div>
  <div class="rc-title">Are they busy enough? — Yes</div>
  <p style="font-size:13px; color:var(--text); line-height:1.55;">
- Productivity is ${fp(m.productivity.r)} vs. the 70% target${atCapacity ? ' — at or near full capacity' : ''}.
+ Productivity is ${fp(m.productivity.y)} (12-mo avg) vs. the 70% target${atCapacity ? ' — at or near full capacity' : ''}.
  ${retentionHealthy
  ? `Both answers are yes — ${name}'s business fundamentals are healthy. Growth now comes from the three proven pathways: increasing service revenue (add-ons, upgrades, strategic price increases), expanding booked hours, and driving retail performance — plus title promotion progress and career milestones.`
  : `The book is filling — once retention is confirmed healthy, growth comes from maximizing the value of every booked hour.`}
@@ -1801,7 +1810,7 @@ function runAnalysis() {
  </div>`;
  } else {
  const q2Signals = [];
- if (m.productivity.r != null) q2Signals.push(`Productivity is ${fp(m.productivity.r)} vs. the 70% target`);
+ if (m.productivity.y != null) q2Signals.push(`Productivity is ${fp(m.productivity.y)} (12-mo avg) vs. the 70% target`);
  if (!atCapacity && tr.newVisits === 'down') q2Signals.push('New client visits are declining vs. the 12-month average');
  if (!atCapacity && tr.totalVisits === 'down') q2Signals.push('Total visit count is declining vs. the 12-month average');
  if (tr.productivity === 'down') q2Signals.push('Productivity is trending downward over time');
@@ -1840,7 +1849,7 @@ function runAnalysis() {
  <div class="rc-title">Returning — But Not Sticking</div>
  <div class="rc-sub">Repeat rate looks ${s.repeatRate === 'green' ? 'healthy' : 'close to benchmark'}, but the book isn't growing</div>
  <p style="font-size:13px; color:var(--text); line-height:1.55;">
- ${name}'s repeat rate is ${fp(m.repeatRate.r)}, but productivity is low and booked hours are not growing.
+ ${name}'s repeat rate is ${fp(m.repeatRate.y)} on the 12-month average, but productivity is low and booked hours are not growing.
  Clients may be coming back once, twice, maybe even three times — then falling off after that.
  Read this as: <strong>${name} is not actually growing a business of retained guests.</strong>
  Dig into what happens after the first few visits — are guests on a treatment plan with a standing
@@ -1986,7 +1995,7 @@ function runAnalysis() {
  'Leverage as a mentor for newer team members and a practical-interview partner for casting',
  ];
  if (atCapacity) {
- greenActions.splice(1, 0, `At ${fp(m.productivity.r)} booked, growth comes from value per hour — not more clients. Focus on add-ons, upgrades, retail attach, and price increase timing`);
+ greenActions.splice(1, 0, `At ${fp(m.productivity.y)} booked (12-mo avg), growth comes from value per hour — not more clients. Focus on add-ons, upgrades, retail attach, and price increase timing`);
  }
  recs.push({ p:1, cls:'p3', cat:'Successful Performer Coaching', title:'Growth & Career Development', actions: greenActions });
  }
@@ -2362,9 +2371,9 @@ function runAnalysis() {
  </div>`;
  } else {
  const missing = [];
- if (!prodReadyNow) missing.push(`Productivity should reach 75–80%+ booked (currently ${m.productivity.r!=null?fp(m.productivity.r):'not entered'})`);
+ if (!prodReadyNow) missing.push(`Productivity should reach 75–80%+ booked (12-mo avg currently ${m.productivity.y!=null?fp(m.productivity.y):'not entered'})`);
  else if (!prodReadySustained) missing.push('Productivity is 75%+ now but not yet sustained over the 12-month view — several consistent months are needed');
- if (s.repeatRate!=='green') missing.push(`Repeat rate must reach ${bm.rrStr} for ${catLabel} (currently ${m.repeatRate.r!=null?fp(m.repeatRate.r):'not entered'})`);
+ if (s.repeatRate!=='green') missing.push(`Repeat rate must reach ${bm.rrStr} for ${catLabel} (12-mo avg currently ${m.repeatRate.y!=null?fp(m.repeatRate.y):'not entered'})`);
  else if (!sustainedRR) missing.push('Repeat rate is green now but not sustained over the 12-month view — consistency earns the increase');
 
  priceHtml = `
@@ -2512,7 +2521,7 @@ function runAnalysis() {
  <div class="rc-icon"></div>
  <div class="rc-title">Address Retention — Not a Schedule Change</div>
  <p style="font-size:12.5px; color:var(--text); line-height:1.55;">
- ${name}'s repeat rate is in the red (${m.repeatRate.r!=null?fp(m.repeatRate.r):'not entered'} vs. ${bm.rrStr} target for ${catLabel}).
+ ${name}'s repeat rate is in the red (12-mo avg ${m.repeatRate.y!=null?fp(m.repeatRate.y):'not entered'} vs. ${bm.rrStr} target for ${catLabel}).
  Per the playbook, adding more new guests to a schedule that isn't retaining clients doesn't fix the underlying
  problem — it just grows the number of guests who won't return. Focus the 1:1 on retention (see Coaching
  Recommendations above). Revisit schedule optimization for new guests once repeat rate improves.
@@ -2530,7 +2539,7 @@ function runAnalysis() {
  ? ` Repeat rate wasn't entered in Step 2 — confirm retention is on track before making the change, since a busier schedule won't help a technician who is struggling to retain guests.`
  : '';
  const yellowNote = rrStatus === 'yellow'
- ? ` ${name}'s repeat rate is in the yellow (${fp(m.repeatRate.r)} vs. ${bm.rrStr} target) — close enough to benchmark that adding new guests is a reasonable focus, but keep retention coaching in the conversation too.`
+ ? ` ${name}'s repeat rate is in the yellow (12-mo avg ${fp(m.repeatRate.y)} vs. ${bm.rrStr} target) — close enough to benchmark that adding new guests is a reasonable focus, but keep retention coaching in the conversation too.`
  : '';
  const workingContext = lessDesirableWorked.length
  ? `${name} is currently working <strong>${lessDesirableWorked.join(', ')}</strong> — typically less in-demand
@@ -2617,12 +2626,12 @@ function runAnalysis() {
  }
  lines.push('');
 
- lines.push('WHERE THEY STAND — KEY NUMBERS');
+ lines.push('WHERE THEY STAND — KEY NUMBERS (12-month average)');
  const primaryStat = primaryStatus==='green'?'On track':primaryStatus==='yellow'?'Getting close':primaryStatus==='red'?'Below target':'—';
- lines.push(` • ${primaryLabel}: ${primaryFmt} → Target: ${primaryBMStr} [${primaryStat}]`);
+ lines.push(` • ${primaryLabel}: ${primaryFmtY} → Target: ${primaryBMStr} [${primaryStat}]`);
  if (ptRevOverride) lines.push(' (Part-time — Total Revenue meets the full-time benchmark, so it overrides RPH for status)');
- if (m.productivity.r!=null) lines.push(` • Productivity: ${fp(m.productivity.r)} → Target: 70% [${s.productivity==='green'?'On track':s.productivity==='yellow'?'Getting close':'Below target'}]${atCapacity?' ← at/near full capacity':''}`);
- if (m.repeatRate.r!=null) lines.push(` • Repeat Rate: ${fp(m.repeatRate.r)} → Target: ${bm.rrStr} for ${catLabel} [${s.repeatRate==='green'?'On track':s.repeatRate==='yellow'?'Getting close':'Below target'}]`);
+ if (m.productivity.r!=null) lines.push(` • Productivity: ${fp(m.productivity.y)} → Target: 70% [${s.productivity==='green'?'On track':s.productivity==='yellow'?'Getting close':'Below target'}]${atCapacity?' ← at/near full capacity':''}`);
+ if (m.repeatRate.r!=null) lines.push(` • Repeat Rate: ${fp(m.repeatRate.y)} → Target: ${bm.rrStr} for ${catLabel} [${s.repeatRate==='green'?'On track':s.repeatRate==='yellow'?'Getting close':'Below target'}]`);
  if (m.totalRPH.r!=null && !isPT) lines.push(` • Revenue / Hr: ${fcD(m.totalRPH.r)} → Target: ${bm.rphStr}`);
  lines.push('');
 
@@ -2632,7 +2641,7 @@ function runAnalysis() {
  if (tr.repeatRate==='down') trendCallouts.push('Repeat rate is trending downward — rebooking habits need attention');
  if (tr.repeatRate==='up') trendCallouts.push('Repeat rate is improving — reinforce what\'s driving client loyalty');
  if (tr.productivity==='down') trendCallouts.push('Productivity is declining — review the Heatmap and schedule alignment');
- if (atCapacity && tr.newVisits==='down') trendCallouts.push(`New client count is down — but at ${fp(m.productivity.r)} booked this is expected; there's simply no room to add many new clients. Not a concern.`);
+ if (atCapacity && tr.newVisits==='down') trendCallouts.push(`New client count is down — but at ${fp(m.productivity.y)} booked (12-mo avg) this is expected; there's simply no room to add many new clients. Not a concern.`);
  if (fallingOff) trendCallouts.push('Repeat rate looks fine on paper, but booked hours aren\'t growing — clients may return a few times and then fall off. Discuss building a base of long-term retained guests, not just second visits.');
  if (trendCallouts.length) {
  lines.push('TREND CALLOUTS (12-month comparison)');
@@ -2717,11 +2726,11 @@ function runAnalysis() {
  const strugglingOverall = primaryStatus === 'red' || redKpiNotes.length > 0;
 
  const wins = [];
- if (primaryStatus === 'green') wins.push(`You're hitting your ${primaryUsesRevenue?'revenue':'revenue-per-hour'} goal for ${catLabel} — ${primaryFmt} vs. a target of ${primaryBMStr}. Great work!`);
- if (s.repeatRate === 'green') wins.push(`Your repeat rate is strong at ${fp(m.repeatRate.r)} — clients keep coming back to you.`);
+ if (primaryStatus === 'green') wins.push(`You're hitting your ${primaryUsesRevenue?'revenue':'revenue-per-hour'} goal for ${catLabel} — ${primaryFmtY} vs. a target of ${primaryBMStr}. Great work!`);
+ if (s.repeatRate === 'green') wins.push(`Your repeat rate is strong at ${fp(m.repeatRate.y)} — clients keep coming back to you.`);
  else if (tr.repeatRate === 'up') wins.push(`Your repeat rate is trending up — keep building those client relationships!`);
  if (tr.totalRevenue === 'up') wins.push(`Your revenue is trending up compared to your 12-month average — nice momentum!`);
- if (s.productivity === 'green') wins.push(`Your schedule is well booked at ${fp(m.productivity.r)} — you're in demand!`);
+ if (s.productivity === 'green') wins.push(`Your schedule is well booked at ${fp(m.productivity.y)} — you're in demand!`);
  if (atCapacity) wins.push(`Your schedule is nearly full — that's something to be proud of.`);
  if (isNew) wins.push(`You're building strong momentum in your first few months with us.`);
  if (highestQualified) wins.push(highestQualified === 'Elite'
