@@ -822,7 +822,7 @@
  <div style="margin-top:16px;">
  <div class="form-group">
  <label>Professional Growth Goal <span style="text-transform:none; font-weight:400; color:var(--text-muted);">(optional — the technician's career/development goal)</span></label>
- <textarea id="goalProfessional" rows="2" placeholder="e.g. Laura wants to improve her product knowledge and grow her retail sales · earn her Master Stylist title by Q4 · learn balayage · become a mentor…"></textarea>
+ <textarea id="goalProfessional" rows="2" placeholder="e.g. Dolly wants to improve her product knowledge and grow her retail sales · earn her Master Stylist title by Q4 · learn balayage · become a mentor…"></textarea>
  </div>
  </div>
  <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
@@ -1016,11 +1016,10 @@
 
  <div class="form-group">
  <label>What do you want help coaching?</label>
- <textarea id="coachInput" class="coach-input-box" placeholder="e.g. My massage therapist is 82% productive but refuses to add Saturdays..."></textarea>
+ <textarea id="coachInput" class="coach-input-box" placeholder="e.g. One of my technicians is toxic and it's bringing down the whole team's morale..."></textarea>
  </div>
 
  <div class="coach-examples" id="coachExamples">
- <span class="coach-example-chip" onclick="coachUseExample(this)">My massage therapist is 82% productive but refuses to add Saturdays</span>
  <span class="coach-example-chip" onclick="coachUseExample(this)">We've talked about prebooking three times and she still isn't doing it</span>
  <span class="coach-example-chip" onclick="coachUseExample(this)">My stylist is doing really well but seems burned out</span>
  <span class="coach-example-chip" onclick="coachUseExample(this)">He's not hitting his productivity goal and I don't know why</span>
@@ -3459,7 +3458,7 @@ function coachUseExample(el) {
 }
 function coachReset() {
  document.getElementById('coachInput').value = '';
- document.getElementById('coachInput').placeholder = 'e.g. My massage therapist is 82% productive but refuses to add Saturdays...';
+ document.getElementById('coachInput').placeholder = "e.g. One of my technicians is toxic and it's bringing down the whole team's morale...";
  document.getElementById('coachResponse').innerHTML = '';
  document.getElementById('coachClearBtn').style.display = 'none';
  coachHistory = [];
