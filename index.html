@@ -153,6 +153,9 @@
  body:not(.generated) #resultsSection #staleBanner,
  body:not(.generated) #resultsSection .rpanel { display: none !important; }
  body:not(.generated) #noDataNote { display: block; }
+ /* Coach tab is accessible standalone — even without a generated plan. Screen-only, so it
+ never fights the print stylesheet's rule that always excludes the Coach panel from print. */
+ @media screen { body:not(.generated) #resultsSection .rpanel[data-panel="coach"] { display: block !important; } }
  .results-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; gap: 12px; }
  .results-header h2 { font-size: 19px; font-weight: 700; color: var(--text); }
  .results-header p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
@@ -172,7 +175,11 @@
  }
  .result-tabs-inner {
  max-width: 1060px; margin: 0 auto; padding: 0 16px;
+ display: flex; align-items: stretch; gap: 8px;
+ }
+ .result-tabs-scroll {
  display: flex; flex-wrap: nowrap; overflow-x: auto; align-items: stretch; gap: 0;
+ flex: 1 1 auto; min-width: 0;
  }
  .rtab {
  padding: 15px 8px; border: none; background: transparent; border-bottom: 3px solid transparent;
@@ -184,7 +191,7 @@
  .rtab:disabled { opacity: 0.4; cursor: not-allowed; }
  .rtab:disabled:hover { color: var(--text-muted); }
  .rtab-print {
- margin-left: auto; align-self: center; padding: 8px 15px; border: 1.5px solid var(--accent); background: transparent;
+ flex-shrink: 0; align-self: center; padding: 8px 15px; border: 1.5px solid var(--accent); background: var(--surface);
  font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; border-radius: 8px; font-family: inherit; transition: all 0.15s; white-space: nowrap;
  }
  .rtab-print:hover { background: var(--accent); color: #fff; }
@@ -356,6 +363,37 @@
  .talking-points-box { background: var(--surface2); border: 1.5px dashed var(--accent); border-radius: 10px; padding: 20px 22px; font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; font-family: inherit; }
  .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--text-muted); line-height: 1.55; }
 
+ /* ── AI Technician Coaching Assistant ── */
+ .coach-intro { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-bottom: 14px; }
+ .coach-context-banner { background: var(--accent-light); border: 1px solid var(--tip-border); color: var(--accent); font-size: 12.5px; font-weight: 600; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+ .coach-context-banner button { background: none; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+ .coach-input-box { width: 100%; min-height: 90px; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--surface); resize: vertical; line-height: 1.5; box-sizing: border-box; }
+ .coach-input-box:focus { outline: none; border-color: var(--accent); }
+ .coach-examples { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+ .coach-example-chip { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: background .15s, color .15s; }
+ .coach-example-chip:hover { background: var(--accent-light); color: var(--accent); border-color: var(--tip-border); }
+ .coach-ask-btn { background: var(--accent); color: #fff; border: none; padding: 12px 22px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; margin-top: 14px; transition: background .15s; }
+ .coach-ask-btn:hover { background: var(--accent-dark); }
+ .coach-ask-btn:disabled { opacity: 0.6; cursor: default; }
+ .coach-clear-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 12px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; margin-top: 14px; margin-left: 8px; }
+ .coach-loading { font-size: 13px; color: var(--text-muted); margin-top: 14px; display: none; }
+ .coach-response { margin-top: 22px; }
+ .coach-clarify-box { background: var(--yellow-bg); border: 1px solid var(--yellow-border); color: var(--text); border-radius: 10px; padding: 16px 18px; font-size: 14px; line-height: 1.55; }
+ .coach-section { margin-bottom: 16px; }
+ .coach-section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--accent); margin-bottom: 6px; }
+ .coach-section-body { font-size: 13.5px; color: var(--text); line-height: 1.6; }
+ .coach-startwith { background: var(--surface2); border: 1.5px dashed var(--accent); border-radius: 10px; padding: 14px 16px; font-size: 13.5px; color: var(--text); line-height: 1.6; font-style: italic; }
+ .coach-ask-list { margin: 0; padding-left: 20px; }
+ .coach-ask-list li { margin: 5px 0; }
+ .coach-avoid-box { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--text); line-height: 1.55; }
+ .coach-support-box { background: var(--yellow-bg); border: 1px solid var(--yellow-border); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--text); line-height: 1.55; font-weight: 600; }
+ .coach-history-note { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+ .coach-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+ .coach-option-btn { background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 20px; cursor: pointer; transition: background .15s, color .15s; }
+ .coach-option-btn:hover { background: var(--accent); color: #fff; }
+ .coach-debug-toggle { font-size: 11px; color: var(--text-muted); text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
+ .coach-debug-panel { background: var(--surface2); border: 1px dashed var(--border); border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: var(--text-muted); font-family: monospace; line-height: 1.7; margin-top: 8px; }
+
  /* ── RESPONSIVE ── */
  @media (max-width: 860px) {
  .profile-grid { grid-template-columns: 1fr 1fr; }
@@ -385,6 +423,7 @@
  .coaching-grid { grid-template-columns: 1fr 1fr; }
  .rpanel { display: block !important; }
  .rpanel + .rpanel { break-before: page; }
+ .rpanel[data-panel="coach"] { display: none !important; }
  body.printing-takeaway header,
  body.printing-takeaway .results-header,
  body.printing-takeaway .disclaimer,
@@ -447,14 +486,17 @@
 
 <nav class="result-tabs" id="resultTabs">
  <div class="result-tabs-inner">
+ <div class="result-tabs-scroll">
  <button class="rtab active" data-tab="setup" onclick="showTab('setup')">Business Review</button>
- <button class="rtab" data-tab="overview" onclick="showTab('overview')">Overview</button>
+ <button class="rtab" data-tab="overview" onclick="showTab('overview')">KPI Overview</button>
  <button class="rtab" data-tab="diagnosis" onclick="showTab('diagnosis')">Diagnosis</button>
  <button class="rtab" data-tab="recs" onclick="showTab('recs')">Recommendations</button>
  <button class="rtab" data-tab="price" onclick="showTab('price')">Price Increases</button>
- <button class="rtab" data-tab="schedule" onclick="showTab('schedule')">Schedule</button>
+ <button class="rtab" data-tab="schedule" onclick="showTab('schedule')">Schedule Optimization</button>
  <button class="rtab" data-tab="goalstitles" onclick="showTab('goalstitles')">Goals &amp; Titles</button>
  <button class="rtab" data-tab="takeaway" onclick="showTab('takeaway')">Takeaway</button>
+ <button class="rtab" data-tab="coach" onclick="showTab('coach')">Coach</button>
+ </div>
  <button class="rtab-print" onclick="window.print()">Print / Save PDF</button>
  </div>
 </nav>
@@ -544,13 +586,6 @@
  <span id="bmProd"></span>
  <span style="color:var(--accent-dark);">·</span>
  <span id="bmRR"></span>
- </div>
-
- <div style="margin-top:14px;">
- <div class="form-group">
- <label>Leader Notes, Context &amp; Questions <span style="text-transform:none; font-weight:400; color:var(--text-muted);">(optional — matched against the Leadership Playbook; relevant guidance appears in the coaching output)</span></label>
- <textarea id="leaderNotes" rows="3" placeholder="Add context or ask a question — e.g. Sarah struggles with confidence recommending retail. When should I consider a level lock? A guest no-showed twice — what's our policy? Her goal is $7K/month by Q4…"></textarea>
- </div>
  </div>
  </div>
 
@@ -711,61 +746,9 @@
  </div>
  </div>
 
- <!-- Step 4: Payroll & Compensation -->
+ <!-- Step 4: Title Promotion Data -->
  <div class="card">
- <div class="card-title"><span class="step-num">4</span> Payroll &amp; Compensation
- <span class="optional-tag">Optional</span>
- </div>
- <div id="payrollBody">
- <div class="metrics-intro">
- Reference the <strong>Compensation Dashboard</strong> for level lock status, qualification, and rate comparison before answering these questions.
- </div>
- <div class="profile-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
- <div class="form-group">
- <label>Currently on a Level Lock?</label>
- <select id="onLevelLock">
- <option value="">Select…</option>
- <option value="yes">Yes</option>
- <option value="no">No</option>
- </select>
- </div>
- <div class="form-group">
- <label>Qualifies for a Level Lock?</label>
- <select id="qualifiesLevelLock">
- <option value="">Select…</option>
- <option value="yes">Yes</option>
- <option value="no">No</option>
- </select>
- </div>
- <div class="form-group">
- <label>If Locked, Rate Is…</label>
- <select id="lockRateComparison">
- <option value="">N/A / not locked</option>
- <option value="above">Above suggested rate</option>
- <option value="at">At suggested rate</option>
- <option value="below">Below suggested rate</option>
- </select>
- </div>
- <div class="form-group">
- <label>MWA in Past 4 Weeks? <span style="text-transform:none; font-weight:400; color:var(--text-muted);">(excludes CA)</span></label>
- <select id="mwaRecent">
- <option value="">Select…</option>
- <option value="yes">Yes</option>
- <option value="no">No</option>
- <option value="na">N/A — California location</option>
- </select>
- </div>
- </div>
- <div class="disclaimer" style="margin-top:16px; margin-bottom:0;">
- <div class="d-icon"></div>
- <div>A Minimum Wage Adjustment (MWA) means extra money is added to the technician's paycheck to bring their pay up to minimum wage, because their commission for the hours they worked came in below the minimum-wage equivalent. Frequent MWA is a signal worth discussing in the 1:1 — this question does not apply to California locations, which have different wage laws.</div>
- </div>
- </div><!-- /payrollBody -->
- </div>
-
- <!-- Step 5: Title Promotion Data -->
- <div class="card">
- <div class="card-title"><span class="step-num">5</span> Title Promotion Data <span style="font-size:11px; font-weight:400; color:var(--text-muted);">(last 3 months — used only for the Title Promotion Tracker)</span>
+ <div class="card-title"><span class="step-num">4</span> Title Promotion Data <span style="font-size:11px; font-weight:400; color:var(--text-muted);">(last 3 months — used only for the Title Promotion Tracker)</span>
  <span class="optional-tag">Optional</span>
  </div>
  <div id="titleBody">
@@ -813,9 +796,9 @@
  </div><!-- /titleBody -->
  </div>
 
- <!-- Step 6: Goal Setting -->
+ <!-- Step 5: Goal Setting -->
  <div class="card">
- <div class="card-title"><span class="step-num">6</span> Goal Setting <span class="optional-tag">Optional</span></div>
+ <div class="card-title"><span class="step-num">5</span> Goal Setting <span class="optional-tag">Optional</span></div>
  <div class="metrics-intro">
  Set a revenue goal <strong>with</strong> the technician, or let the tool suggest one based on their most recent month's total revenue. <strong>Tip:</strong> if you fill in the <strong>Schedule Optimization</strong> section (Step 3), the tool will also break the monthly goal into a daily goal for each day the technician works.
  </div>
@@ -895,16 +878,11 @@
  </div>
  </div>
 
- <!-- ── Recommendations page (coaching + pay + talking points) ── -->
+ <!-- ── Recommendations page (coaching + talking points) ── -->
  <div class="rpanel" data-panel="recs">
  <div class="card">
  <div class="card-title">Coaching Recommendations</div>
  <div id="coachingContent" class="coaching-grid"></div>
- </div>
- <div class="card" id="payrollCard">
- <div class="card-title">Payroll &amp; Compensation Insights</div>
- <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Based on the Level Lock and MWA answers in Step 4. Reference the Compensation Dashboard for the source of truth.</p>
- <div id="payrollContent"></div>
  </div>
  <div class="card">
  <div class="card-title">Suggested 1:1 Talking Points</div>
@@ -1005,14 +983,14 @@
  </div>
  <div class="card" id="titleCard">
  <div class="card-title">Title Promotion Tracker</div>
- <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Technicians can earn Senior, Master, or Elite titles by hitting the category's revenue benchmark <strong>in each of the last 3 months</strong> (no averaging) while maintaining the minimum repeat rate. Eligibility begins after 3 full months with LifeSpa. This tracker checks the 3 individual months entered in Step 5 above against the Employment Type selected in Step 1.</p>
+ <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Technicians can earn Senior, Master, or Elite titles by hitting the category's revenue benchmark <strong>in each of the last 3 months</strong> (no averaging) while maintaining the minimum repeat rate. Eligibility begins after 3 full months with LifeSpa. This tracker checks the 3 individual months entered in Step 4 above against the Employment Type selected in Step 1.</p>
  <div id="titleContent"></div>
  <div class="disclaimer" style="margin-top:14px;">
  <div class="d-icon">⚠️</div>
  <div><strong>Cross-check against DOMO before announcing a title promotion to the technician.</strong> This tracker is an estimate based on leader-entered data and a single employment type applied across all 3 months. DOMO is the official source of record for title eligibility.</div>
  </div>
  </div>
- <div class="info-box" id="titleEmpty" style="display:none;">Title Promotion is optional. Fill in Step 5 to see the tracker.</div>
+ <div class="info-box" id="titleEmpty" style="display:none;">Title Promotion is optional. Fill in Step 4 to see the tracker.</div>
  </div>
 
  <!-- ── Takeaway page ── -->
@@ -1022,6 +1000,44 @@
  <button class="results-btn" style="margin-left:auto;" onclick="printTakeaway()">Print This Sheet</button>
  </div>
  <div id="takeawayContent"></div>
+ </div>
+ </div>
+
+ <!-- ── AI Technician Coaching Assistant ── -->
+ <div class="rpanel" data-panel="coach">
+ <div class="card" id="coachCard">
+ <div class="card-title">AI Technician Coaching Assistant</div>
+ <p class="coach-intro">Describe the technician situation or conversation you need help preparing for — in your own words. There's nothing to categorize; just tell it what's going on and it will help you figure out the right way in.</p>
+
+ <div id="coachContextBanner" class="coach-context-banner" style="display:none;">
+ <span id="coachContextText"></span>
+ <button type="button" onclick="coachClearContext()">Ignore Plan Data</button>
+ </div>
+
+ <div class="form-group">
+ <label>What do you want help coaching?</label>
+ <textarea id="coachInput" class="coach-input-box" placeholder="e.g. My massage therapist is 82% productive but refuses to add Saturdays..."></textarea>
+ </div>
+
+ <div class="coach-examples" id="coachExamples">
+ <span class="coach-example-chip" onclick="coachUseExample(this)">My massage therapist is 82% productive but refuses to add Saturdays</span>
+ <span class="coach-example-chip" onclick="coachUseExample(this)">We've talked about prebooking three times and she still isn't doing it</span>
+ <span class="coach-example-chip" onclick="coachUseExample(this)">My stylist is doing really well but seems burned out</span>
+ <span class="coach-example-chip" onclick="coachUseExample(this)">He's not hitting his productivity goal and I don't know why</span>
+ </div>
+
+ <button type="button" class="coach-ask-btn" id="coachAskBtn" onclick="coachAsk()">Get Coaching Guidance</button>
+ <button type="button" class="coach-clear-btn" id="coachClearBtn" onclick="coachReset()" style="display:none;">Start Over</button>
+ <div class="coach-loading" id="coachLoading">Thinking this through…</div>
+
+ <div class="coach-response" id="coachResponse"></div>
+
+ <div class="info-box" style="margin-top:18px;">This assistant is a preparation aid, not a substitute for the Leadership Playbook, your Lead General, Employee Relations, or your own judgment. It never invents company policy and won't recommend formal employment actions — for anything beyond a normal coaching conversation, follow your company's process and involve the appropriate internal resource.</div>
+
+ <div style="margin-top:10px;">
+ <button type="button" class="coach-debug-toggle" id="coachDebugToggle" onclick="coachToggleDebug()">Show diagnostic details (internal testing)</button>
+ <div id="coachDebugPanel" class="coach-debug-panel" style="display:none;"></div>
+ </div>
  </div>
  </div>
 
@@ -1157,11 +1173,11 @@ function daysSince(d) {
 }
 
 // ============================================================
-// LEADER NOTES — PLAYBOOK KNOWLEDGE BASE
+// PLAYBOOK KNOWLEDGE BASE
 // Built from the LifeSpa Leadership Playbook (Updated July 2026).
-// Leader notes, context, and questions typed in Step 1 are matched
-// against these topics; relevant playbook guidance is surfaced in
-// the coaching output and 1:1 talking points.
+// The Professional Growth Goal (Step 5) is matched against these
+// topics; relevant playbook guidance is surfaced in the coaching
+// output and 1:1 talking points.
 // ============================================================
 const PLAYBOOK_KB = [
  { re: /confiden/, tips: [
@@ -1244,9 +1260,6 @@ const PLAYBOOK_KB = [
  'Professional development (playbook): tie the growth goal to the Technician Business Plan and the growth pathways — advanced education, specialty certifications, and premium/new service offerings. Use downtime (4th open hour) for self-guided technical onboarding and vendor education (SharePoint, vendor videos) — all completed outside the spa. Point them to Education/Onboarding resources.',
  'Turn the development goal into measurable steps with a timeline, and revisit progress in each 1:1; when they hit a milestone, recognize it visibly (Leaderboard, MVP, Artist Awards).',
  ]},
- { re: /level ?lock|\block(ed|s)?\b/, tips: [
- 'Level Locks (playbook): 12-week lock (up to 50%) for new hires; quarterly pre-calculated locks for consistent green performers; a tradeoff tool for behavior changes — never for retention strugglers, never above what they consistently earn, and max ~6 months with a gradual taper after the first 12 weeks',
- ]},
  { re: /mwa|minimum wage/, tips: [
  'MWA (playbook): triggered when commission falls below minimum wage for hours worked — coach with urgency on booked hours, productivity, and client retention, and review the Compensation Dashboard (emailed Wednesdays); excludes California',
  ]},
@@ -1257,13 +1270,13 @@ const PLAYBOOK_KB = [
  'Compensation (playbook): weekly pay every Friday; 8 commission levels from 35% up to 70%+, earned independently on service and retail; WISELY card tips load by 9am the next day — walk through their Compensation Dashboard with full transparency to connect behavior to earnings',
  ]},
  { re: /hiring|casting|interview|recruit|staffing/, tips: [
- 'Casting (playbook): 4-step process — first interview, practical assessment (always with a technical expert), Lead General interview, then offer with a 12-week level lock; repost requisitions every 30 days',
+ 'Casting (playbook): 4-step process — first interview, practical assessment (always with a technical expert), Lead General interview, then offer; repost requisitions every 30 days',
  ]},
  { re: /intake|soap note|waiver/, tips: [
  'Intake forms (playbook): required for all massage and skin guests before the first visit and reviewed annually; SOAP notes documented after every service; forms retained 7 years',
  ]},
  { re: /retention|repeat rate|not returning|aren'?t (coming|returning)|clients? left/, tips: [
- 'Retention (playbook): retention is fully owned by the technician — red retention KPIs call for a structured coaching plan with clear improvement expectations and timelines; consecutive red months warrant a formal HR-approved performance plan',
+ 'Retention (playbook): retention is fully owned by the technician — red retention KPIs call for a structured coaching plan with clear improvement expectations and timelines; consecutive red months warrant a formal Employee Relations-approved performance plan',
  ]},
  { re: /team meeting/, tips: [
  'Team meetings (playbook): monthly or quarterly, cancel with at least 24 hours notice; use the 60-minute agenda — theme, praise & gratitude, brand alignment, development topic, team practice, close',
@@ -1286,11 +1299,7 @@ function notesCoachingActions(notes, ctx) {
 
  // ── Context-aware scenarios (use the technician's actual data, shown first) ──
  const nm = ctx.name || 'This technician';
- // (a) Asking for a level lock but doesn't qualify
- if (/level ?lock|\block(ed|s)?\b/.test(low) && ctx.lockNotQualified) {
- add(`${nm} is asking about a Level Lock but doesn't currently qualify. Explain why: a lock is earned through consistent green performance — a strong, sustained service revenue per hour — not by request. Redirect to what earns one: hit the productivity and repeat-rate benchmarks and sustain them, and the quarterly pre-calculated lock becomes available. Set a clear, measurable path in the business plan so they know exactly what to aim for.`);
- }
- // (b) Wants a schedule change but isn't retaining guests
+ // Wants a schedule change but isn't retaining guests
  if (/schedule|shift|days|availab/.test(low) && ctx.retentionLow) {
  add(`${nm} wants a schedule change, but they aren't retaining guests yet. Per the playbook, more new-guest days won't grow the business if guests don't come back. Talking points: "Before we add busier days, let's make sure the guests you already see return — that's where your biggest growth is. Let's focus on rebooking every guest, personalizing each visit, and running your lapsed-guest outreach. Once your repeat rate is climbing, we'll revisit the schedule together." Keep retention the focus first.`);
  }
@@ -1317,7 +1326,6 @@ function runAnalysis() {
  const hireDate = document.getElementById('hireDate').value;
  const cat = document.getElementById('category').value;
  const isPT = document.getElementById('empType').value === 'parttime';
- const notes = document.getElementById('leaderNotes').value.trim();
 
  if (!cat) return;
 
@@ -1865,10 +1873,6 @@ function runAnalysis() {
  if (lowRPH && !lowProd && m.totalRPH.r != null) contribSignals.push(`Revenue/hr is ${fcD(m.totalRPH.r)} vs. the $${bm.rph}/hr target for ${catLabel}`);
  if (goodProd && lowRev) contribSignals.push('Schedule is filling but revenue per visit is below benchmark');
  if (tr.totalRPH === 'down' && !lowProd) contribSignals.push('Revenue per hour is declining vs. the 12-month average');
- if (m.retailRevenue.r != null && m.totalRevenue.r != null && m.totalRevenue.r > 0) {
- const rp = (m.retailRevenue.r / m.totalRevenue.r * 100);
- if (rp < 12) contribSignals.push(`Retail is ${rp.toFixed(1)}% of total revenue — below the 15% company target`);
- }
  if (contribSignals.length) {
  diagHtml += `
  <div class="root-cause-card revenue">
@@ -1892,26 +1896,11 @@ function runAnalysis() {
  const recs = [];
  const retentionFirst = rootCauses.includes('retention') && months !== null && months > 3;
 
- // Context for the leader-notes engine (data-aware scenarios)
- const qualLockAns = gs('qualifiesLevelLock');
+ // Context for the professional-growth-goal engine (data-aware scenarios)
  const noteCtx = {
  name: name,
- lockNotQualified: qualLockAns === 'no' || (qualLockAns !== 'yes' && primaryStatus !== 'green'),
  retentionLow: s.repeatRate === 'red' || s.repeatRate === 'yellow',
  };
-
- if (notes) {
- const noteActions = notesCoachingActions(notes, noteCtx);
- recs.push({
- p:0, cls:'notes-card',
- cat:'Leader Context', title:'Personalized Coaching Considerations',
- isNotes: true, notesText: notes,
- actions: noteActions.length ? noteActions : [
- 'Use the context above to guide the tone and focus of your 1:1 conversation',
- 'Connect the performance data to what you know about this technician personally',
- ],
- });
- }
 
  let nextP = 1;
 
@@ -1925,7 +1914,7 @@ function runAnalysis() {
  'Review consultation structure: are expectations being set clearly at the start of each visit?',
  'Improve personalization: use client notes in the Stylist App, remember preferences, build genuine connection',
  'Run the lapsed guest report — outreach to guests at 0–8 weeks past their rebooking window before they become lost guests (3+ months)',
- 'If retention KPIs stay red, initiate a structured coaching plan with clear improvement expectations and timelines — consecutive red months warrant a formal HR-approved performance plan',
+ 'If retention KPIs stay red, initiate a structured coaching plan with clear improvement expectations and timelines — consecutive red months warrant a formal Employee Relations-approved performance plan',
  ], rebookTable: true });
  }
 
@@ -1935,7 +1924,6 @@ function runAnalysis() {
  'Coordinate leader-assisted bookings and internal referrals to jumpstart the schedule',
  'Schedule must include Wed–Sat, minimum 20 hrs/week, 3+ shifts of 5 hours or longer',
  'Set introductory pricing that invites trial and builds momentum — use the per-minute model and Price Setting Calculator',
- 'Consider a Level Lock (12-week commission lock) for income stability during ramp',
  'Review month-over-month ramp benchmarks weekly — consistent momentum in booked hours and RPH is the goal',
  'Connect them with the front desk concierge team and new member tours for early visibility',
  ]});
@@ -1951,7 +1939,6 @@ function runAnalysis() {
  'Build social proof: consistent Instagram posting of before/afters, and actively request Google reviews from happy guests',
  'Verify their online booking profile is complete with a professional headshot — photos increase bookings in the LT app',
  'Confirm schedule meets minimums: 20+ hrs/week, 3+ days, 5-hour shifts, Wed–Sat priority coverage',
- 'If asking for a schedule or behavior change, a Level Lock can be a tradeoff tool to meet them halfway — but never for technicians struggling with retention',
  ]});
  }
 
@@ -1989,7 +1976,6 @@ function runAnalysis() {
  'Coach with freedom and flexibility — 1:1s monthly or quarterly based on their preference; a walk-and-talk may beat a formal sit-down',
  'Review the three pathways to continued growth: service revenue (add-ons, upgrades, price increases), booked hours, and retail',
  `Discuss title promotion progress (see tracker below) — Senior, Master, and Elite titles reward consistent results`,
- 'Consider a quarterly pre-calculated Level Lock as a reward — a safety net for green performers during time off or slower weeks',
  'Explore advanced education, specialty certifications, or premium service offerings',
  'Celebrate wins visibly — MVP recognition, Leaderboard, and milestone anniversaries keep top performers connected',
  'Leverage as a mentor for newer team members and a practical-interview partner for casting',
@@ -2000,25 +1986,9 @@ function runAnalysis() {
  recs.push({ p:1, cls:'p3', cat:'Successful Performer Coaching', title:'Growth & Career Development', actions: greenActions });
  }
 
- // Retail add-on opportunity
- if (m.retailRevenue.r!=null && m.totalRevenue.r!=null && m.totalRevenue.r>0) {
- const rp = m.retailRevenue.r/m.totalRevenue.r*100;
- if (rp<12 && !rootCauses.includes('revenue')) {
- recs.push({ p: nextP++, cls:'p4', cat:'Additional Opportunity', title:'Grow Retail Revenue', actions:[
- `Retail is currently ${rp.toFixed(1)}% of total revenue — the company target is 15% of total revenue`,
- 'Educate clients during and after the service about the products being used and recommended',
- 'Ask questions to understand client goals, then align product suggestions accordingly',
- 'Share personal favorites — clients value authentic, professional recommendations',
- 'Review guest routines and offer improvements that support at-home care and extend service results',
- ]});
- }
- }
-
  // ── Performer Playbook plays ──
  // Surface specific plays from the LifeSpa Performer Playbook, matched to this technician's
  // focus areas (root causes / status), to complement the priority coaching above.
- const retailPct = (m.retailRevenue.r != null && m.totalRevenue.r != null && m.totalRevenue.r > 0)
- ? (m.retailRevenue.r / m.totalRevenue.r * 100) : null;
  const pbPush = (cat, title, actions) => recs.push({ isPlaybook: true, cls: 'playbook-card', cat: cat, title: title, actions: actions });
 
  if (isNew) {
@@ -2047,12 +2017,6 @@ function runAnalysis() {
  'Three pathways to more revenue: (1) service revenue — add-ons, upgrades, strategic price increases; (2) more booked hours; (3) retail at 15% of total revenue.',
  'Price for Growth: LifeSpa prices by the minute (Hair $1.05 · Skin & Body $1.23 · Nails $1.00), rounded to the nearest $5 — and tighten any service times that run long.',
  'Retail, "Recommend Don\'t Sell": narrate the products during the service and reference them at checkout, so it lands as expertise rather than a cold upsell.',
- ]);
- }
- if (retailPct != null && retailPct < 15 && !rootCauses.includes('revenue')) {
- pbPush('Performer Playbook · Pillar 2', 'Grow Retail Toward 15%', [
- 'Retail should be 15% of total revenue — educate during and after the service about the products used, review the guest\'s at-home routine, and share honest, personal recommendations.',
- 'Recommend inside the service, not after — weaving products into the time the guest is already spending feels like expertise, not an upsell.',
  ]);
  }
  if (!rootCauses.includes('retention') && !rootCauses.includes('acquisition') && !rootCauses.includes('revenue') && !isNew && primaryStatus === 'green') {
@@ -2127,12 +2091,18 @@ function runAnalysis() {
  </div>`;
 
  // Professional growth goal block (shown whenever the leader entered one)
- let proGoalTipsList = performerGoalTips(goalProfessional);
+ const proGoalPlaybookTips = performerGoalTips(goalProfessional);
+ const proGoalResourcesList = proGoalPlaybookTips.length ? performerGoalResources(goalProfessional) : [];
+ let proGoalTipsList = proGoalPlaybookTips;
  if (!proGoalTipsList.length && goalProfessional) proGoalTipsList = notesCoachingActions(goalProfessional, noteCtx);
  proGoalTipsList = proGoalTipsList.slice(0, 5);
+ const proGoalResourcesHtml = proGoalResourcesList.length
+ ? `<div style="font-size:11.5px; color:var(--text-muted); margin-top:10px; padding-top:8px; border-top:1px dashed var(--border);"><strong>Performer Playbook resources:</strong> ${proGoalResourcesList.join(' · ')}</div>`
+ : '';
  const proGoalTipsHtml = proGoalTipsList.length
  ? `<div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--accent); margin:12px 0 6px;">How to Support It — Performer Playbook</div>
- <ul class="rc-signals">${proGoalTipsList.map(t => `<li>${t}</li>`).join('')}</ul>`
+ <ul class="rc-signals">${proGoalTipsList.map(t => `<li>${t}</li>`).join('')}</ul>
+ ${proGoalResourcesHtml}`
  : (goalProfessional ? `<p style="font-size:12.5px; color:var(--text-muted); margin-top:10px;">Connect this goal to the Technician Business Plan and the growth pathways — advanced education, specialty certifications, and premium/new service offerings — and break it into measurable steps you revisit each 1:1.</p>` : '');
  const proGoalBlock = goalProfessional ? `
  <div class="root-cause-card" style="background:var(--sage-bg); border-left-color:var(--sage); margin-top:14px;">
@@ -2144,8 +2114,8 @@ function runAnalysis() {
  let goalHtml;
  if (goalMonthly == null) {
  goalHtml = goalHeader + (goalMode === 'custom'
- ? `<div class="info-box">Enter a custom monthly goal in Step 6 to set ${name}'s target.</div>`
- : `<div class="info-box">Enter Total Revenue for the most recent month in Step 2 (or switch to a custom goal in Step 6) to generate a suggested goal.</div>`) + proGoalBlock;
+ ? `<div class="info-box">Enter a custom monthly goal in Step 5 to set ${name}'s target.</div>`
+ : `<div class="info-box">Enter Total Revenue for the most recent month in Step 2 (or switch to a custom goal in Step 5) to generate a suggested goal.</div>`) + proGoalBlock;
  } else {
  const monthlyTile = `
  <div class="goal-tile primary">
@@ -2185,11 +2155,11 @@ function runAnalysis() {
  const T = TITLES[cat];
  let highestQualified = null;
  let highestViaOverride = false;
- // Optional section: show the Title tracker only if the leader entered any Step 6 data.
+ // Optional section: show the Title tracker only if the leader entered any Step 4 data.
  const includeTitle = [1,2,3].some(n => gv('titleRevenue_m'+n)!=null || gv('titleRPH_m'+n)!=null || gv('titleRR_m'+n)!=null);
  document.getElementById('titleCard').style.display = includeTitle ? '' : 'none';
  if (includeTitle) {
- // Uses the dedicated 3-month Title Promotion Data inputs (Step 5). Per the playbook, titles require
+ // Uses the dedicated 3-month Title Promotion Data inputs (Step 4). Per the playbook, titles require
  // EACH of the 3 months to individually clear the benchmark and repeat rate qualifier — no averaging.
  // Full Time technicians are checked against the Total Revenue benchmark. Part Time technicians are
  // checked against the Revenue Per Hour benchmark, BUT if a part-time technician's Total Revenue meets
@@ -2395,63 +2365,7 @@ function runAnalysis() {
  }
  document.getElementById('priceContent').innerHTML = priceHtml;
 
- // ── 6. Payroll & Compensation (optional section) ──
- // Show only if the leader answered any Step 5 question.
- const includePayroll = ['onLevelLock','qualifiesLevelLock','lockRateComparison','mwaRecent'].some(id => gs(id)!=null);
- document.getElementById('payrollCard').style.display = includePayroll ? '' : 'none';
- if (includePayroll) {
- const onLock = gs('onLevelLock');
- const qualLock = gs('qualifiesLevelLock');
- const lockRate = gs('lockRateComparison');
- const mwa = gs('mwaRecent');
-
- let payrollHtml = '';
- if (!onLock && !qualLock && !lockRate && !mwa) {
- payrollHtml = `<div class="info-box">Enter Level Lock and MWA information in Step 4 to see payroll insights.</div>`;
- } else {
- const payrollFlags = [];
- if (onLock === 'no' && qualLock === 'yes') {
- payrollFlags.push({ icon:'', text:`${name} qualifies for a Level Lock but is not currently on one. Per the playbook, locks are typically a 12-week new-hire lock or a quarterly pre-calculated lock for consistent green performers — review the Compensation Dashboard and consider whether a lock makes sense now.` });
- }
- if (onLock === 'yes' && qualLock === 'no') {
- payrollFlags.push({ icon:'', text:`${name} is currently on a Level Lock but does not currently qualify. Per the playbook, level locks should never be used for technicians struggling with retention — revisit in the Compensation Dashboard whether this lock is still appropriate.` });
- }
- if (onLock === 'yes' && lockRate === 'above') {
- payrollFlags.push({ icon:'', text:`${name}'s locked rate is above the suggested rate. Per the playbook, never lock a technician at a rate higher than what they consistently earn (unless part-time and calibrated accordingly) — confirm in the Compensation Dashboard that this is still justified.` });
- }
- if (onLock === 'yes' && lockRate === 'below') {
- payrollFlags.push({ icon:'', text:`${name}'s locked rate is below the suggested rate. Consider whether an adjustment is appropriate — verify in the Compensation Dashboard.` });
- }
- const topPerformerLock = primaryStatus === 'green' && qualLock === 'yes';
- if (onLock === 'yes' && topPerformerLock) {
- payrollFlags.push({ icon:'', text:`${name} is a consistent green performer who qualifies for a Level Lock. Per the playbook, top performers' locks are evaluated <strong>quarterly</strong> (pre-calculated from their service revenue per hour), so being on a lock past 6 months is expected and appropriate here — there's no need to taper it off. Re-verify the pre-calculated rate each quarter in the Compensation Dashboard.` });
- } else if (onLock === 'yes') {
- payrollFlags.push({ icon:'', text:`Duration check (playbook): for a <em>ramping</em> technician, level locks are recommended for a maximum of about 6 months, and any lock extended past the first 12 weeks should be gradually tapered based on booked hours and client retention. (Consistent green performers who qualify are the exception — their locks are evaluated quarterly and can continue past 6 months.) Confirm how long ${name}'s lock has been in place and which case applies.` });
- }
- if (mwa === 'yes') {
- payrollFlags.push({ icon:'⚠️', text:`${name} has received a Minimum Wage Adjustment in the past 4 weeks — commission-based pay fell below minimum wage for hours worked. Per the playbook, persistent MWA signals a lack of bookings, productivity, or effective pricing — coach with urgency on booked hours, productivity, and client retention, and review the weekly Compensation Dashboard together.` });
- }
- if (retentionFirst && onLock === 'yes') {
- payrollFlags.push({ icon:'', text:`Retention is currently the #1 coaching priority for ${name}. Per the playbook, level locks should never be used for technicians struggling with retention — review in the Compensation Dashboard whether this lock should continue.` });
- }
-
- const summaryPills = `
- <div class="status-meta" style="margin-bottom:${payrollFlags.length?'14px':'0'};">
- ${onLock ? `<span class="meta-pill">${onLock==='yes'?'On Level Lock':'Not on Level Lock'}</span>` : ''}
- ${qualLock ? `<span class="meta-pill">${qualLock==='yes'?'Qualifies for Lock':'— Does Not Qualify for Lock'}</span>` : ''}
- ${lockRate ? `<span class="meta-pill">Rate: ${lockRate==='above'?'Above Suggested':lockRate==='at'?'At Suggested':'Below Suggested'}</span>` : ''}
- ${mwa && mwa!=='na' ? `<span class="meta-pill">${mwa==='yes'?'⚠️ MWA in Last 4 Weeks':'No Recent MWA'}</span>` : ''}
- ${mwa === 'na' ? `<span class="meta-pill">MWA: N/A (California)</span>` : ''}
- </div>`;
-
- payrollHtml = summaryPills + (payrollFlags.length
- ? payrollFlags.map(f => `<div class="root-cause-card" style="background:var(--yellow-bg); border-left-color:var(--yellow); margin-bottom:10px;"><div class="rc-icon">${f.icon}</div><p style="font-size:12.5px; color:var(--text); line-height:1.55;">${f.text}</p></div>`).join('')
- : `<div class="info-box">No payroll flags — nothing further to review this month.</div>`);
- }
- document.getElementById('payrollContent').innerHTML = payrollHtml;
- } // end includePayroll
-
- // ── 7. Heatmap Schedule Optimization ──
+ // ── 6. Heatmap Schedule Optimization ──
  // Logic: analyze the entered schedule data. A technician with 0% (or blank) on a day is treated
  // as NOT scheduled that day. If the technician is working a less-desirable day (Sunday, Monday,
  // Tuesday) and the location category shows high demand (70%+ booked) on a day the technician is
@@ -2590,7 +2504,7 @@ function runAnalysis() {
  }
  document.getElementById('heatmapContent').innerHTML = heatmapHtml;
 
- // ── 8. Talking Points ──
+ // ── 7. Talking Points ──
  const lines = [];
  lines.push(`COACHING CONVERSATION — ${name.toUpperCase()}`);
  lines.push('─'.repeat(54));
@@ -2603,18 +2517,6 @@ function runAnalysis() {
  lines.push(' • Pre-plan, don\'t pre-schedule — connect when no clients will be impacted');
  lines.push(' • Preload KPI data into the Technician Business Plan, but leave goal-setting blank — fill it out together to promote ownership');
  lines.push('');
-
- if (notes) {
- lines.push('LEADER CONTEXT (from your notes)');
- lines.push(`"${notes}"`);
- const noteActs = notesCoachingActions(notes, noteCtx);
- if (noteActs.length) {
- lines.push('');
- lines.push('Consider weaving this context into your conversation:');
- noteActs.forEach(a => lines.push(` • ${a}`));
- }
- lines.push('');
- }
 
  lines.push('SUGGESTED OPENING');
  if (isNew) {
@@ -2696,7 +2598,7 @@ function runAnalysis() {
 
  document.getElementById('talkingPointsContent').textContent = lines.join('\n');
 
- // ── 9. Technician Takeaway Sheet (simplified, positive-framed) ──
+ // ── 8. Technician Takeaway Sheet (simplified, positive-framed) ──
 
  // Flag any KPI that is red on the 12-month average — improvement there is essential, even if the
  // most recent month is trending better (recognize the growth, but note that sustained improvement
@@ -2840,6 +2742,38 @@ function runAnalysis() {
  document.getElementById('activitiesCard').style.display =
  (m.productivity.r != null && m.productivity.r < 70) ? '' : 'none';
 
+ // ── Snapshot data for the AI Coaching Assistant (Coach tab) ──
+ // Only fields that actually exist in this Planner's computed data are included — nothing
+ // is invented or estimated for the Coach's benefit. Rebuilt fresh every time a plan is
+ // (re)generated; the Coach tab itself never recomputes anything.
+ const coachTopRec = recs.find(r => !r.isNotes && !r.isPlaybook) || null;
+ const coachDemandByDay = {};
+ GOAL_DAYS.forEach(([key, label]) => {
+ const techPct = gv('heatmapTech_'+key);
+ const catPct = gv('heatmapCat_'+key);
+ if (techPct != null || catPct != null) coachDemandByDay[label] = { technicianBooked: techPct, categoryDemand: catPct };
+ });
+ lastTechnicianContext = {
+ name: name,
+ discipline: catLabel,
+ tenure: months,
+ revenue: m.totalRevenue.y,
+ revenueTrend: tr.totalRevenue,
+ productivity: m.productivity.y,
+ bookedHours: m.hoursBooked.y,
+ scheduledHours: m.hoursScheduled.y,
+ repeatRate: m.repeatRate.y,
+ rph: m.totalRPH.y,
+ retailRevenue: (m.retailRevenue.y != null) ? m.retailRevenue.y : null,
+ retailPercentage: (m.totalRevenue.y && m.retailRevenue.y != null && m.totalRevenue.y > 0) ? Math.round((m.retailRevenue.y / m.totalRevenue.y) * 100) : null,
+ title: highestQualified || null,
+ performanceStatus: primaryStatus,
+ demandByDay: Object.keys(coachDemandByDay).length ? coachDemandByDay : null,
+ plannerPriority: coachTopRec ? coachTopRec.cat : null,
+ plannerRecommendation: coachTopRec ? coachTopRec.title : null,
+ };
+ if (typeof coachRefreshContextBanner === 'function') coachRefreshContextBanner();
+
  // Mark generated and switch to the Overview tab
  document.body.classList.add('generated');
  resultsGenerated = true;
@@ -2864,6 +2798,11 @@ function showTab(name) {
  if (rs) rs.style.display = (name === 'setup') ? 'none' : 'block';
  const b = document.getElementById('staleBanner');
  if (b) b.style.display = (name !== 'setup' && isStale) ? 'flex' : 'none';
+ // Coach tab is accessible standalone (without a generated plan) — don't show the
+ // "No data yet" note while it's active, and refresh its technician-context banner.
+ const noData = document.getElementById('noDataNote');
+ if (noData) noData.style.display = (name === 'coach') ? 'none' : '';
+ if (name === 'coach' && typeof coachRefreshContextBanner === 'function') coachRefreshContextBanner();
 }
 function goalModeChange() {
  const mode = document.getElementById('goalMode').value;
@@ -2901,7 +2840,11 @@ window.addEventListener('resize', setTabbarH);
 function printTakeaway() {
  // Print ONLY the Technician Takeaway sheet (hide the leader report).
  document.body.classList.add('printing-takeaway');
+ requestAnimationFrame(() => {
+ requestAnimationFrame(() => {
  window.print();
+ });
+ });
 }
 window.addEventListener('afterprint', () => {
  document.body.classList.remove('printing-takeaway');
@@ -3389,62 +3332,72 @@ function clearValidation() {
 
 // ============================================================
 // PERFORMER PLAYBOOK — PROFESSIONAL GROWTH GOAL GUIDANCE
-// When the leader types a professional growth goal (Step 6),
-// it's matched against these topics drawn from the LifeSpa
-// Performer Playbook, and the relevant development guidance is
-// surfaced on the Goal page and in the 1:1 talking points.
+// When the leader types a professional growth goal (Step 5), it's matched
+// against these topics drawn directly from the LifeSpa Performer Playbook
+// (the technician-facing guide to the 5-pillar LifeSpa Performer Blueprint),
+// and the relevant development guidance — plus the exact "Resources
+// Referenced in This Pillar" citations from that playbook — is surfaced on
+// the Goal page and in the 1:1 talking points.
 // ============================================================
 const PERFORMER_PLAYBOOK_KB = [
- { re: /\btitle\b|senior|master|elite|promot/, tips: [
- 'Title path (Playbook, Pillar 5): Senior, Master, and Elite titles require hitting the category revenue benchmark (full-time) or Revenue Per Hour (part-time) AND holding the minimum repeat-client rate — eligibility begins after 3 full months.',
- 'Both the revenue benchmark and the repeat-rate minimum must be met (Hair 55% · Body 50% · Skin 55% · Nails 55%). Map their current numbers to the next tier and name the exact gap — cross-check DOMO before promising a title.',
- 'Grow toward the number using the three revenue pathways: service revenue (add-ons, upgrades, price increases), more booked hours, and retail.',
- ]},
- { re: /retail|product sale|product knowledge|homecare|home care|sell/, tips: [
- 'Retail (Pillar 2): the target is 15% of total revenue. Coach "Recommend, Don\'t Sell" — narrate products during the service ("I\'m using this heat protectant so your color stays vibrant") so it lands as education, then reference it back at checkout.',
- 'Recommend inside the service, not after — weaving products into the time the guest is already spending feels natural; introducing them cold at the register feels like an upsell.',
- '"Use what you sell" (Pillar 4): have them try the products personally so recommendations sound like real experience, not a script.',
- ]},
- { re: /educat|certif|\blearn\b|technique|\bskill|craft|balayage|advanced|\bclass(es)?\b|\bcourse\b|training/, tips: [
- 'Master Your Craft (Pillar 4): use the Self-Guided Technical Onboarding Guide and the Learning Well for category education, then add vendor product knowledge and the LTH Nutrition Supplement Certification.',
- 'Prioritize Your Growth (Pillar 1): ongoing internal (Learning Well) and external (vendor trainings, certifications) education keeps craft current and confidence high — lean on the category mentor for a success tip.',
- 'Update the SalonBiz bio as new skills and certifications are earned so guests searching for that specialty find them.',
- ]},
+ { re: /\btitle\b|senior|master|elite|promot|level up|next tier/, tips: [
+ 'Title Promotions (Playbook, Pillar 5): Senior, Master, and Elite titles are earned by hitting the category revenue benchmark (full-time, 120+ scheduled hrs/mo) or Revenue Per Hour (part-time) AND maintaining the category\'s minimum repeat-client rate — eligibility begins after 3 full months.',
+ 'Repeat-rate minimums by category: Hair 55% · Body 50% · Skin 55% · Nails 55%. Both the revenue benchmark and the repeat-rate minimum must be met — map their current numbers to the next tier and name the exact gap.',
+ 'Full-time revenue benchmarks: Hair Senior $5,000+/mo, Master $6,000+/mo, Elite $9,000+/mo (Body, Skin, and Nails have their own tables) — or the part-time RPH alternate if scheduled under 120 hrs/mo.',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['Technician Business Plan','SalonBiz App Goal & Stats','Monthly Updates'] },
+ { re: /retail|product sale|product knowledge|homecare|home care|\bsell\b|recommend/, tips: [
+ 'Recommend, Don\'t Sell (Playbook, Pillar 2): narrate products during the service ("I\'m using this heat protectant to protect your color investment and prevent split ends") so it lands as education, then reference it back at checkout instead of opening a new conversation.',
+ 'Retail should represent 15% of total revenue in every category — the guests most likely to buy are the ones who just felt the recommendation work in real time.',
+ 'Use What You Sell (Pillar 4): personally try the products and services recommended so guidance sounds like real experience, not a script — Friends & Family and Trade Services make this easy to do.',
+ ], pillar: 'Pillar 2 — Connectivity & Client Acquisition', resources: ['Technician Business Building Toolkit','Business Building Programs'] },
+ { re: /educat|certif|\blearn\b|technique|\bskill|craft|balayage|advanced|\bclass(es)?\b|\bcourse\b|training|onboarding/, tips: [
+ 'Master Your Craft (Playbook, Pillar 4): technical mastery builds in layers — the Self-Guided Technical Onboarding Guide and the Learning Well lay the foundation, then vendor product knowledge, technical education, and (where certified) the LTH Nutrition Supplement Certification keep it going.',
+ 'Category education, onboarding, and vendor/service protocols live on the LifeSpa Performers SharePoint — point them to their category\'s guide (Hair, Body, Skin, or Nails).',
+ 'Prioritize Your Growth (Pillar 1): ongoing internal (Learning Well) and external (vendor trainings, certifications) education keeps craft current and confidence high — lean on the category mentor for a success tip, and update the SalonBiz bio as new skills are earned.',
+ ], pillar: 'Pillar 4 — Deliver Unrivaled Results', resources: ['Guest Experience Standards','Self-Guided Technical Onboarding Guide (Hair · Skin · Nails · Body)'] },
  { re: /retention|repeat|rebook|loyal|retain|drift|lapsed/, tips: [
- 'Improving Retention (Pillar 3): audit the four areas — Personal Presentation, Communication, Technical Ability, and Availability — and use the Learning Well "Improving Client Retention" videos.',
- 'Always Rebook: every guest leaves with a specific recommended return time. Set the plan during the service and hand off to the coordinator with a clear timeline — never a vague "see you soon."',
- 'Reconnect with drifted guests: pull the lapsed and lost lists from SmartWeb weekly — a light-touch reminder for lapsed guests, more personal outreach plus an incentive for lost ones.',
- ]},
- { re: /productiv|\bbusy\b|clientele|new client|acquisition|fill.*book|grow.*book|booked/, tips: [
- 'Get Busy — the 70% booked goal (Pillar 2): build a first-clientele plan using the five connectivity strategies — Friends & Family, team member services, social media, club member outreach, and a scripted referral ask.',
- 'Business Building Programs: New Guest, New Member, Referral, and VIP cards — carry the ones that fit the goal and use them consistently, not just when reminded.',
- 'Build a schedule that grows the business (Pillar 5): work Wed–Sat (highest-demand days), 20+ hours/week, shifts of 5+ hours, 3+ days — and check the Heatmap for the busiest windows.',
- ]},
- { re: /brand|social|instagram|google review|\breview|\bbio\b|visib|market|\bfollow/, tips: [
- 'Build Your Personal Brand (Pillar 1): keep the SalonBiz bio current and specialty-led ("precision color," "deep tissue"), ask happy guests for a Google Review in the moment, and keep the social presence polished.',
- 'Show up across the club (Pillar 1): take classes, attend events, and get to know the concierge, Dynamic Personal Training, and LifeCafe teams by name — every relationship is a potential client.',
- 'Make sure the online booking profile is complete with a professional headshot — photos increase bookings in the Life Time app.',
- ]},
+ 'Improving Your Retention (Playbook, Pillar 3): a lower-than-expected repeat rate usually traces back to one of four areas — Personal Presentation, Communication, Technical Ability, or Availability. Take an honest look at which one needs the most work, and use the Learning Well "Improving Client Retention" video series.',
+ 'Always Rebook: every guest should leave with a specific, recommended return time — not a vague "see you soon" — set the plan during the service and hand off to the coordinator with a clear timeline.',
+ 'Reconnect with guests who\'ve drifted: pull the lapsed and lost lists from SmartWeb weekly. A light-touch reminder works for lapsed guests; lost guests (2x+ their typical rebooking cycle) need more personal outreach, sometimes with an incentive.',
+ ], pillar: 'Pillar 3 — Deliver Exceptional Experiences', resources: ['LifeSpa Performer Brand Audit','Improving Client Retention (Learning Well video series)'] },
+ { re: /productiv|\bbusy\b|clientele|new client|acquisition|fill.*book|grow.*book|\bbooked\b|connectivity/, tips: [
+ 'Get Busy — the 70% Booked Goal (Playbook, Pillar 2): build a first-clientele plan using the five connectivity strategies — Friends & Family (10 guests), Team Member Services (8 guests), Social Media (10 guests), Club Member Outreach (12 guests), and a scripted Referral Ask (10 guests).',
+ 'Carry the Business Building Program cards that fit the goal — New Guest, New Member, Referral, and VIP — and use them consistently, not just when reminded.',
+ 'Build a Highly Effective Schedule (HES): target 70%+ of scheduled hours booked, with the rest split across connectivity/business-building, admin, and Learning & Growth blocks.',
+ ], pillar: 'Pillar 2 — Connectivity & Client Acquisition', resources: ['Technician Business Building Toolkit','Business Building Programs'] },
+ { re: /brand|social|instagram|google review|\breview|\bbio\b|visib|market|\bfollow|reputation/, tips: [
+ 'Build Your Personal Brand (Playbook, Pillar 1): keep the SalonBiz bio current — lead with the specialty ("precision color," "deep tissue work") instead of a generic job title, and name the techniques, brands, and certifications offered so the right guest can find them.',
+ 'Ask happy guests for a Google Review in the moment their results are freshest, and keep the social presence polished and specialty-led — it\'s part of their professional reputation, not an afterthought.',
+ 'Show up across the club — take a class, attend a club event, and get to know Concierge, Dynamic Personal Training, and LifeCafe by name. Every relationship in the club is a potential client.',
+ ], pillar: 'Pillar 1 — Build Your Personal Brand', resources: ['Onboarding Playbook','Style Guide','Social Media & Google Reviews'] },
+ { re: /schedule|availability|\bhours?\b|\bdays?\b|shift/, tips: [
+ 'Build a Schedule That Grows the Business (Playbook, Pillar 5): work Wednesday–Saturday (LifeSpa\'s highest-demand days), a minimum of 20 hours/week, shifts of 5+ hours, and at least 3 days/week — check the Heatmap for the busiest windows at their location.',
+ 'A schedule this consistent is what lets guests count on them — small adjustments toward high-demand windows boost both visibility and booked hours without adding more hours to the week.',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['SalonBiz App Goal & Stats'] },
  { re: /price increase|raise.*price|pricing/, tips: [
- 'Price for Growth (Pillar 5): a price increase is earned when BOTH productivity and repeat-client rate are green, sustained over roughly a 12-month average — being busy alone isn\'t enough.',
- 'Do\'s: minimum 10% increase, round up to end in 0 or 5, every 12–18 months. Don\'ts: never post signs or notify guests in advance — if a guest reacts at checkout, the coordinator adjusts today\'s price and notes it as the new rate going forward.',
- ]},
- { re: /income|\bearn|commission|money|\bpay\b/, tips: [
- 'Earnings (Pillar 5): the plan has eight commission levels (35%–70%), with service and retail tracked separately — greater availability opens higher earnings without a cap.',
- 'Grow earnings through the three pathways: service revenue (add-ons, upgrades, price increases), more booked hours, and retail at 15% of revenue.',
- ]},
- { re: /mentor|\blead\b|leadership|teach|train other|help.*team/, tips: [
- 'Lean into mentorship and recognition: strong performers make great mentors for newer techs, and onboarding is designed to pair each new technician with a category mentor who shares a success tip.',
- 'The Artist Achievement Awards (MVP, Emerging, Century Club) recognize standout performers — a visible milestone to work toward.',
- ]},
+ 'Price for Growth (Playbook, Pillar 5): a price increase is earned when productivity is typically ≥75–80% AND the repeat-visit rate is green for their category, sustained over roughly a 12-month average — being busy alone isn\'t enough; they need to be busy with guests who keep coming back.',
+ 'Do\'s: minimum 10% increase, round to end in 0 or 5, every 12–18 months. Don\'ts: never post signs or notify guests in advance — if a guest reacts at checkout, the coordinator adjusts today\'s price and notes it as the new rate going forward.',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['Technician Business Plan'] },
+ { re: /income|\bearn\b|earnings|commission|money|\bpay\b|compensation/, tips: [
+ 'Grow earnings through the three pathways (Playbook, Pillar 5): increase service revenue (add-ons, upgrades, price increases), increase hours booked, and increase retail revenue — service and retail commission are tracked and earned independently across eight commission levels (35%–70%).',
+ 'Greater availability opens higher earnings with no cap — revenue goals by category (full-time, 120+ scheduled hrs/mo): Hair & Body $6,300+/mo, Skin $8,400+/mo, Nails $4,200+/mo (or the RPH alternate under 120 hrs/mo).',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['SalonBiz App Goal & Stats'] },
+ { re: /mentor|\blead\b|leadership|teach|train other|help.*team|recogni|celebrat|mvp|award|leaderboard|century club/, tips: [
+ 'Strong performers make great mentors — onboarding pairs each new technician with a category mentor who shares a success tip, and mentoring newer technicians is itself a visible growth path.',
+ 'Recognition: LifeSpa Artist Achievement Awards (Pillar 5) — MVP, Emerging, and Century Club tiers recognize standout performers. Ask the leader to see the most recent leaderboard and name it as something to work toward.',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['Technician Recognition'] },
  { re: /consult|guest experience|\bexperience\b/, tips: [
- 'Consultation That Delivers Results (Pillar 3): observe before you ask, separate the want from the need, build the plan out loud, and set realistic expectations as part of the plan — not as a disclaimer afterward.',
- 'Deliver the Guest Experience Service Wheel steps 3–6 consistently, offer the Aroma Journey, and send every guest home with a specific, personalized homecare plan.',
- ]},
+ 'Consultation That Delivers Results (Playbook, Pillar 3): observe before you ask, separate the want from the need, build the plan out loud before starting, and set the expected result as part of the plan — not as a disclaimer afterward.',
+ 'Deliver the technician\'s part of the Guest Experience Service Wheel (Steps 3–6) consistently — consultation, technical service, service & product education, and homecare instructions — not just when being evaluated.',
+ ], pillar: 'Pillar 3 — Deliver Exceptional Experiences', resources: ['Guest Experience Standards'] },
  { re: /supplement|nutrition|\blth\b|wellness/, tips: [
- 'Helping Members Use LTH Supplements (Pillar 4): if LTH Nutrition Supplement certified, tie a product to the guest\'s stated goal the same way you\'d recommend retail; if not certified, refer to a certified team member.',
- 'Keep language accurate: LTH statements are dietary-supplement claims, not medical claims — not intended to diagnose, treat, cure, or prevent any disease.',
- ]},
+ 'Helping Guests Use Life Time Health Supplements (Playbook, Pillar 4): if LTH Nutrition Supplement certified, tie a specific product to the goal the guest already shared in consultation, the same way a retail recommendation would be made; if not yet certified, refer the guest to a certified team member rather than guessing.',
+ 'Keep language accurate — LTH statements are dietary-supplement claims, not medical claims, and aren\'t intended to diagnose, treat, cure, or prevent disease.',
+ ], pillar: 'Pillar 4 — Deliver Unrivaled Results', resources: ['Self-Guided Technical Onboarding Guide (Hair · Skin · Nails · Body)'] },
+ { re: /kpi|green status|productivity score|business plan|1:1|monthly review|track.*(goal|stat)/, tips: [
+ 'Your Monthly Business Plan & 1:1 Cadence (Playbook, Pillar 5): new technicians meet weekly with their leader for the first couple months, then move to monthly — each conversation covers a personal check-in, a review of benchmarks and progress, guest-growth numbers, a Learning & Development update, and one or two clear action items.',
+ 'Understanding Green Status & KPIs: performance tracks on a red/yellow/green system across Revenue, Productivity, Revenue Per Hour, and Repeat Client Rate — where they land isn\'t a grade, it\'s a diagnostic for exactly where to focus next.',
+ ], pillar: 'Pillar 5 — Operate as a Business Owner', resources: ['Technician Business Plan','SalonBiz App Goal & Stats'] },
 ];
 function performerGoalTips(text) {
  if (!text) return [];
@@ -3454,6 +3407,1237 @@ function performerGoalTips(text) {
  if (e.re.test(t)) e.tips.forEach(tip => { if (out.indexOf(tip) === -1) out.push(tip); });
  });
  return out;
+}
+function performerGoalResources(text) {
+ if (!text) return [];
+ const t = text.toLowerCase();
+ const out = [];
+ PERFORMER_PLAYBOOK_KB.forEach(e => {
+ if (e.re.test(t)) (e.resources || []).forEach(r => { if (out.indexOf(r) === -1) out.push(r); });
+ });
+ return out;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AI TECHNICIAN COACHING ASSISTANT
+   ──────────────────────────────────────────────────────────────────────────
+   Current build = Option C: a fully client-side, zero-cost, rule/pattern-
+   matching engine. No network calls, no backend, no API key.
+
+   Everything funnels through ONE entry point: getCoachResponse(userInput,
+   context, history). It returns a fixed structured object shape. If this is
+   ever swapped to a real Claude API backend (Option A), only the body of
+   getCoachResponse() changes (to a fetch('/api/coach', ...) call) — the UI,
+   rendering, and every other function below stay untouched.
+
+   Pipeline: escalation scan → vague-label check → scenario scoring
+   (boosted by Planner context) → ambiguity check / clarifying question →
+   gap-informed response assembly.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+let lastTechnicianContext = null;
+let coachHistory = [];
+let coachAwaitingClarification = null;
+let coachIgnoreContext = false;
+
+function coachRefreshContextBanner() {
+ const banner = document.getElementById('coachContextBanner');
+ const textEl = document.getElementById('coachContextText');
+ if (!banner || !textEl) return;
+ if (!lastTechnicianContext || coachIgnoreContext) { banner.style.display = 'none'; return; }
+ textEl.textContent = `Using Planner data for ${lastTechnicianContext.name || 'this technician'} as background context for your coaching guidance.`;
+ banner.style.display = 'flex';
+}
+function coachClearContext() {
+ coachIgnoreContext = true;
+ coachRefreshContextBanner();
+}
+function coachUseExample(el) {
+ const ta = document.getElementById('coachInput');
+ ta.value = el.textContent;
+ ta.focus();
+}
+function coachReset() {
+ document.getElementById('coachInput').value = '';
+ document.getElementById('coachInput').placeholder = 'e.g. My massage therapist is 82% productive but refuses to add Saturdays...';
+ document.getElementById('coachResponse').innerHTML = '';
+ document.getElementById('coachClearBtn').style.display = 'none';
+ coachHistory = [];
+ coachAwaitingClarification = null;
+}
+function coachEsc(s) {
+ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let coachDebugMode = /[?&]coachDebug=1/.test(location.search);
+
+async function coachAsk() {
+ const inputEl = document.getElementById('coachInput');
+ const text = (inputEl.value || '').trim();
+ if (!text) { inputEl.focus(); return; }
+ await coachSubmit(text);
+}
+function coachAskOption(label) {
+ coachSubmit(label);
+}
+async function coachSubmit(text) {
+ const inputEl = document.getElementById('coachInput');
+ const btn = document.getElementById('coachAskBtn');
+ const loading = document.getElementById('coachLoading');
+ btn.disabled = true;
+ loading.style.display = 'block';
+ const ctx = coachIgnoreContext ? null : lastTechnicianContext;
+ try {
+ const resp = await getCoachResponse(text, ctx, coachHistory);
+ renderCoachResponse(resp);
+ coachHistory.push({ input: text, response: resp });
+ if (resp.needsClarification) {
+ inputEl.value = '';
+ inputEl.placeholder = 'Type your answer, or choose an option above...';
+ inputEl.focus();
+ } else {
+ document.getElementById('coachClearBtn').style.display = 'inline-block';
+ }
+ } finally {
+ btn.disabled = false;
+ loading.style.display = 'none';
+ }
+}
+function coachToggleDebug() {
+ coachDebugMode = !coachDebugMode;
+ const panel = document.getElementById('coachDebugPanel');
+ const btn = document.getElementById('coachDebugToggle');
+ if (panel) panel.style.display = coachDebugMode ? 'block' : 'none';
+ if (btn) btn.textContent = coachDebugMode ? 'Hide diagnostic details' : 'Show diagnostic details (internal testing)';
+}
+(function coachWireOptionClicks() {
+ const el = document.getElementById('coachResponse');
+ if (!el) return;
+ el.addEventListener('click', function (e) {
+ const btn = e.target.closest('.coach-option-btn');
+ if (btn) coachAskOption(btn.getAttribute('data-coach-option'));
+ });
+})();
+
+function renderCoachResponse(resp) {
+ const el = document.getElementById('coachResponse');
+ if (resp.needsClarification) {
+ const isConfirm = resp.meta && resp.meta.archetype === 'CONFIRMATION';
+ const lead = isConfirm ? '' : '<strong>One quick question before I give you a full recommendation:</strong><br>';
+ const opts = (resp.meta && resp.meta.options) || [];
+ const optsHtml = opts.length ? `<div class="coach-options">${opts.map(o => `<button type="button" class="coach-option-btn" data-coach-option="${coachEsc(o)}">${coachEsc(o)}</button>`).join('')}</div>` : '';
+ el.innerHTML = `<div class="coach-clarify-box">${lead}${coachEsc(resp.clarifyingQuestion)}</div>${optsHtml}`;
+ renderCoachDebug(resp);
+ return;
+ }
+ const section = (label, body) => body ? `<div class="coach-section"><div class="coach-section-label">${label}</div><div class="coach-section-body">${coachEsc(body)}</div></div>` : '';
+ let html = '';
+ html += section("What's Going On", resp.whatsGoingOn);
+ html += section('Coaching Approach', resp.coachingApproach);
+ if (resp.startWith) html += `<div class="coach-section"><div class="coach-section-label">Start With</div><div class="coach-startwith">${coachEsc(resp.startWith)}</div></div>`;
+ if (resp.ask && resp.ask.length) html += `<div class="coach-section"><div class="coach-section-label">Ask</div><ul class="coach-ask-list">${resp.ask.map(q => `<li>${coachEsc(q)}</li>`).join('')}</ul></div>`;
+ html += section('Coach Toward', resp.coachToward);
+ if (resp.avoid) html += `<div class="coach-section"><div class="coach-section-label">Avoid</div><div class="coach-avoid-box">"${coachEsc(resp.avoid)}"</div></div>`;
+ if (resp.followUp) html += section('Follow Up', resp.followUp);
+ if (resp.additionalSupport) html += `<div class="coach-section"><div class="coach-section-label">Additional Support May Be Needed</div><div class="coach-support-box">${coachEsc(resp.additionalSupport)}</div></div>`;
+ el.innerHTML = html;
+ renderCoachDebug(resp);
+}
+function renderCoachDebug(resp) {
+ const dbg = document.getElementById('coachDebugPanel');
+ if (!dbg) return;
+ const m = resp.meta;
+ if (!m) { dbg.innerHTML = ''; dbg.style.display = 'none'; return; }
+ const gapInfo = m.gap && COACH_GAP_TYPES[m.gap] ? COACH_GAP_TYPES[m.gap].definition : '';
+ dbg.innerHTML =
+ `<div>Primary Scenario: ${coachEsc(m.primaryScenario || '—')}${m.primaryTitle ? ' (' + coachEsc(m.primaryTitle) + ')' : ''}</div>` +
+ `<div>Supporting Scenario: ${coachEsc(m.supportingScenario || '—')}</div>` +
+ `<div>Gap: ${coachEsc(m.gap || '—')}${gapInfo ? ' — ' + coachEsc(gapInfo) : ''}</div>` +
+ `<div>Confidence: ${m.confidence != null ? m.confidence + '%' : '—'}</div>` +
+ `<div>Leadership Mode: ${coachEsc(m.leadershipMode || '—')}</div>` +
+ `<div>Conversation Intensity: ${coachEsc(m.conversationIntensity || '—')}</div>` +
+ `<div>Model: ${coachEsc(m.model || '—')} · Categories: ${coachEsc((m.categories || []).join(', ') || '—')}</div>` +
+ `<div>Strong Performer Guardrail: ${m.strongPerformerGuardrail ? 'ON' : 'OFF'}</div>`;
+ dbg.style.display = coachDebugMode ? 'block' : 'none';
+}
+
+function coachResponseShape(overrides) {
+ return Object.assign({
+ needsClarification: false,
+ clarifyingQuestion: null,
+ whatsGoingOn: '',
+ coachingApproach: '',
+ startWith: '',
+ ask: [],
+ coachToward: '',
+ avoid: null,
+ followUp: null,
+ additionalSupport: null,
+ meta: null,
+ }, overrides);
+}
+
+/* ── Scenario engine configuration (mirrors the coachingConfig / coachingCategories /
+ coachingModels structure from the implementation spec) ── */
+const COACH_CONFIG = {
+ confidenceThresholds: { HIGH: 0.75, MEDIUM: 0.45 },
+ scoringWeights: {
+ exactTriggerMatch: 8,
+ partialTriggerMatch: 5,
+ conceptMatch: 2,
+ pairedConceptMatch: 3,
+ supportingMetricMatch: 3,
+ strongMetricSignal: 5,
+ diagnosticAnswerMatch: 6,
+ conflictingSignalPenalty: -4,
+ },
+ // Calibration constant: turns a raw weighted score into a 0–1 confidence band for the
+ // HIGH/MEDIUM gating above. Not shown to leaders — internal only (debug panel excepted).
+ normalizer: 16,
+};
+const HIGH_PRODUCTIVITY_THRESHOLD = 85;
+const COACH_LEADERSHIP_MODES = {
+ ASK: 'Understand the situation before determining the solution.',
+ COACH: 'Help the technician participate in identifying the solution or developing capability.',
+ DIRECT: 'Clearly communicate an expectation or standard.',
+ RECOGNIZE: 'Reinforce positive behavior, progress, contribution, or performance.',
+ ESCALATE: 'Use another internal resource or formal company process when normal coaching is not sufficient.',
+};
+const COACH_INTENSITY_DEFS = {
+ DEVELOP: 'Primarily developmental.',
+ RESET: 'An expectation or standard needs clarification or resetting.',
+ ACCOUNTABILITY: 'The expectation existed and follow-through is now the issue.',
+ FORMAL_PROCESS: 'The issue may require an internal company process or resource.',
+};
+const COACH_GAP_TYPES = {
+ CLARITY: { definition: 'The technician does not fully understand the expectation.' },
+ SKILL: { definition: 'The technician does not yet know how to perform the behavior.' },
+ CONFIDENCE: { definition: 'The technician has some capability but lacks confidence executing it.' },
+ WILL: { definition: 'The technician understands and appears capable but is choosing not to perform the behavior.' },
+ RESOURCE: { definition: 'The technician lacks tools, information, or support.' },
+ CAPACITY: { definition: 'Schedule, workload, or availability is limiting execution.' },
+ OPPORTUNITY: { definition: 'The business may not currently provide sufficient demand or opportunity.' },
+ ACCOUNTABILITY: { definition: 'An agreement existed and follow-through did not occur.' },
+ MOTIVATION: { definition: 'The technician may be capable but no longer feels meaningfully engaged.' },
+ BEHAVIOR: { definition: 'The primary concern is an observable behavior, not a personality trait.' },
+ CONFLICT: { definition: 'The primary issue involves interpersonal tension or working relationships.' },
+ AVAILABILITY: { definition: "The technician's available days or times may limit guest access." },
+ UNKNOWN: { definition: 'There is not enough information to determine the appropriate approach.' },
+};
+const COACH_CATEGORIES = {
+ CHARACTER: ['integrity', 'confidence', 'clarity', 'presence', 'calmness', 'ownership'],
+ CULTURE: ['trust', 'connection', 'negativity', 'teamwork', 'team energy', 'standards', 'psychological safety', 'inclusion', 'gossip'],
+ FEEDBACK: ['observable behavior', 'performance', 'execution', 'mistakes', 'guest interaction', 'missed expectations'],
+ ACCOUNTABILITY: ['commitments', 'follow-through', 'standards', 'ownership', 'results', 'repeated missed expectations'],
+ CONFLICT: ['defensiveness', 'disagreement', 'tension', 'difficult conversations', 'interpersonal behavior', 'boundaries'],
+ CHANGE: ['new expectations', 'new processes', 'uncertainty', 'change resistance', 'setbacks', 'change fatigue'],
+ GROWTH: ['development', 'confidence', 'motivation', 'career growth', 'stretch opportunities', 'progress'],
+ RECOGNITION: ['contribution', 'progress', 'improvement', 'effort', 'strength', 'impact'],
+};
+const COACH_MODELS = {
+ SBI: { name: 'SBI Feedback', steps: ['Situation', 'Behavior', 'Impact'] },
+ GROW: { name: 'GROW Coaching', steps: ['Goal', 'Reality', 'Options', 'Way Forward'] },
+ CLEAR_EXPECTATIONS: { name: 'Clear Expectations', steps: ['Clarity', 'Leadership', 'Engagement', 'Accountability', 'Results'] },
+ CRUCIAL_CONVERSATIONS: { name: 'Crucial Conversations', steps: ['Create safety', 'Share facts', 'Understand perspective', 'Align around desired outcome'] },
+ RECOGNITION: { name: 'Meaningful Recognition', steps: ['Specific', 'Authentic', 'Connected to behavior', 'Connected to impact'] },
+ CHANGE: { name: 'Change Coaching', steps: ['Explain why', 'Acknowledge concerns', 'Clarify what is known', 'Determine the next controllable step'] },
+};
+
+function isStrongPerformer(ctx) {
+ return !!(ctx && (ctx.performanceStatus === 'green' || (ctx.productivity != null && ctx.productivity >= HIGH_PRODUCTIVITY_THRESHOLD)));
+}
+
+// ── Escalation scan (highest priority — overrides everything else) ──
+const COACH_ESCALATION_PATTERNS = [
+ /harass/i, /discriminat/i, /\bthreat(en|ens|ened|ening)?\b/i, /\bviolen(t|ce)\b/i,
+ /\bunsafe\b/i, /safety concern/i, /hurt (myself|himself|herself|someone)/i,
+ /\baccommodation\b/i, /\bfmla\b/i, /medical leave/i, /leave of absence/i,
+ /\blawyer\b|\battorney\b|\blawsuit\b|\bpolice\b|legal action/i,
+ /\bsexual(ly)?\b/i, /\btheft\b|\bstealing\b|\bfraud\b/i,
+ /hostile work environment/i, /\bretaliat/i,
+ /(\bdrugs?\b|\balcohol\b).{0,15}(work|shift)|intoxicat/i,
+ /\bweapon\b/i, /self[-\s]?harm|suicid/i,
+ /\bunion\b/i, /pregnan(t|cy).{0,20}(discriminat|fired|treat)/i,
+];
+function coachScanEscalation(text) { return COACH_ESCALATION_PATTERNS.some(rx => rx.test(text)); }
+function coachEscalationResponse() {
+ return coachResponseShape({
+ whatsGoingOn: "What you're describing sounds like it may go beyond a normal coaching conversation.",
+ coachingApproach: "This may require support beyond a normal coaching conversation. Pause before handling this one-on-one.",
+ additionalSupport: "This may require support beyond a normal coaching conversation. Follow the applicable company process and involve the appropriate internal resource (Employee Relations or your Lead General) before taking any action on your own.",
+ meta: { primaryScenario: null, gap: null, leadershipMode: 'ESCALATE', conversationIntensity: 'FORMAL_PROCESS', confidence: 100, strongPerformerGuardrail: false },
+ });
+}
+
+// ── Vague personality-label detection (unless concrete behavior evidence is already given) ──
+const COACH_VAGUE_LABEL_RX = /\b(toxic|rude|lazy|difficult|unmotivated|negative|entitled|dramatic|attitude problem|bad attitude|not a team player|disrespectful|arrogant|condescending|passive[-\s]?aggressive)\b/i;
+const COACH_BEHAVIOR_EVIDENCE_RX = /\b(gossip(s|ing|ed)?|interrupt(s|ing|ed)?|talks? over|dismiss(es|ing|ed)?|criticiz(es|ing|ed)?|roll(s|ing)?\s+(their|her|his)?\s*eyes|undermin(es|ing|ed)?|yell(s|ed|ing)?|snap(s|ped|ping)?|late|no[-\s]?show(s|ed)?|ignor(es|ing|ed)?|refus(es|ing|ed)?|walk(s|ed|ing)? away|slam(s|med|ming)?|swear(s|ing)?|curs(e|es|ing)|argu(es|ing|ed)?|complain(s|ing|ed)?|whisper(s|ing|ed)?|exclud(es|ing|ed)?|shut(s)?\s+(down|out)|talk(s|ed|ing)?\s+(badly|bad)\s+about)\b/i;
+
+// ── Ambiguous productivity/growth check (only when nothing more specific is present) ──
+function coachIsAmbiguousGrowth(normText) {
+ if (!/(productiv|growth|growing|not growing)/i.test(normText)) return false;
+ const hasSpecific = /(schedule|hours?\b|saturday|sunday|weekend|book(ing|ed)?|pre[-\s]?book|retail|skill|confidence|won'?t|refuse|burn(ed|t)?\s*out|new client|repeat|consult|capacity|full(y)?\s*booked|plateau|title|promotion)/i.test(normText);
+ return !hasSpecific;
+}
+
+/* ── Adaptive diagnostic-question archetypes ──
+ A small, reusable set of multiple-choice follow-ups, each with keyword fallbacks so a typed
+ answer routes the same way a clicked option would. This is what lets the engine ask ONE
+ useful question instead of guessing, per the spec's clarifying-question rule. */
+const COACH_ARCHETYPES = {
+ VAGUE_BEHAVIOR: {
+ question: () => 'What specific behavior are you seeing most often?',
+ options: [
+ { label: 'Gossiping or talking about teammates', routeTo: 'CULT_01', gap: 'BEHAVIOR', keywords: [/gossip|talking about (teammates|coworkers)|rumor/i] },
+ { label: 'Speaking disrespectfully', routeTo: 'CORR_05', gap: 'BEHAVIOR', keywords: [/disrespect|rude|dismissive|talks? down/i] },
+ { label: 'Undermining changes or decisions', routeTo: 'CHANGE_01', gap: 'BEHAVIOR', keywords: [/undermin/i] },
+ { label: 'Refusing to collaborate', routeTo: 'BUILD_10', gap: 'WILL', keywords: [/refuses? to (collaborate|help|work with)|won'?t (help|collaborate)/i] },
+ { label: 'Creating conflict', routeTo: 'CULT_04', gap: 'CONFLICT', keywords: [/conflict|argu(e|ing)|fight/i] },
+ { label: 'Something else', keywords: [] },
+ ],
+ },
+ CAPACITY_VS_OPPORTUNITY: {
+ question: (name) => `When you say ${name}'s productivity or growth isn't where it should be, what are you actually seeing — is it that there isn't enough guest demand or opportunity, that their schedule or availability is limiting it, that it looks like a skill or confidence issue, or that it seems like low effort or follow-through?`,
+ options: [
+ { label: 'Not enough guest demand or opportunity', gap: 'OPPORTUNITY', boostIds: ['BUILD_09'], keywords: [/not enough (demand|guests|clients|opportunity)|low demand|no demand/i] },
+ { label: 'Schedule or availability limits it', gap: 'CAPACITY', boostIds: ['RAMP_04'], keywords: [/schedule|availability|hours|days/i] },
+ { label: 'Skill or confidence issue', gap: 'CONFIDENCE', boostIds: ['RAMP_03'], keywords: [/skill|confidence|nervous|training/i] },
+ { label: 'Seems like low effort or follow-through', gap: 'ACCOUNTABILITY', boostIds: ['BUILD_10'], keywords: [/effort|not trying|follow.?through|doesn'?t care/i] },
+ { label: 'Not sure', gap: 'UNKNOWN', keywords: [/not sure|unsure|don'?t know/i] },
+ ],
+ },
+ SKILL_VS_WILL: {
+ question: (name) => `Does ${name} know how to do this but isn't following through consistently, or does it seem like they still need help with the how?`,
+ options: [
+ { label: 'Still needs help with the how', gap: 'SKILL', keywords: [/need.*help|doesn'?t know how|needs? (training|practice|coaching)/i] },
+ { label: "Knows how but isn't doing it consistently", gap: 'ACCOUNTABILITY', keywords: [/knows how|isn'?t doing it|won'?t do it|not doing it consistently|chooses not/i] },
+ { label: 'Not sure', gap: 'UNKNOWN', keywords: [/not sure|unsure/i] },
+ ],
+ },
+ CONFIRMATION: {
+ options: [
+ { label: "Yes, that's right", keywords: [/^yes\b|that'?s right|correct|exactly/i] },
+ { label: 'Not quite', keywords: [/not quite|not really|^no\b/i] },
+ { label: 'Not sure', keywords: [/not sure/i] },
+ ],
+ },
+ GENERIC_CATEGORY: {
+ question: () => 'Can you tell me a bit more about what\'s going on — is this mainly about performance or results, behavior with the team, schedule or availability, or growth and development?',
+ options: [
+ { label: 'Performance or results', expand: 'performance results productivity revenue repeat rate booked hours', keywords: [/performance|results?|productivity|revenue|repeat rate|kpi/i] },
+ { label: 'Behavior with the team', expand: 'team behavior gossip conflict negativity attitude', keywords: [/team|behavior|gossip|conflict|attitude/i] },
+ { label: 'Schedule or availability', expand: 'schedule availability hours capacity demand', keywords: [/schedule|availability|hours/i] },
+ { label: 'Growth or development', expand: 'growth development confidence skill title promotion', keywords: [/growth|development|confidence|skill|title|promotion/i] },
+ { label: 'Something else', expand: '', keywords: [] },
+ ],
+ },
+};
+function coachMatchOption(archetypeId, answerText) {
+ const arch = COACH_ARCHETYPES[archetypeId];
+ if (!arch) return null;
+ const norm = (answerText || '').toLowerCase().trim();
+ let opt = arch.options.find(o => norm === o.label.toLowerCase());
+ if (!opt) opt = arch.options.find(o => (o.keywords || []).some(rx => rx.test(norm)));
+ return opt || null;
+}
+function coachAskArchetype(archetypeId, situationText, context, topScenario) {
+ const arch = COACH_ARCHETYPES[archetypeId];
+ const name = (context && context.name) ? context.name : 'this technician';
+ const question = typeof arch.question === 'function' ? arch.question(name, topScenario) : arch.question;
+ return coachResponseShape({
+ needsClarification: true,
+ clarifyingQuestion: question,
+ meta: { archetype: archetypeId, originalText: situationText, options: arch.options.map(o => o.label), primaryScenario: topScenario ? topScenario.id : null },
+ });
+}
+function coachAskConfirmation(topScenario, situationText, context) {
+ const question = `Just to make sure I point you toward the right conversation — does this sound like it's mainly about ${topScenario.title.toLowerCase()}?`;
+ return coachResponseShape({
+ needsClarification: true,
+ clarifyingQuestion: question,
+ meta: { archetype: 'CONFIRMATION', originalText: situationText, options: COACH_ARCHETYPES.CONFIRMATION.options.map(o => o.label), primaryScenario: topScenario.id },
+ });
+}
+function coachGapsAreSkillVsWillAmbiguous(sc) {
+ const gaps = sc.gaps || [];
+ const hasSkillSide = gaps.includes('SKILL') || gaps.includes('CONFIDENCE');
+ const hasWillSide = gaps.includes('WILL') || gaps.includes('ACCOUNTABILITY');
+ return hasSkillSide && hasWillSide;
+}
+
+// ── Shared helper for turning Planner context into supporting (non-causal) commentary ──
+function coachContextHint(ctx, fields) {
+ if (!ctx || !fields || !fields.length) return '';
+ const parts = [];
+ fields.forEach(f => {
+ if (f === 'productivity' && ctx.productivity != null) parts.push(`12-month productivity average is ${Math.round(ctx.productivity)}%`);
+ if (f === 'repeatRate' && ctx.repeatRate != null) parts.push(`repeat rate is ${Math.round(ctx.repeatRate)}%`);
+ if (f === 'tenure' && ctx.tenure != null) parts.push(`tenure is ${ctx.tenure} month${ctx.tenure === 1 ? '' : 's'}`);
+ if (f === 'revenueTrend' && ctx.revenueTrend) parts.push(`revenue is trending ${ctx.revenueTrend}`);
+ if (f === 'performanceStatus' && ctx.performanceStatus) parts.push(`overall status is ${ctx.performanceStatus}`);
+ if (f === 'retailPercentage' && ctx.retailPercentage != null) parts.push(`retail is ${ctx.retailPercentage}% of revenue`);
+ if (f === 'plannerPriority' && ctx.plannerPriority) parts.push(`the Planner's top flagged priority is ${ctx.plannerPriority}`);
+ });
+ return parts.join('; ');
+}
+
+// ── Scenario scoring: exact/partial trigger match, concept + paired-concept match, supporting
+// metric presence, strong/conflicting metric signal, and diagnostic-answer bonus. ──
+function coachScoreScenario(sc, normText, ctx, isDiagnosticBoost) {
+ const wt = COACH_CONFIG.scoringWeights;
+ let score = 0;
+ const exactHit = sc.triggers.some(tr => normText.includes(tr));
+ if (exactHit) {
+ score += wt.exactTriggerMatch;
+ } else {
+ const partialHit = sc.triggers.some(tr => {
+ const words = tr.split(/\s+/).filter(w => w.length > 3);
+ if (!words.length) return false;
+ const hits = words.filter(w => normText.includes(w)).length;
+ return hits / words.length >= 0.5;
+ });
+ if (partialHit) score += wt.partialTriggerMatch;
+ }
+ const matchedConcepts = sc.concepts.filter(c => normText.includes(c));
+ if (matchedConcepts.length) score += matchedConcepts.length * wt.conceptMatch;
+ if (matchedConcepts.length >= 2) score += wt.pairedConceptMatch;
+ if (ctx && sc.metrics && sc.metrics.length) {
+ const available = sc.metrics.filter(m => ctx[m] != null);
+ if (available.length) score += wt.supportingMetricMatch;
+ }
+ if (ctx && typeof sc.metricSignal === 'function') {
+ const sig = sc.metricSignal(ctx);
+ if (sig > 0) score += wt.strongMetricSignal;
+ else if (sig < 0) score += wt.conflictingSignalPenalty;
+ }
+ if (isDiagnosticBoost) score += wt.diagnosticAnswerMatch;
+ return score;
+}
+
+function coachModeForGap(gap, sc) {
+ if (gap === 'ACCOUNTABILITY') return 'ASK_THEN_DIRECT';
+ if (gap === 'BEHAVIOR') return 'FEEDBACK_THEN_DIRECT';
+ if ((gap === 'SKILL' || gap === 'CONFIDENCE') && sc.mode !== 'RECOGNIZE') return 'COACH';
+ return sc.mode || 'ASK';
+}
+function coachIntensityForGap(gap, sc) {
+ if (gap === 'ACCOUNTABILITY') return 'ACCOUNTABILITY';
+ if (gap === 'SKILL' || gap === 'CONFIDENCE') return 'DEVELOP';
+ return sc.intensity || 'DEVELOP';
+}
+
+function coachAssembleFull(primary, supporting, gapOverride, ctx, confidence) {
+ const name = (ctx && ctx.name) ? ctx.name : 'this technician';
+ const fill = (s) => (typeof s === 'string' ? s.replace(/\{name\}/g, name) : s);
+ const c = primary.content;
+ const gap = gapOverride || primary.gaps[0];
+ const mode = coachModeForGap(gap, primary);
+ const intensity = coachIntensityForGap(gap, primary);
+ const guardrailOn = isStrongPerformer(ctx) && !!primary.guardrailSensitive;
+
+ const hint = ctx ? coachContextHint(ctx, primary.metrics || []) : '';
+ let whatsGoingOn = fill(c.context);
+ if (hint) whatsGoingOn += ` For context, the Planner shows: ${hint}. Treat that as supporting information, not the explanation on its own.`;
+ if (supporting) whatsGoingOn += ` This may also connect to ${supporting.title.toLowerCase()} — worth keeping in view, without letting it replace the main issue.`;
+
+ let ask = (c.ask || []).map(fill);
+ if (supporting && supporting.content.ask && supporting.content.ask.length) {
+ ask = ask.slice(0, 3).concat(fill(supporting.content.ask[0]));
+ }
+
+ return coachResponseShape({
+ whatsGoingOn,
+ coachingApproach: fill(c.approach),
+ startWith: fill(c.startWith),
+ ask,
+ coachToward: fill(c.coachToward),
+ avoid: c.avoid ? fill(c.avoid) : null,
+ followUp: c.followUp ? fill(c.followUp) : null,
+ meta: {
+ primaryScenario: primary.id,
+ primaryTitle: primary.title,
+ supportingScenario: supporting ? supporting.id : null,
+ gap,
+ confidence: Math.round((confidence != null ? confidence : 0.8) * 100),
+ leadershipMode: mode,
+ conversationIntensity: intensity,
+ model: primary.model,
+ categories: primary.cats,
+ strongPerformerGuardrail: guardrailOn,
+ },
+ });
+}
+
+// ── 4. Scenario library ── (46 clusters covering the 8 leadership-framework groups, RAMP →
+// BUILD → PERF → DEV → CORR → CULT → CHANGE → RETAIN/RECOG)
+function coachRampSignal(ctx) { if (ctx.tenure != null) { if (ctx.tenure < 9) return 1; if (ctx.tenure >= 12) return -1; } return 0; }
+function coachHighProdSignal(ctx) { if (ctx.productivity != null) { if (ctx.productivity >= HIGH_PRODUCTIVITY_THRESHOLD || ctx.performanceStatus === 'green') return 1; if (ctx.productivity < 50) return -1; } return 0; }
+function coachLowProdSignal(ctx) { if (ctx.productivity != null) { if (ctx.productivity < 60) return 1; if (ctx.productivity >= HIGH_PRODUCTIVITY_THRESHOLD) return -1; } return 0; }
+function coachRepeatSignal(ctx) { if (ctx.performanceStatus === 'red') return 1; if (ctx.performanceStatus === 'green') return -1; return 0; }
+function coachPlateauSignal(ctx) { if (ctx.revenueTrend === 'flat') return 1; return 0; }
+
+const SCENARIOS = [
+// RAMP — Cast & Ramp
+ { id: 'RAMP_01', title: 'New Technician Has Low Productivity', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['OPPORTUNITY','SKILL','CONFIDENCE','CLARITY'], metrics: ['tenure','productivity','bookedHours','scheduledHours','repeatRate'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP', metricSignal: coachRampSignal,
+ triggers: ['new technician low productivity',"new hire isn't busy",'new tech has openings','slow ramp',"new technician isn't booking",'new technician not busy'],
+ concepts: ['new technician','new hire','productivity','openings','slow','ramp','not busy'],
+ content: {
+ context: "Low productivity during a technician's early ramp does not automatically indicate poor performance. Focus first on opportunity, confidence, skill, and controllable business-building behaviors.",
+ approach: "Normalize the ramp without removing ownership. Review what is working, where opportunity exists, and which behaviors can help the technician build momentum.",
+ startWith: "I want to look at how your business is building and talk about where we can create more opportunity. You're still early in your ramp, so let's focus on what you're learning and what you can control.",
+ ask: ["What are you noticing about the guests you're seeing so far?", "Where do you feel most confident right now?", "What part of building your clientele feels hardest?", "What is one behavior you could consistently practice over the next few weeks?"],
+ coachToward: "One or two specific business-building behaviors and a clear follow-up point.",
+ avoid: "You're not busy enough. You need to get your productivity up.",
+ followUp: "Review booked-hour growth, productivity trend, repeat behaviors, and the agreed actions.",
+ }},
+ { id: 'RAMP_02', title: 'New Technician Is Discouraged by Slow Growth', cats: ['GROWTH','CHARACTER'], model: 'GROW',
+ gaps: ['CONFIDENCE','OPPORTUNITY','SKILL'], metrics: ['tenure','productivity','bookedHours','revenueTrend','repeatRate'],
+ mode: 'COACH', intensity: 'DEVELOP', metricSignal: coachRampSignal,
+ triggers: ['new technician discouraged','new hire frustrated','wants to give up','not growing fast enough','feels unsuccessful','discouraged by empty books'],
+ concepts: ['discouraged','frustrated','give up','slow growth','empty books','new technician'],
+ content: {
+ context: "Early performance can feel discouraging when a technician compares current results to established performers. Help the technician focus on progress and controllable behaviors.",
+ approach: "Acknowledge frustration without promising immediate results. Show progress where it exists and redirect attention toward behaviors that create momentum.",
+ startWith: "I can tell you're frustrated with how quickly your books are building. Let's look at what has already improved and identify what you can influence next.",
+ ask: ["What progress have you noticed since you started?", "What part of building your business feels most discouraging?", "Where are you seeing signs that guests are responding well to you?", "What would meaningful progress look like over the next few weeks?"],
+ coachToward: "A small set of realistic growth behaviors and a progress measure.",
+ avoid: "Just be patient. It takes time.",
+ followUp: "Recognize progress and revisit the specific growth behaviors rather than judging only the final KPI.",
+ }},
+ { id: 'RAMP_03', title: 'New Technician Is Uncomfortable Taking New Guests', cats: ['GROWTH','CHARACTER'], model: 'GROW',
+ gaps: ['CONFIDENCE','SKILL'], metrics: ['tenure','productivity','repeatRate'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ["doesn't want new guests",'nervous taking new clients','afraid of new guests','not confident with new clients','avoids new guests'],
+ concepts: ['new guests','new clients','nervous','afraid','not confident','avoids'],
+ content: {
+ context: "Avoidance of new guests may come from confidence or skill concerns rather than unwillingness.",
+ approach: "Ask what specifically feels uncomfortable before assuming the technician is unwilling to grow.",
+ startWith: "I've noticed some hesitation around taking new guests. I'd like to understand what part of that experience feels uncomfortable so we can work on it together.",
+ ask: ["What feels most challenging about working with someone new?", "Are there specific services or situations where you feel less confident?", "What would help you feel more prepared?", "What would be a manageable next step?"],
+ coachToward: "A specific confidence-building or skill-building action.",
+ avoid: "You just need to get over it and take more clients.",
+ followUp: "Review confidence, guest experiences, and whether the agreed practice is helping.",
+ }},
+ { id: 'RAMP_04', title: 'New Technician Has Insufficient Availability', cats: ['ACCOUNTABILITY','GROWTH'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['CLARITY','CAPACITY','AVAILABILITY'], metrics: ['scheduledHours','bookedHours','productivity','demandByDay'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['new technician not available enough','not enough hours','limited availability','too few scheduled hours','new hire limited schedule'],
+ concepts: ['availability','hours','schedule','limited','not enough','new technician'],
+ content: {
+ context: "Availability can influence a new technician's ability to build consistent clientele, but additional days should not automatically be prescribed without understanding expectations, guest demand, and technician constraints.",
+ approach: "Use demand data when available and understand legitimate constraints before recommending changes.",
+ startWith: "I want to look at whether your current availability is giving you enough opportunity to build your business and understand what schedule options are realistic for you.",
+ ask: ["How is your current availability working for you?", "Where do you feel you have flexibility?", "Does your schedule line up with the times we're seeing guest demand?", "What adjustment, if any, would feel realistic?"],
+ coachToward: "Clear understanding of schedule expectations and an appropriate schedule plan when a meaningful opportunity exists.",
+ avoid: "You're never going to build a business with that schedule.",
+ followUp: "Review booked-hour growth and whether schedule alignment is actually supporting opportunity.",
+ escalation: "medical restriction; leave concern; accommodation concern.",
+ }},
+ { id: 'RAMP_05', title: 'New Technician Is Struggling Technically', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','CONFIDENCE','RESOURCE'], metrics: ['repeatRate','tenure'],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ['technical struggle','not technically strong','needs more practice','service quality issue','not confident technically','technical skill gap'],
+ concepts: ['technical','skill','practice','service quality','technique','confidence'],
+ content: {
+ context: "Technical concerns require development before accountability when the technician has not yet demonstrated proficiency.",
+ approach: "Be specific about what needs improvement and connect the technician with available development resources.",
+ startWith: "I want to focus on one part of your technical execution that I think will help you become more confident and consistent.",
+ ask: ["Which part of this service feels least comfortable to you?", "Where do you think you need more practice?", "What type of practice would help you most?", "How can you demonstrate that you're ready to perform this consistently?"],
+ coachToward: "Specific development activity and demonstrated proficiency.",
+ avoid: "You're just not good at this service.",
+ followUp: "Observe skill development and confirm proficiency.",
+ escalation: "repeated serious guest service issue; safety concern.",
+ }},
+
+// BUILD — Business Building
+ { id: 'BUILD_01', title: 'Low Repeat Rate', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','CONFIDENCE','OPPORTUNITY','AVAILABILITY'], metrics: ['repeatRate','productivity','rph'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP', metricSignal: coachRepeatSignal,
+ triggers: ['low repeat rate','low retention',"clients aren't returning","guests aren't coming back",'poor repeat business'],
+ concepts: ['repeat rate','retention','return','coming back','repeat clients'],
+ content: {
+ context: "Repeat rate is an outcome. Coach the guest-experience behaviors that influence whether guests choose to return.",
+ approach: "Use the metric as a starting point, then explore consultation, communication, technical experience, recommendations, availability, and rebooking.",
+ startWith: "I want to look at your repeat business together. Rather than focusing only on the percentage, let's understand what's happening throughout the guest experience.",
+ ask: ["What do you think is working well in your guest experience?", "Where do you think we may be losing the opportunity for a guest to return?", "How are you introducing the guest's next visit?", "What behavior could you strengthen consistently?"],
+ coachToward: "One or two specific guest-experience behaviors.",
+ avoid: "Your repeat rate is bad. You need to get your clients to come back.",
+ followUp: "Review agreed behaviors and repeat-rate trend over time.",
+ }},
+ { id: 'BUILD_02', title: 'Low New-Client Repeat Rate', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','CONFIDENCE'], metrics: ['repeatRate'],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ["new clients don't return",'low new client repeat','new guest retention low',"new guests aren't rebooking"],
+ concepts: ['new client','new guest','repeat','retention','rebook'],
+ content: {
+ context: "Low new-client repeat may point to first-visit consultation, connection, expectation setting, technical experience, recommendations, or rebooking behaviors.",
+ approach: "Coach the full new-guest journey rather than only the final rebooking moment.",
+ startWith: "I'd like to look specifically at what happens from the beginning to the end of a new guest's first visit with you.",
+ ask: ["How do you learn what a new guest really wants?", "How are you setting expectations for future visits?", "What are you doing before they leave to create the next connection?", "Where do you feel the first-visit experience could be stronger?"],
+ coachToward: "A stronger first-visit consultation and next-visit recommendation behavior.",
+ avoid: "You need to make your new clients rebook.",
+ followUp: "Review new-client repeat trend and consistency of selected behaviors.",
+ }},
+ { id: 'BUILD_03', title: 'Low Existing-Client Repeat Rate', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','CAPACITY','AVAILABILITY'], metrics: ['repeatRate','scheduledHours','productivity'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ["existing clients aren't returning",'regular clients disappearing','existing client repeat low','losing regulars','clients used to return'],
+ concepts: ['existing client','regular client','repeat','losing clients','returning'],
+ content: {
+ context: "Existing-client loss may reflect guest experience, changing availability, difficulty booking back in, or lack of continued consultation and recommendation.",
+ approach: "Explore both guest experience and availability before assuming service quality is the cause.",
+ startWith: "I've noticed an opportunity in your existing-client repeat business. Let's look at what might be changing for guests who already know you.",
+ ask: ["Have you noticed any changes in how often regular guests are returning?", "Are guests able to find appointments when they want them?", "How are you continuing to consult with established clients?", "What do you think could strengthen those relationships?"],
+ coachToward: "A specific action addressing guest experience or availability.",
+ avoid: "You're losing your regular clients.",
+ followUp: "Review existing-client repeat and whether the identified barrier improves.",
+ }},
+ { id: 'BUILD_04', title: 'Technician Is Not Prebooking', cats: ['GROWTH','ACCOUNTABILITY'], model: 'GROW',
+ gaps: ['SKILL','CONFIDENCE','WILL','ACCOUNTABILITY'], metrics: ['repeatRate','productivity','bookedHours'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ['not prebooking',"doesn't ask clients to rebook","doesn't rebook","won't prebook",'not booking next appointment'],
+ concepts: ['prebook','rebook','next appointment','booking','return visit'],
+ content: {
+ context: "Determine whether the technician lacks confidence or skill introducing the next visit or understands the expectation and is simply not following through.",
+ approach: "Diagnose before deciding whether the conversation should be developmental or accountability-focused.",
+ startWith: "I want to talk about how you're introducing the next visit with your guests and understand what feels natural or difficult about it.",
+ ask: ["How comfortable are you recommending when the guest should return?", "What makes that conversation feel difficult?", "What language feels natural for you?", "What would consistent follow-through look like going forward?"],
+ coachToward: "A consistent next-visit recommendation behavior.",
+ avoid: "You need to ask every client to prebook because your numbers are low.",
+ followUp: "Observe behavior and review repeat-booking progress.",
+ }},
+ { id: 'BUILD_05', title: 'Weak Consultation Behaviors', cats: ['FEEDBACK','GROWTH'], model: 'SBI',
+ gaps: ['SKILL','CONFIDENCE'], metrics: ['repeatRate'],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ['poor consultation','weak consultation',"doesn't ask enough questions",'rushes consultation',"doesn't listen to guests",'consultation problem'],
+ concepts: ['consultation','questions','listen','guest needs','rush'],
+ content: {
+ context: "Consultation issues should be coached through observable behaviors rather than vague statements about communication ability.",
+ approach: "Describe what was observed and help the technician identify specific consultation behaviors to improve.",
+ startWith: "I'd like to focus on the consultation because that's where we create clarity and trust before the service begins.",
+ ask: ["How do you make sure you understand what the guest is asking for?", "What questions are you consistently asking?", "How do you confirm you're aligned before starting?", "What could make your consultation more intentional?"],
+ coachToward: "Specific consultation behaviors to practice consistently.",
+ avoid: "You're not good at communicating with clients.",
+ followUp: "Observe consultation behaviors and review guest feedback or repeat trends.",
+ }},
+ { id: 'BUILD_06', title: 'Technician Is Not Recommending Retail', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','CONFIDENCE','WILL','RESOURCE'], metrics: ['retailRevenue','retailPercentage','rph'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ['not selling retail',"doesn't recommend products",'low retail',"doesn't talk about products",'uncomfortable selling'],
+ concepts: ['retail','products','recommend','selling','home care'],
+ content: {
+ context: "Low retail may result from product knowledge, confidence, belief about selling, or inconsistent recommendation behavior.",
+ approach: "Understand the reason behind the behavior before treating it as an effort problem.",
+ startWith: "I'd like to understand how product recommendations currently fit into your guest experience.",
+ ask: ["How comfortable do you feel recommending home-care products?", "What makes a recommendation feel natural versus sales-focused?", "Where would more product knowledge help?", "What recommendation behavior could you consistently practice?"],
+ coachToward: "A relevant, repeatable recommendation behavior.",
+ avoid: "You need to sell more retail.",
+ followUp: "Review recommendation behavior, confidence, and retail trend.",
+ }},
+ { id: 'BUILD_07', title: 'Technician Has Low Revenue Per Hour', cats: ['GROWTH'], model: 'GROW',
+ gaps: ['SKILL','CLARITY','OPPORTUNITY'], metrics: ['rph','retailRevenue','productivity'],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ['low rph','low revenue per hour','revenue per hour too low','not making enough per hour'],
+ concepts: ['rph','revenue per hour','service mix','retail','hourly revenue'],
+ content: {
+ context: "Low RPH may reflect service mix, pricing opportunity, enhancement behaviors, retail recommendations, or service selection. Avoid coaching the number without understanding the driver.",
+ approach: "Use data to identify where the revenue opportunity actually exists.",
+ startWith: "I'd like to look at what's happening inside your booked hours and where there may be an opportunity to create more value for your guests and your business.",
+ ask: ["Which services make up most of your business today?", "Where are there natural opportunities to enhance the guest's service?", "How confident are you making recommendations that add value?", "What would you like to grow within your service mix?"],
+ coachToward: "A specific service, recommendation, or business behavior connected to RPH.",
+ avoid: "Your RPH is too low. You need to charge more or sell more.",
+ followUp: "Review RPH with the selected behavior or mix change.",
+ }},
+ { id: 'BUILD_08', title: 'Booked Hours Are Not Growing', cats: ['GROWTH'], model: 'GROW',
+ gaps: ['OPPORTUNITY','SKILL','CONFIDENCE','AVAILABILITY'], metrics: ['bookedHours','scheduledHours','productivity','repeatRate'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP', metricSignal: coachLowProdSignal,
+ triggers: ["booked hours aren't growing",'same booked hours','bookings flat','not getting more booked','hours not increasing'],
+ concepts: ['booked hours','flat bookings','growth','appointments','not increasing'],
+ content: {
+ context: "Booked-hour stagnation may result from limited demand, insufficient availability, low repeat business, or weak business-building behaviors.",
+ approach: "Separate demand limitations from technician-controlled behaviors before deciding what to coach.",
+ startWith: "Your booked hours have been fairly flat, so let's look at what is limiting growth and where you have the most influence.",
+ ask: ["Do you feel you're getting enough new opportunities?", "How are your existing guests returning?", "Where is there still open availability?", "What behavior could create more future bookings?"],
+ coachToward: "A targeted action based on the actual constraint.",
+ avoid: "You just need to get busier.",
+ followUp: "Review booked-hour trend and the specific driver identified.",
+ }},
+ { id: 'BUILD_09', title: 'Technician Believes the Location Is Not Giving Them Enough Clients', cats: ['ACCOUNTABILITY','GROWTH'], model: 'GROW',
+ gaps: ['OPPORTUNITY','CLARITY','ACCOUNTABILITY'], metrics: ['bookedHours','scheduledHours','repeatRate','demandByDay'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['not giving me clients',"location isn't giving clients","front desk doesn't book me",'not enough clients',"club doesn't support me","i don't get new guests"],
+ concepts: ['clients','new guests','location','club','not enough','giving'],
+ content: {
+ context: "The concern may be legitimate. Validate demand and opportunity before shifting the conversation toward technician ownership.",
+ approach: "Review data together. Acknowledge legitimate demand constraints while identifying technician-controlled growth behaviors.",
+ startWith: "I hear your concern about the number of guests you're receiving. Let's look at what the business is showing us and separate what we can influence as a location from what you can influence within your own business.",
+ ask: ["Where do you feel you're missing opportunities?", "Are you available during the times we have the strongest guest demand?", "How well are the guests you do receive returning?", "What can we each influence from here?"],
+ coachToward: "Shared understanding of location responsibility and technician ownership.",
+ avoid: "We give you plenty of clients. You're just not retaining them.",
+ followUp: "Review new-client opportunity, availability, repeat behavior, and booked-hour growth.",
+ }},
+ { id: 'BUILD_10', title: 'Technician Is Not Participating in Business-Building Activities', cats: ['ACCOUNTABILITY','GROWTH'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['CLARITY','CONFIDENCE','WILL'], metrics: ['productivity','bookedHours'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ["won't participate","doesn't do outreach","won't promote","won't engage","doesn't participate in events","doesn't build business"],
+ concepts: ['participate','outreach','promote','events','business building','engage'],
+ content: {
+ context: "Clarify whether business-building activities are expected behaviors, optional opportunities, or developmental recommendations before coaching accountability.",
+ approach: "Understand reluctance first, then clearly distinguish expectations from optional opportunities.",
+ startWith: "I want to understand what's getting in the way of participating in the business-building activities we've discussed.",
+ ask: ["What part of these activities feels difficult or unclear?", "Which activities feel most realistic for you?", "What support would help you participate more consistently?", "What are you willing to commit to?"],
+ coachToward: "Clear understanding and a realistic growth commitment.",
+ avoid: "You don't care enough about growing your business.",
+ followUp: "Review completion of the agreed activity and its impact.",
+ }},
+
+// PERF — Performance & Capacity
+ { id: 'PERF_01', title: 'High Productivity Indicates a Capacity Opportunity', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['CAPACITY'], metrics: ['performanceStatus','productivity','bookedHours','scheduledHours','revenue','rph','repeatRate','demandByDay'],
+ mode: 'ASK', intensity: 'DEVELOP', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ triggers: ['high productivity','fully booked','too busy','books are full','no openings','high demand'],
+ concepts: ['high productivity','full books','capacity','demand','availability'],
+ content: {
+ context: "High productivity is a positive performance and demand signal. Do not automatically recommend adding a scheduled day or increasing hours. Protect what is already working and explore additional capacity only when it aligns with the technician's goals, guest-access needs, or a clearly demonstrated business opportunity.",
+ approach: "Lead with recognition. Do not pressure the technician to add days or hours simply because productivity is high. Explore the technician's goals first, then discuss available options.",
+ startWith: "Your books are showing really strong demand, and that reflects the business you've built. I'd love to understand what you want your next stage of growth to look like, if anything.",
+ ask: ["How are you feeling about your current schedule and workload?", "Are you happy with where your business is today, or is there something you'd still like to grow?", "Would you rather maximize your existing hours or explore additional capacity?", "Are there guest-access challenges you're interested in solving?"],
+ coachToward: "A technician-led decision to maintain the current schedule, optimize within existing hours, or voluntarily explore additional capacity.",
+ avoid: "You're highly productive, so you need to add another day.",
+ followUp: "Only revisit additional capacity when the technician expresses interest, guest access becomes meaningful, or another clear business reason emerges.",
+ }},
+ { id: 'PERF_02', title: 'Technician Is Fully Booked but Revenue Has Plateaued', cats: ['GROWTH'], model: 'GROW',
+ gaps: ['CAPACITY','OPPORTUNITY'], metrics: ['productivity','revenue','revenueTrend','rph','scheduledHours'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ triggers: ['fully booked but not growing','revenue plateau','revenue flat',"busy but revenue isn't growing",'maxed out'],
+ concepts: ['fully booked','plateau','revenue','flat','capacity'],
+ content: {
+ context: "When capacity is already high, growth does not automatically require more hours. Explore RPH, service mix, development, or maintenance before additional capacity.",
+ approach: "Recognize strong demand first, then ask what the technician wants from the next stage of their business.",
+ startWith: "You've done a strong job filling your schedule. The next question is whether you want additional growth and, if so, what type of growth feels meaningful.",
+ ask: ["Are you happy with where your business is today?", "What would meaningful growth look like from here?", "Would you rather maximize your existing hours or explore another opportunity?", "What feels like the most sustainable next step?"],
+ coachToward: "A technician-led growth goal or intentional maintenance plan.",
+ avoid: "You're fully booked, so you should be making more money.",
+ followUp: "Review the chosen growth lever only if the technician elects to pursue one.",
+ }},
+ { id: 'PERF_03', title: 'Strong Performance but Schedule Could Be Optimized', cats: ['GROWTH','CHANGE'], model: 'GROW',
+ gaps: ['CAPACITY','CLARITY','AVAILABILITY'], metrics: ['productivity','demandByDay','scheduledHours','bookedHours'],
+ mode: 'ASK', intensity: 'DEVELOP', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ triggers: ['schedule could be better','wrong days','schedule optimization','needs better schedule','demand on different days'],
+ concepts: ['schedule','optimize','demand','days','hours'],
+ content: {
+ context: "A successful technician may have an opportunity to align existing hours with demand. Optimization should not automatically increase total hours.",
+ approach: "Frame the conversation as optional optimization, not correction.",
+ startWith: "Your business is performing well. I want to show you one opportunity in how your existing schedule lines up with guest demand and see what you think.",
+ ask: ["Which parts of your schedule feel strongest today?", "Where do you notice demand exceeding availability?", "Would shifting existing hours make sense?", "Is your current schedule working well enough that you'd rather maintain it?"],
+ coachToward: "A targeted schedule optimization or intentional decision to maintain the current schedule.",
+ avoid: "You're doing well, so you need to work a different day.",
+ followUp: "Compare results only if a schedule test is chosen.",
+ }},
+ { id: 'PERF_04', title: 'High Performer Is Reluctant to Take New Guests', cats: ['GROWTH','ACCOUNTABILITY'], model: 'GROW',
+ gaps: ['CAPACITY','WILL','CLARITY'], metrics: ['productivity','repeatRate','scheduledHours'],
+ mode: 'ASK', intensity: 'DEVELOP', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ triggers: ["doesn't want new guests",'only wants regulars',"won't take new clients",'high performer refuses new guests',"doesn't want new business"],
+ concepts: ['new guests','regulars','high performer','refuse','new clients'],
+ content: {
+ context: "Reluctance may reflect capacity, preference, burnout, or misunderstanding. Strong performers should not automatically be pressured to expand workload.",
+ approach: "Explore capacity and motivation before determining whether an expectation needs clarification.",
+ startWith: "You've built a strong book of regular guests. I'd like to understand how you're thinking about new guests and whether capacity is the main concern.",
+ ask: ["What makes taking new guests less appealing right now?", "Do you feel your current clientele is using your available capacity?", "Are you comfortable with your current level of business?", "Is there a guest-access issue we need to solve together?"],
+ coachToward: "Clear understanding of capacity, preference, and applicable expectations.",
+ avoid: "You're a high performer, so you should be taking every new guest.",
+ followUp: "Revisit only if there is a meaningful guest-access or expectation issue.",
+ }},
+ { id: 'PERF_05', title: 'Technician May Be Ready for a Next Title or Growth Goal', cats: ['RECOGNITION','GROWTH'], model: 'GROW',
+ gaps: ['CLARITY'], metrics: ['title','rph','repeatRate','revenueTrend','performanceStatus'],
+ mode: 'RECOGNIZE', intensity: 'DEVELOP',
+ triggers: ['ready for next title','promotion opportunity','ready to level up','career growth','next goal'],
+ concepts: ['title','promotion','level up','career','growth goal'],
+ content: {
+ context: "Strong performance is an opportunity to recognize progress and explore what the technician wants next.",
+ approach: "Recognize what the technician has accomplished before moving to another expectation.",
+ startWith: "You've built some real momentum, and I want to recognize what you've accomplished. I'd also love to understand what you want your next level of growth to look like, if anything.",
+ ask: ["What are you most proud of in your business right now?", "Is there something you'd like to accomplish next?", "Would advancing your title be meaningful to you?", "What support would help you reach that goal?"],
+ coachToward: "A meaningful technician-selected growth goal or continued strong performance.",
+ avoid: "Great job. Now here's what you need to do next.",
+ followUp: "Review progress only when a development goal is selected.",
+ }},
+
+// DEV — Development
+ { id: 'DEV_01', title: 'Technician Has Plateaued', cats: ['GROWTH'], model: 'GROW',
+ gaps: ['MOTIVATION','CLARITY','CAPACITY'], metrics: ['revenueTrend','rph','repeatRate','productivity','bookedHours'],
+ mode: 'ASK', intensity: 'DEVELOP', metricSignal: coachPlateauSignal,
+ triggers: ['plateaued','stuck','not growing anymore','same results every month','flat performance'],
+ concepts: ['plateau','stuck','flat','not growing','same results'],
+ content: {
+ context: "A plateau does not automatically mean poor effort. A technician may be satisfied, need a new goal, or need a different strategy.",
+ approach: "Use curiosity instead of assuming that flat performance requires correction.",
+ startWith: "You've built consistency in your business. I'd like to understand whether you're happy maintaining where you are or if there's something you'd still like to grow.",
+ ask: ["How do you feel about where your business is today?", "Is there anything you'd like to improve?", "What would meaningful growth look like to you?", "Is there a skill or opportunity you'd like to explore?"],
+ coachToward: "A new technician-selected goal or intentional maintenance.",
+ avoid: "You've been stuck at the same level too long.",
+ followUp: "Review only the goal the technician chooses to pursue.",
+ }},
+ { id: 'DEV_02', title: 'Technician Lacks Confidence', cats: ['GROWTH','CHARACTER'], model: 'GROW',
+ gaps: ['CONFIDENCE','SKILL'], metrics: [],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ['not confident','lacks confidence','second guesses herself','afraid to recommend',"doesn't believe in herself"],
+ concepts: ['confidence','nervous','second guess','afraid','unsure'],
+ content: {
+ context: "Confidence should be separated from competence. A capable technician may need practice and reinforcement rather than more education.",
+ approach: "Get specific instead of giving broad encouragement.",
+ startWith: "I want to understand where you're feeling least confident so we can work on something specific rather than just telling you to be more confident.",
+ ask: ["Which situations make you second-guess yourself?", "What do you already know you're capable of?", "What would make this feel more manageable?", "What could we practice together?"],
+ coachToward: "A specific practice or stretch action.",
+ avoid: "You just need to believe in yourself more.",
+ followUp: "Recognize evidence of improved confidence and execution.",
+ }},
+ { id: 'DEV_03', title: 'Technician Wants to Advance but Is Not Meeting Performance Expectations', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['CLARITY','SKILL','ACCOUNTABILITY'], metrics: ['title','rph','repeatRate','performanceStatus'],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ['wants promotion but not ready',"wants next title but doesn't qualify",'wants to advance','thinks she should be promoted','not meeting kpis for title'],
+ concepts: ['promotion','title','advance','qualify','kpi'],
+ content: {
+ context: "Connect technician aspiration to transparent performance requirements and development opportunities.",
+ approach: "Acknowledge ambition while being factual about current results.",
+ startWith: "I love that you're thinking about your next level. Let's look at what is required and where your biggest opportunity is so you have a clear path forward.",
+ ask: ["What does advancing mean to you?", "Which requirement feels most challenging?", "What behavior could move that KPI?", "What support would help you make progress?"],
+ coachToward: "A development plan tied to actual advancement criteria.",
+ avoid: "You're just not ready yet.",
+ followUp: "Review progress against relevant qualification criteria.",
+ }},
+ { id: 'DEV_04', title: 'Technician Wants More Responsibility', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['CLARITY'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ['wants more responsibility','wants leadership','wants to mentor','wants more opportunity','wants to help more'],
+ concepts: ['responsibility','leadership','mentor','opportunity','development'],
+ content: {
+ context: "Additional responsibility should align with strengths, readiness, and meaningful development rather than simply giving the technician more work.",
+ approach: "Explore motivation and strengths before assigning responsibility.",
+ startWith: "You mentioned wanting more responsibility. I'd like to understand what kind of opportunity would feel meaningful to you.",
+ ask: ["What kind of responsibility are you most interested in?", "What strengths do you want to use more?", "What would you like to learn?", "What would be a good stretch opportunity?"],
+ coachToward: "A specific and appropriate development opportunity.",
+ avoid: "Great, I have plenty of extra things you can take on.",
+ followUp: "Review learning and whether the opportunity continues to support development.",
+ }},
+ { id: 'DEV_05', title: 'Technician Would Benefit From Technical Development', cats: ['GROWTH','FEEDBACK'], model: 'GROW',
+ gaps: ['SKILL','RESOURCE'], metrics: ['repeatRate'],
+ mode: 'COACH', intensity: 'DEVELOP',
+ triggers: ['needs technical development','needs more education','needs practice','technical improvement','skill development'],
+ concepts: ['technical','education','practice','skill','development'],
+ content: {
+ context: "Technical development should identify a specific skill rather than broadly telling someone to improve.",
+ approach: "Be specific about the observed opportunity and connect the technician to the appropriate learning resource.",
+ startWith: "I'd like to focus on one technical area that could strengthen both your confidence and your guest results.",
+ ask: ["Where do you feel you need the most development?", "What would you like more practice with?", "What resource would be most useful?", "How can you demonstrate proficiency?"],
+ coachToward: "Specific learning activity and demonstrated skill improvement.",
+ avoid: "You need more training.",
+ followUp: "Observe the skill after development and confirm improvement.",
+ escalation: "safety concern; repeated serious technical complaint.",
+ }},
+ { id: 'DEV_06', title: 'Technician Is Resistant to Developmental Feedback', cats: ['CONFLICT','FEEDBACK'], model: 'CRUCIAL_CONVERSATIONS',
+ gaps: ['WILL','CONFIDENCE'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'RESET',
+ triggers: ["doesn't take feedback",'defensive when coached','argues with feedback',"won't accept coaching",'resistant to feedback'],
+ concepts: ['feedback','defensive','argue','resistant','coaching'],
+ content: {
+ context: "Defensiveness may reflect fear, disagreement, lack of trust, or unwillingness. Focus first on facts and perspective.",
+ approach: "Keep the conversation anchored in observable facts rather than winning an argument.",
+ startWith: "I want this conversation to be useful, not feel like I'm coming at you. Let me share what I'm seeing, and then I want to hear your perspective.",
+ ask: ["What part of this feedback feels different from how you see the situation?", "What are you concerned this feedback means?", "What do you think happened?", "What would help us move forward productively?"],
+ coachToward: "Shared understanding and one agreed next action.",
+ avoid: "You always get defensive whenever anyone gives you feedback.",
+ followUp: "Revisit the specific behavior and agreed action.",
+ }},
+
+// CORR — Accountability & Correction
+ { id: 'CORR_01', title: 'Technician Does Not Follow Through on Agreed Actions', cats: ['ACCOUNTABILITY'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['ACCOUNTABILITY','SKILL','RESOURCE'], metrics: [],
+ mode: 'ASK_THEN_DIRECT', intensity: 'ACCOUNTABILITY',
+ triggers: ["didn't follow through","we already talked about this",'still not doing it',"didn't do what she agreed",'missed commitment'],
+ concepts: ['follow through','agreed','commitment','still not','already discussed'],
+ content: {
+ context: "When a clear agreement already existed, move from initial development toward understanding the missed commitment and resetting accountability.",
+ approach: "Reference the prior agreement factually, allow explanation, then clarify the expectation.",
+ startWith: "When we met previously, we agreed that you would take this action. That hasn't happened consistently, so I'd like to understand what got in the way.",
+ ask: ["What prevented you from following through?", "Is anything about the expectation still unclear?", "What will you do differently from here?", "What can I expect to see going forward?"],
+ coachToward: "Clear ownership and renewed commitment.",
+ avoid: "We've talked about this a million times and you never listen.",
+ followUp: "Follow up on the agreed behavior.",
+ }},
+ { id: 'CORR_02', title: 'Technician Repeatedly Misses Expectations', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['ACCOUNTABILITY','WILL'], metrics: [],
+ mode: 'DIRECT', intensity: 'ACCOUNTABILITY',
+ triggers: ['keeps missing expectations','same issue again','repeated problem','keeps happening','multiple conversations'],
+ concepts: ['repeated','again','keeps happening','expectation','multiple conversations'],
+ content: {
+ context: "Repeated issues require a more direct conversation when the expectation is known and reasonable.",
+ approach: "Stay factual and direct. Do not repeatedly reteach something the technician already understands.",
+ startWith: "We've discussed this expectation before, and I'm still seeing the same pattern. I want to make sure we're clear about what needs to change going forward.",
+ ask: ["What continues to get in the way?", "Is there anything about the expectation you don't understand?", "What will be different after today's conversation?"],
+ coachToward: "Clear expectation, ownership, and appropriate follow-up.",
+ avoid: "You obviously don't care.",
+ followUp: "Use applicable leadership and company processes if the concern continues.",
+ escalation: "formal performance concern; repeated policy concern.",
+ }},
+ { id: 'CORR_03', title: 'Guest Complaint', cats: ['FEEDBACK','GROWTH'], model: 'SBI',
+ gaps: ['SKILL','CLARITY','BEHAVIOR'], metrics: ['repeatRate'],
+ mode: 'ASK_THEN_COACH', intensity: 'RESET',
+ triggers: ['guest complaint','member complaint','client complained','bad guest experience','unhappy guest'],
+ concepts: ['complaint','guest','member','client','unhappy'],
+ content: {
+ context: "A complaint is one perspective and should be explored factually with the technician before conclusions are reached.",
+ approach: "Share the specific concern without accusation and hear the technician's perspective.",
+ startWith: "I want to talk through feedback we received from a guest so I can understand what happened from your perspective and determine what we can learn from it.",
+ ask: ["Walk me through the service from your perspective.", "Where do you think the experience went off track?", "What would you do differently next time?", "Is there any support or development you need?"],
+ coachToward: "Clear learning, development, or behavior expectation.",
+ avoid: "The guest said you did a terrible job.",
+ followUp: "Use the appropriate guest-service recovery process and follow up on development actions.",
+ escalation: "safety concern; serious misconduct allegation.",
+ }},
+ { id: 'CORR_04', title: 'Repeated Guest-Service Challenges', cats: ['FEEDBACK','ACCOUNTABILITY'], model: 'SBI',
+ gaps: ['SKILL','ACCOUNTABILITY'], metrics: ['repeatRate'],
+ mode: 'ASK_THEN_DIRECT', intensity: 'ACCOUNTABILITY',
+ triggers: ['another complaint','multiple complaints','repeated guest issues','several redos','keeps getting complaints'],
+ concepts: ['another','multiple','repeated','complaints','redos'],
+ content: {
+ context: "A repeated pattern requires development assessment and consideration of applicable company processes.",
+ approach: "Discuss specific situations and patterns rather than making generalized statements.",
+ startWith: "We've now had more than one guest concern involving this area, so I want to look at the pattern with you and determine what needs to change.",
+ ask: ["What similarities do you see across these situations?", "Where do you believe the biggest gap is?", "What development do you need?", "What needs to be different going forward?"],
+ coachToward: "Specific development or corrective action and appropriate follow-up.",
+ avoid: "Everyone complains about you.",
+ followUp: "Document guest-service challenges and use the applicable internal process.",
+ escalation: "repeated serious guest issue; formal performance concern; technical proficiency concern.",
+ }},
+ { id: 'CORR_05', title: 'Poor Hospitality or Guest Interaction', cats: ['FEEDBACK','GROWTH'], model: 'SBI',
+ gaps: ['SKILL','CLARITY','WILL'], metrics: ['repeatRate'],
+ mode: 'FEEDBACK_THEN_DIRECT', intensity: 'RESET',
+ triggers: ['poor hospitality','not friendly','cold with guests',"doesn't connect",'poor guest interaction','bad service attitude'],
+ concepts: ['hospitality','friendly','guest interaction','connection','attitude'],
+ content: {
+ context: "Hospitality should be coached through observable behavior rather than personality labels.",
+ approach: "Describe the observed interaction and impact.",
+ startWith: "I'd like to talk about one guest interaction I observed because there are a few behaviors that could strengthen the experience.",
+ ask: ["How do you think the guest experienced that interaction?", "What signals were you getting from the guest?", "What could you do differently next time?", "What does great hospitality look like in that moment?"],
+ coachToward: "Specific guest-facing behaviors.",
+ avoid: "You aren't a people person.",
+ followUp: "Observe future guest interactions and recognize improvement.",
+ }},
+ { id: 'CORR_06', title: 'Technician Is Consistently Late or Unprepared', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['ACCOUNTABILITY','CAPACITY'], metrics: [],
+ mode: 'ASK_THEN_DIRECT', intensity: 'RESET',
+ triggers: ['always late','keeps coming late','not prepared','not ready for guests','late to shift','late technician'],
+ concepts: ['late','unprepared','not ready','shift','arrival'],
+ content: {
+ context: "Repeated lateness or lack of readiness should focus on observable occurrences, impact, expectations, and barriers.",
+ approach: "Use specific examples and avoid assumptions about commitment or work ethic.",
+ startWith: "I've noticed several recent times when you weren't ready at the start of your scheduled time. I want to understand what's happening and make sure we're clear on the expectation.",
+ ask: ["What's contributing to the repeated timing issue?", "Is there a barrier I need to understand?", "What will you do differently going forward?"],
+ coachToward: "Clear expectation and plan for consistent readiness.",
+ avoid: "You're unreliable.",
+ followUp: "Track whether the behavior improves and use appropriate internal processes if it continues.",
+ escalation: "leave concern; medical concern; accommodation concern; formal attendance process.",
+ }},
+ { id: 'CORR_07', title: 'Technician Resists Schedule Changes', cats: ['CHANGE','CONFLICT','ACCOUNTABILITY'], model: 'CRUCIAL_CONVERSATIONS',
+ gaps: ['CAPACITY','WILL','CLARITY'], metrics: ['productivity','scheduledHours','bookedHours','demandByDay','performanceStatus'],
+ mode: 'ASK', intensity: 'RESET', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ triggers: ['refuses schedule change',"won't work weekends","won't work saturday","won't work evenings",'does not want to change schedule','resists schedule'],
+ concepts: ['refuse','schedule','weekend','saturday','evening','availability'],
+ content: {
+ context: "Resistance may reflect a legitimate constraint, preference, or unwillingness. High productivity alone does not justify pressuring a technician to add days or hours.",
+ approach: "Listen first. If the technician is already performing strongly, protect what is working and distinguish an optional growth opportunity from a true expectation.",
+ startWith: "I'd like to understand your concerns about the schedule change and then look together at whether there is actually a business or guest-access need we need to solve.",
+ ask: ["What concerns you most about the proposed change?", "How is your current schedule working for you?", "Is there another way to address the guest-access opportunity?", "Is this something you would be interested in testing, or are you comfortable maintaining your current business?"],
+ coachToward: "Clear understanding of whether a change is truly needed, optional, or unnecessary.",
+ avoid: "You're highly productive, so you need to work another day.",
+ followUp: "Only revisit additional capacity when there is a meaningful unresolved business need or the technician wants to explore it.",
+ escalation: "medical restriction; leave concern; accommodation concern.",
+ }},
+
+// CULT — Culture & Team
+ { id: 'CULT_01', title: 'Technician Is Gossiping', cats: ['CULTURE','CONFLICT'], model: 'SBI',
+ gaps: ['BEHAVIOR','ACCOUNTABILITY'], metrics: [],
+ mode: 'FEEDBACK_THEN_DIRECT', intensity: 'RESET',
+ triggers: ['gossip','talking about coworkers','spreading rumors',"talking behind people's backs",'team gossip'],
+ concepts: ['gossip','rumor','coworkers','talking about','behind backs'],
+ content: {
+ context: "Address observable behavior and team impact rather than labeling the technician as dramatic or toxic.",
+ approach: "Use specific examples when available and clarify the expected way to address concerns.",
+ startWith: "I want to address something that can impact trust on the team. I've become aware of conversations about teammates that aren't being addressed directly with the people involved.",
+ ask: ["What concern are you trying to resolve?", "Have you spoken directly with the person involved?", "What would a more productive way to address this look like?", "What can you do differently going forward?"],
+ coachToward: "Direct, respectful communication and an end to gossip behavior.",
+ avoid: "You're the source of all the drama.",
+ followUp: "Observe whether the behavior stops and concerns are handled more directly.",
+ escalation: "harassment allegation; discrimination allegation; retaliation concern.",
+ }},
+ { id: 'CULT_02', title: 'Persistent Negativity', cats: ['CULTURE','CHANGE'], model: 'CRUCIAL_CONVERSATIONS',
+ gaps: ['MOTIVATION','WILL','CLARITY','BEHAVIOR'], metrics: [],
+ mode: 'FEEDBACK_THEN_DIRECT', intensity: 'RESET',
+ triggers: ['always negative','complains about everything','bad attitude','negative about every change','brings team down'],
+ concepts: ['negative','complain','attitude','team energy','change'],
+ content: {
+ context: "Do not coach the personality label \"negative.\" Identify specific behaviors affecting the team.",
+ approach: "Differentiate healthy disagreement from behavior that repeatedly undermines the team.",
+ startWith: "I want to understand your concerns, and I also want to talk about how those concerns are being expressed with the team.",
+ ask: ["What is frustrating you most right now?", "Which concerns do you feel haven't been heard?", "How do you think the way you're expressing those concerns is affecting others?", "What would a more constructive approach look like?"],
+ coachToward: "Constructive communication without suppressing legitimate concerns.",
+ avoid: "You need to stop being so negative.",
+ followUp: "Observe specific behaviors and reinforce constructive communication.",
+ }},
+ { id: 'CULT_03', title: 'High Performer Has Poor Team Behaviors', cats: ['CULTURE','FEEDBACK','ACCOUNTABILITY'], model: 'SBI',
+ gaps: ['BEHAVIOR','ACCOUNTABILITY'], metrics: ['revenue','performanceStatus'],
+ mode: 'FEEDBACK_THEN_DIRECT', intensity: 'ACCOUNTABILITY',
+ triggers: ['top performer rude','makes money but bad teammate','high performer difficult','best stylist but poor attitude','team hates working with her'],
+ concepts: ['high performer','top performer','rude','team','bad teammate'],
+ content: {
+ context: "Strong business performance does not remove expectations for respectful team behavior. Do not respond by adding more workload or withholding recognition of business success.",
+ approach: "Use observable examples and impact. Recognize that strong results and poor team behavior can coexist.",
+ startWith: "Your business performance is strong, and I also need to address a separate issue related to how some team interactions are happening.",
+ ask: ["How do you think that interaction came across to the team?", "What were you trying to accomplish in that moment?", "How could you handle the same concern differently?", "What should your teammates be able to expect from you?"],
+ coachToward: "Clear team-behavior expectation.",
+ avoid: "Everyone hates working with you.",
+ followUp: "Observe the specific behavior and reinforce improvement.",
+ escalation: "harassment allegation; discrimination allegation; threatening behavior.",
+ }},
+ { id: 'CULT_04', title: 'Conflict Between Two Technicians', cats: ['CONFLICT','CULTURE'], model: 'CRUCIAL_CONVERSATIONS',
+ gaps: ['CONFLICT','CLARITY'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'RESET',
+ triggers: ['two technicians fighting','team conflict',"don't get along",'arguing','conflict between coworkers'],
+ concepts: ['conflict','argue','fight',"don't get along",'coworkers'],
+ content: {
+ context: "Understand facts and each person's perspective rather than deciding who is right from one account.",
+ approach: "Address behavior and working expectations rather than forcing the technicians to become friends.",
+ startWith: "I want to understand what's happening between you and your teammate and make sure we have a path forward that allows both of you to work together professionally.",
+ ask: ["What happened from your perspective?", "What do you need from the other person to work effectively?", "What can you personally do differently?", "What agreement would help prevent this from continuing?"],
+ coachToward: "Professional working agreement and clear boundaries.",
+ avoid: "You both just need to get over it.",
+ followUp: "Check whether the working agreement is being followed.",
+ escalation: "harassment allegation; discrimination allegation; threat; workplace violence concern.",
+ }},
+
+// CHANGE — Change
+ { id: 'CHANGE_01', title: 'Resistance to a New Process or Expectation', cats: ['CHANGE','ACCOUNTABILITY'], model: 'CHANGE',
+ gaps: ['CLARITY','WILL','CONFIDENCE'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'RESET',
+ triggers: ["doesn't like new process",'resists change',"won't follow new process",'complains about new expectation',"doesn't want to change"],
+ concepts: ['change','new process','new expectation','resist',"won't follow"],
+ content: {
+ context: "Resistance may come from misunderstanding, disagreement, uncertainty, or unwillingness.",
+ approach: "Explain the why when known, acknowledge concerns, and distinguish discussion from required execution.",
+ startWith: "I know this change may not feel easy. I want to understand your concerns and also make sure we're clear about what is changing and what happens next.",
+ ask: ["What part of the change concerns you most?", "What feels unclear?", "What support would make the transition easier?", "What is the next action you can control?"],
+ coachToward: "Understanding, appropriate support, and execution of the required next step.",
+ avoid: "You don't have to like it. Just do it.",
+ followUp: "Review adoption of the new behavior or process.",
+ }},
+ { id: 'CHANGE_02', title: 'Technician Is Experiencing Change Fatigue', cats: ['CHANGE','GROWTH'], model: 'CHANGE',
+ gaps: ['CAPACITY','CLARITY','MOTIVATION'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ['too many changes','tired of changes','change fatigue','overwhelmed by changes','another new thing'],
+ concepts: ['too many changes','tired','overwhelmed','change fatigue','another change'],
+ content: {
+ context: "Change fatigue may be legitimate even when the change itself is required.",
+ approach: "Acknowledge the amount of change without implying required changes are optional.",
+ startWith: "It sounds like the amount of change is starting to feel heavy. Let's separate what you need to focus on right now from everything else.",
+ ask: ["Which change is creating the most frustration?", "What feels hardest to keep up with?", "What would create more clarity?", "What is the next thing you need to execute well?"],
+ coachToward: "Focus and clarity on the immediate priority.",
+ avoid: "Everyone is dealing with change. You'll be fine.",
+ followUp: "Revisit the immediate priority and reduce unnecessary confusion when possible.",
+ }},
+ { id: 'CHANGE_03', title: 'Technician Is Uncertain About a New Business Direction', cats: ['CHANGE','CHARACTER'], model: 'CHANGE',
+ gaps: ['CLARITY'], metrics: [],
+ mode: 'ASK_THEN_COACH', intensity: 'DEVELOP',
+ triggers: ["doesn't understand direction",'confused by strategy',"doesn't know why we're doing this",'uncertain about change','new direction'],
+ concepts: ['direction','strategy','why','uncertain','confused'],
+ content: {
+ context: "Uncertainty should be met with clarity about what is known and honesty about what is not known.",
+ approach: "Do not invent answers. Explain known rationale and next steps.",
+ startWith: "I want to make sure you understand what we know about this direction, why it's happening, and what it means for you right now.",
+ ask: ["What feels most unclear?", "What questions do you still have?", "What part of the change affects you most directly?", "What do you need to know to move forward?"],
+ coachToward: "Clarity about immediate expectations.",
+ avoid: "Don't worry about the why. Just trust leadership.",
+ followUp: "Share new information when it becomes available.",
+ }},
+
+// RETAIN / RECOG — Retention & Recognition
+ { id: 'RETAIN_01', title: 'Strong Performer Appears Disengaged', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['MOTIVATION','CLARITY','CAPACITY'], metrics: ['performanceStatus','revenueTrend','productivity'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['high performer disengaged','checked out',"doesn't seem motivated",'top performer less engaged','seems bored'],
+ concepts: ['disengaged','checked out','bored','motivation','high performer'],
+ content: {
+ context: "A strong performer may need renewed challenge, recognition, development, workload adjustment, or simply a conversation about what they want next.",
+ approach: "Do not wait for performance to decline before checking in.",
+ startWith: "You've been a strong contributor, and lately I've noticed a little less energy than usual. I wanted to check in and understand how you're feeling about your work right now.",
+ ask: ["What feels energizing to you right now?", "What feels repetitive or draining?", "Is there something you want more or less of?", "What would make the next few months feel meaningful?"],
+ coachToward: "A retention, growth, recognition, workload, or maintenance action based on the technician's response.",
+ avoid: "You seem checked out. What's wrong with you?",
+ followUp: "Revisit the specific factor identified.",
+ }},
+ { id: 'RETAIN_02', title: 'Technician Appears Burned Out', cats: ['GROWTH','CULTURE'], model: 'GROW',
+ gaps: ['CAPACITY'], metrics: ['scheduledHours','bookedHours','productivity'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['burned out','exhausted','overworked','too tired',"can't keep up",'working too much'],
+ concepts: ['burnout','exhausted','overworked','tired','capacity'],
+ content: {
+ context: "Explore workload and capacity without diagnosing a medical or mental-health condition.",
+ approach: "Focus on observable workload and the technician's own description of capacity.",
+ startWith: "You've had a very full workload lately, and I want to check in on whether your current pace feels sustainable.",
+ ask: ["How is your current schedule feeling?", "What part of the workload is most difficult?", "Where do you feel you need more recovery or support?", "What change would make the biggest difference?"],
+ coachToward: "A sustainable workload or appropriate support conversation.",
+ avoid: "You look burned out.",
+ followUp: "Revisit workload and capacity after any adjustment.",
+ escalation: "medical concern; leave concern; accommodation concern.",
+ }},
+ { id: 'RETAIN_03', title: 'High Performer Wants or Needs a New Challenge', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['MOTIVATION'], metrics: ['performanceStatus','revenueTrend','title'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['needs a challenge','high performer bored','nothing left to work on','needs stretch goal','ready for something new'],
+ concepts: ['challenge','bored','stretch','high performer','something new'],
+ content: {
+ context: "High performers often benefit from meaningful challenge, but additional responsibility should be technician-led and should not simply become more workload.",
+ approach: "Explore development before assigning anything.",
+ startWith: "You've built a very strong business. If you're interested, I'd love to talk about what would feel like a meaningful next challenge for you.",
+ ask: ["Is there something you'd like to learn next?", "What part of your role would you like to stretch?", "Would mentoring or development work interest you?", "What challenge would feel exciting rather than just like more work?"],
+ coachToward: "A technician-selected stretch opportunity or continued focus on current success.",
+ avoid: "You're doing great, so I need you to take on more.",
+ followUp: "Review only if the technician chooses a stretch opportunity.",
+ }},
+ { id: 'RETAIN_04', title: 'Technician Has Lost Motivation', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['MOTIVATION','CAPACITY','CLARITY'], metrics: ['revenueTrend','productivity','bookedHours'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ triggers: ['not motivated','lost motivation',"doesn't care anymore",'used to be driven','energy is gone'],
+ concepts: ['motivation','driven','energy','lost interest','engagement'],
+ content: {
+ context: "Do not assume the technician does not care. Motivation changes can come from goals, workload, recognition, plateau, or changing priorities.",
+ approach: "Use curiosity instead of accusation.",
+ startWith: "I've noticed your energy around the business feels different lately, and I wanted to understand how you're feeling about your work right now.",
+ ask: ["What feels different for you lately?", "What parts of the work still energize you?", "What feels draining or frustrating?", "What would make your work feel more meaningful?"],
+ coachToward: "Clear understanding of the motivation issue and one realistic next action.",
+ avoid: "You don't seem like you care anymore.",
+ followUp: "Revisit the specific factor identified.",
+ }},
+ { id: 'RECOG_01', title: 'Technician Has Made Meaningful Progress', cats: ['RECOGNITION','GROWTH'], model: 'RECOGNITION',
+ gaps: ['CLARITY'], metrics: ['revenueTrend','repeatRate','productivity','rph','bookedHours'],
+ mode: 'RECOGNIZE', intensity: 'DEVELOP',
+ triggers: ['doing much better','improved','made progress','numbers improved','great improvement','turned things around'],
+ concepts: ['improved','progress','better','growth','turned around'],
+ content: {
+ context: "Recognition should connect the result to the behaviors that created it.",
+ approach: "Be specific about the result and the behavior.",
+ startWith: "I want to recognize the progress you've made. I'm seeing a real difference in your results, and I can also see the behaviors behind it.",
+ ask: ["What do you think made the biggest difference?", "Which behavior has become easier or more consistent?", "What do you want to keep doing?", "Is there anything you want to build on next?"],
+ coachToward: "Continued consistency and ownership of the behaviors that created progress.",
+ avoid: "Great job. Keep it up.",
+ followUp: "Continue recognizing meaningful progress and consistency.",
+ }},
+ { id: 'RECOG_02', title: 'Technician Deserves Recognition for Strong Performance', cats: ['RECOGNITION'], model: 'RECOGNITION',
+ gaps: ['CLARITY'], metrics: ['revenue','revenueTrend','repeatRate','productivity','rph'],
+ mode: 'RECOGNIZE', intensity: 'DEVELOP',
+ triggers: ['best month','crushing it','top performer','great month','strong performance','doing amazing'],
+ concepts: ['best month','top performer','strong','great results','achievement'],
+ content: {
+ context: "Recognition should reinforce the specific behaviors and impact behind strong results. Do not automatically turn recognition into another growth demand.",
+ approach: "Connect recognition to what the technician did rather than only naming the number.",
+ startWith: "I want to recognize the month you just had. The results are strong, but what stands out even more is the consistency behind them.",
+ ask: ["What are you most proud of?", "What do you think drove the result?", "What behavior do you want to make sure you carry forward?"],
+ coachToward: "Pride, ownership, and continued consistency.",
+ avoid: "Great numbers! Now let's figure out how to do even more.",
+ followUp: "Continue recognizing results and the behaviors behind them.",
+ }},
+];
+
+async function getCoachResponse(userInput, context, history) {
+ /* ── Swap-to-Option-A note ──────────────────────────────────────────────
+ To move this to a real Claude API backend later, replace everything
+ below with:
+ const r = await fetch('/api/coach', { method:'POST',
+ headers:{'Content-Type':'application/json'},
+ body: JSON.stringify({ userInput, context, history }) });
+ return await r.json();
+ The return shape is identical either way — no caller or UI code changes.
+ ────────────────────────────────────────────────────────────────────── */
+ const text = (userInput || '').trim();
+ if (!text) return coachResponseShape({ needsClarification: true, clarifyingQuestion: "What's the situation you'd like help coaching?" });
+
+ const prevTurn = (history && history.length) ? history[history.length - 1] : null;
+ const pendingMeta = (prevTurn && prevTurn.response && prevTurn.response.needsClarification) ? prevTurn.response.meta : null;
+
+ let gapOverride = null;
+ let diagnosticBoostId = null;
+ let forcedScenarioId = null;
+ let expandText = '';
+
+ if (pendingMeta && pendingMeta.archetype) {
+ const chosen = coachMatchOption(pendingMeta.archetype, text);
+ if (pendingMeta.archetype === 'VAGUE_BEHAVIOR') {
+ if (chosen && chosen.routeTo) { forcedScenarioId = chosen.routeTo; gapOverride = chosen.gap; }
+ // "Something else" (no routeTo) or no match at all: fall through to normal scoring below.
+ } else if (pendingMeta.archetype === 'CAPACITY_VS_OPPORTUNITY') {
+ if (chosen) { gapOverride = chosen.gap; if (chosen.boostIds) diagnosticBoostId = chosen.boostIds[0]; }
+ } else if (pendingMeta.archetype === 'SKILL_VS_WILL') {
+ if (chosen) { gapOverride = chosen.gap; diagnosticBoostId = pendingMeta.primaryScenario; }
+ } else if (pendingMeta.archetype === 'CONFIRMATION') {
+ if (chosen && /not quite/i.test(chosen.label)) {
+ return coachResponseShape({ needsClarification: true, clarifyingQuestion: "Got it — what's actually going on? Add whatever detail feels most important.", meta: { archetype: null, originalText: pendingMeta.originalText } });
+ }
+ diagnosticBoostId = pendingMeta.primaryScenario;
+ } else if (pendingMeta.archetype === 'GENERIC_CATEGORY') {
+ if (chosen && chosen.expand) expandText = chosen.expand;
+ }
+ }
+
+ const situationText = (pendingMeta && pendingMeta.originalText ? pendingMeta.originalText + ' ' + text : text) + (expandText ? ' ' + expandText : '');
+ const normText = situationText.toLowerCase();
+
+ // Escalation scan — highest priority, overrides everything else.
+ if (coachScanEscalation(normText)) return coachEscalationResponse();
+
+ if (forcedScenarioId) {
+ const forced = SCENARIOS.find(s => s.id === forcedScenarioId);
+ if (forced) return coachAssembleFull(forced, null, gapOverride, context, 0.9);
+ }
+
+ // Vague personality-label check — unless concrete behavior evidence is already present, and only
+ // when we're not already resolving a pending diagnostic.
+ if (!pendingMeta) {
+ const vagueMatch = normText.match(COACH_VAGUE_LABEL_RX);
+ const hasEvidence = COACH_BEHAVIOR_EVIDENCE_RX.test(normText);
+ if (vagueMatch && !hasEvidence) return coachAskArchetype('VAGUE_BEHAVIOR', situationText, context, null);
+ }
+
+ // Scenario scoring, boosted by Planner context and any diagnostic-answer bonus.
+ const scored = SCENARIOS
+ .map(sc => ({ sc, score: coachScoreScenario(sc, normText, context, diagnosticBoostId === sc.id) }))
+ .filter(x => x.score > 0)
+ .sort((a, b) => b.score - a.score);
+
+ if (!scored.length) {
+ if (!pendingMeta && coachIsAmbiguousGrowth(normText)) return coachAskArchetype('CAPACITY_VS_OPPORTUNITY', situationText, context, null);
+ return coachAskArchetype('GENERIC_CATEGORY', situationText, context, null);
+ }
+
+ const top = scored[0];
+ const supportingCandidate = (scored[1] && scored[1].score >= 6 && scored[1].sc.id !== top.sc.id) ? scored[1].sc : null;
+ // Do not blend an unrelated concern into a pure recognition moment — recognition should not
+ // automatically turn into another growth demand (see RECOG_01/RECOG_02 authored guidance).
+ const supporting = (top.sc.mode === 'RECOGNIZE' && supportingCandidate && supportingCandidate.mode !== 'RECOGNIZE') ? null : supportingCandidate;
+ const confidence = Math.max(0, Math.min(1, top.score / COACH_CONFIG.normalizer));
+
+ if (confidence < COACH_CONFIG.confidenceThresholds.MEDIUM && !gapOverride) {
+ if (!pendingMeta && coachIsAmbiguousGrowth(normText)) return coachAskArchetype('CAPACITY_VS_OPPORTUNITY', situationText, context, null);
+ if (coachGapsAreSkillVsWillAmbiguous(top.sc)) return coachAskArchetype('SKILL_VS_WILL', situationText, context, top.sc);
+ return coachAskArchetype('GENERIC_CATEGORY', situationText, context, null);
+ }
+ if (confidence < COACH_CONFIG.confidenceThresholds.HIGH && !gapOverride) {
+ if (coachGapsAreSkillVsWillAmbiguous(top.sc)) return coachAskArchetype('SKILL_VS_WILL', situationText, context, top.sc);
+ return coachAskConfirmation(top.sc, situationText, context);
+ }
+
+ return coachAssembleFull(top.sc, supporting, gapOverride, context, Math.max(confidence, gapOverride ? 0.85 : confidence));
 }
 </script>
 </body>
