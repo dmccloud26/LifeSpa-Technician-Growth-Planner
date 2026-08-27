@@ -1561,6 +1561,12 @@ function runAnalysis() {
  let diagHtml = '';
 
  if (isNew) {
+ const actualRow = `<tr style="background:var(--accent-light); font-weight:700; border-bottom:2px solid var(--accent);">
+ <td>${name} — Most Recent Month (Actual)</td>
+ <td style="text-align:center;">${fn(m.hoursBooked.r)}</td>
+ <td style="text-align:center;">${fp(m.productivity.r)}</td>
+ <td style="text-align:center;">${fcD(m.totalRPH.r)}</td>
+ </tr>`;
  const rampRowsTable = NEW_TECH.map(x => {
  const cur = x.month === months;
  return `<tr style="${cur ? 'background:var(--sage-bg); font-weight:700;' : ''}">
@@ -1583,7 +1589,7 @@ function runAnalysis() {
  </p>
  <table class="cycle-table">
  <thead><tr><th>Ramp Month</th><th style="text-align:center;">Booked Hours</th><th style="text-align:center;">Productivity</th><th style="text-align:center;">Revenue / Hr</th></tr></thead>
- <tbody>${rampRowsTable}</tbody>
+ <tbody>${actualRow}${rampRowsTable}</tbody>
  </table>
  </div>`;
  }
