@@ -290,8 +290,9 @@
  .coaching-card.playbook-card .cc-category { color: var(--accent-dark); }
  .cc-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 4px; }
  .cc-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
- .cc-list { padding-left: 14px; }
- .cc-list li { font-size: 12.5px; color: var(--text); margin-bottom: 6px; line-height: 1.45; }
+ .cc-list { list-style: none; padding-left: 0; }
+ .cc-list li { font-size: 12.5px; color: var(--text); margin-bottom: 7px; line-height: 1.45; padding-left: 17px; position: relative; }
+ .cc-list li::before { content: ''; position: absolute; left: 2px; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
  .notes-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 10px; background: var(--surface); padding: 10px 12px; border-radius: 7px; border: 1px solid var(--sage); font-style: italic; }
 
  /* Rebooking cycle table */
@@ -3922,10 +3923,12 @@ const SCENARIOS = [
  followUp: "Review confidence, guest experiences, and whether the agreed practice is helping.",
  }},
  { id: 'RAMP_04', title: 'New Technician Has Insufficient Availability', cats: ['ACCOUNTABILITY','GROWTH'], model: 'CLEAR_EXPECTATIONS',
- gaps: ['CLARITY','CAPACITY','AVAILABILITY'], metrics: ['scheduledHours','bookedHours','productivity','demandByDay'],
- mode: 'ASK', intensity: 'DEVELOP',
- triggers: ['new technician not available enough','not enough hours','limited availability','too few scheduled hours','new hire limited schedule'],
- concepts: ['availability','hours','schedule','limited','not enough','new technician'],
+ gaps: ['CLARITY','CAPACITY','AVAILABILITY'], metrics: ['scheduledHours','bookedHours','productivity','demandByDay','tenure'],
+ mode: 'ASK', intensity: 'DEVELOP', metricSignal: coachRampSignal,
+ // Scoped to genuinely new hires (see coachRampSignal) — an established technician's hours/
+ // availability shortfall should route to BUILD_11 instead, so triggers stay tied to "new".
+ triggers: ['new technician not available enough','new hire limited schedule','new technician limited availability'],
+ concepts: ['availability','schedule','limited','new technician','new hire'],
  content: {
  context: "Availability can influence a new technician's ability to build consistent clientele, but additional days should not automatically be prescribed without understanding expectations, guest demand, and technician constraints.",
  approach: "Use demand data when available and understand legitimate constraints before recommending changes.",
@@ -4054,7 +4057,9 @@ const SCENARIOS = [
  { id: 'BUILD_08', title: 'Booked Hours Are Not Growing', cats: ['GROWTH'], model: 'GROW',
  gaps: ['OPPORTUNITY','SKILL','CONFIDENCE','AVAILABILITY'], metrics: ['bookedHours','scheduledHours','productivity','repeatRate'],
  mode: 'ASK_THEN_COACH', intensity: 'DEVELOP', metricSignal: coachLowProdSignal,
- triggers: ["booked hours aren't growing",'same booked hours','bookings flat','not getting more booked','hours not increasing'],
+ // "booked" is required alongside "hours" here (not just "hours not increasing") so this
+ // doesn't fuzzy-match general not-enough-hours/availability statements — those route to BUILD_11.
+ triggers: ["booked hours aren't growing",'same booked hours','bookings flat','not getting more booked','booked hours not increasing'],
  concepts: ['booked hours','flat bookings','growth','appointments','not increasing'],
  content: {
  context: "Booked-hour stagnation may result from limited demand, insufficient availability, low repeat business, or weak business-building behaviors.",
@@ -4092,6 +4097,25 @@ const SCENARIOS = [
  coachToward: "Clear understanding and a realistic growth commitment.",
  avoid: "You don't care enough about growing your business.",
  followUp: "Review completion of the agreed activity and its impact.",
+ }},
+ { id: 'BUILD_11', title: 'Not Enough Scheduled Hours or Availability to Reach Goals', cats: ['ACCOUNTABILITY','GROWTH'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['CAPACITY','AVAILABILITY','CLARITY','ACCOUNTABILITY'], metrics: ['scheduledHours','bookedHours','productivity','demandByDay','tenure'],
+ mode: 'ASK', intensity: 'DEVELOP',
+ // Deliberately tenure-agnostic (no metricSignal gate) — this covers both a brand-new
+ // technician and a tenured one whose scheduled hours fall short of their goal.
+ triggers: ['not enough scheduled hours','not enough hours to hit goal','not enough hours to reach goal','not enough availability','doesn\'t have enough hours','isn\'t working enough hours','not working enough hours','schedule doesn\'t give enough hours','needs more hours to hit goal','hours are limiting growth','can\'t reach goal without more hours'],
+ // 'goal' also matches "goals" (substring); 'not enough' is intentionally broad so this pairs
+ // reliably with 'scheduled hours'/'availability' and outscores generic schedule/hours overlap
+ // in other scenarios (e.g. PERF_03, BUILD_08).
+ concepts: ['scheduled hours','availability','enough hours','reach goal','hit goal','hours to reach','not enough hours','goal','not enough'],
+ content: {
+ context: "When scheduled hours or availability fall short of what a technician's goal requires, the first step is understanding whether the constraint is a legitimate limitation (guest demand, a personal constraint) or simply a schedule that has not been built to reach that goal. This applies the same way whether the technician is brand new or has been on the team for a while.",
+ approach: "Look at the goal, the schedule standards, and actual guest demand together before deciding whether the fix is a schedule change, a demand issue, or a conversation about what's realistic.",
+ startWith: "I want to look at whether your current schedule gives you enough opportunity to reach the goal we've set, and figure out together what a realistic schedule looks like from here.",
+ ask: ["What does your schedule look like today, and how did we arrive at it?", "Does your availability line up with when we're seeing the most guest demand?", "What would need to be true for your current hours to get you to your goal?", "What, if anything, would you be willing to adjust?"],
+ coachToward: "A specific, mutually agreed schedule adjustment (or a clear-eyed decision that the goal or timeline needs to change) tied to actual demand data.",
+ avoid: "You just need to work more hours.",
+ followUp: "Review whether the schedule change was made, and whether booked hours and progress toward the goal are trending up.",
  }},
 
 // PERF — Performance & Capacity
@@ -4356,6 +4380,25 @@ const SCENARIOS = [
  avoid: "You're highly productive, so you need to work another day.",
  followUp: "Only revisit additional capacity when there is a meaningful unresolved business need or the technician wants to explore it.",
  escalation: "medical restriction; leave concern; accommodation concern.",
+ }},
+ { id: 'CORR_08', title: 'Technician Resists a Schedule Change Needed to Reach Expectations', cats: ['ACCOUNTABILITY','CONFLICT'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['ACCOUNTABILITY','WILL','CAPACITY'], metrics: ['scheduledHours','bookedHours','productivity','performanceStatus'],
+ mode: 'ASK_THEN_DIRECT', intensity: 'ACCOUNTABILITY',
+ // Distinct from CORR_07: this is the follow-through conversation after a schedule change has
+ // already been raised and a real business/goal need exists — not an optional ask to a strong
+ // performer. Works the same for a new or established technician.
+ triggers: ['already asked her to change her schedule','already talked to him about his schedule','asked to work a different schedule and refuses','keeps refusing to change schedule',"won't adjust schedule after being asked",'resists working the schedule we agreed on','pushed back every time i bring up the schedule','already had this conversation about his schedule'],
+ // 'refus'/'resist' are stems so they also match refuses/refusing and resists/resisting.
+ concepts: ['already asked','already talked','schedule change','resist','refus','pushed back','agreed schedule'],
+ content: {
+ context: "This is different from a first conversation about a schedule change — the expectation has already been communicated and the technician has not followed through. This applies whether the technician is new or established.",
+ approach: "Acknowledge what's already been discussed, restate the business or goal-related reason clearly, and move the conversation from exploring to confirming a decision and a timeline.",
+ startWith: "We've talked before about adjusting your schedule so you have a real opportunity to reach your goal, and it hasn't changed. I want to understand what's getting in the way, and then be clear about what needs to happen from here.",
+ ask: ["What's made it hard to make the change we discussed?", "Is there a constraint I don't know about that we need to work around?", "What would it take for you to commit to this change?"],
+ coachToward: "A specific commitment with a date, or a clear understanding of what happens if the expectation continues to go unmet.",
+ avoid: "You never listen to me about your schedule.",
+ followUp: "Confirm the change was made and whether it addressed the underlying goal; escalate to a formal performance conversation if it continues to go unaddressed.",
+ escalation: "medical restriction; leave concern; accommodation concern; formal attendance or performance process.",
  }},
 
 // CULT — Culture & Team
