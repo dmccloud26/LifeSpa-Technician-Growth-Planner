@@ -3803,11 +3803,17 @@ function coachScoreScenario(sc, normText, ctx, isDiagnosticBoost) {
  const matchedConcepts = sc.concepts.filter(c => normText.includes(c));
  if (matchedConcepts.length) score += matchedConcepts.length * wt.conceptMatch;
  if (matchedConcepts.length >= 2) score += wt.pairedConceptMatch;
- if (ctx && sc.metrics && sc.metrics.length) {
+ // Planner-context signals (KPI status, tenure, etc.) are supporting evidence only — they
+ // should never be what makes an otherwise textually-unrelated scenario surface (e.g. a
+ // technician's red retention KPI silently winning a schedule-resistance conversation just
+ // because Low Repeat Rate happens to share that metric). Only let them add to a scenario
+ // that the leader's own words already gave some real reason to consider.
+ const hasTextMatch = score > 0;
+ if (hasTextMatch && ctx && sc.metrics && sc.metrics.length) {
  const available = sc.metrics.filter(m => ctx[m] != null);
  if (available.length) score += wt.supportingMetricMatch;
  }
- if (ctx && typeof sc.metricSignal === 'function') {
+ if (hasTextMatch && ctx && typeof sc.metricSignal === 'function') {
  const sig = sc.metricSignal(ctx);
  if (sig > 0) score += wt.strongMetricSignal;
  else if (sig < 0) score += wt.conflictingSignalPenalty;
@@ -4369,8 +4375,10 @@ const SCENARIOS = [
  { id: 'CORR_07', title: 'Technician Resists Schedule Changes', cats: ['CHANGE','CONFLICT','ACCOUNTABILITY'], model: 'CRUCIAL_CONVERSATIONS',
  gaps: ['CAPACITY','WILL','CLARITY'], metrics: ['productivity','scheduledHours','bookedHours','demandByDay','performanceStatus'],
  mode: 'ASK', intensity: 'RESET', guardrailSensitive: true, metricSignal: coachHighProdSignal,
- triggers: ['refuses schedule change',"won't work weekends","won't work saturday","won't work evenings",'does not want to change schedule','resists schedule'],
- concepts: ['refuse','schedule','weekend','saturday','evening','availability'],
+ triggers: ['refuses schedule change',"won't work weekends","won't work saturday","won't work evenings",'does not want to change schedule','resists schedule',"doesn't want to change their schedule"],
+ // 'don't want'/'doesn't want' are the plain-language way leaders actually phrase resistance —
+ // without them this scenario under-scores against generic schedule-topic scenarios like PERF_03.
+ concepts: ['refuse','schedule',"don't want","doesn't want",'weekend','saturday','evening','availability'],
  content: {
  context: "Resistance may reflect a legitimate constraint, preference, or unwillingness. High productivity alone does not justify pressuring a technician to add days or hours.",
  approach: "Listen first. If the technician is already performing strongly, protect what is working and distinguish an optional growth opportunity from a true expectation.",
@@ -4387,9 +4395,11 @@ const SCENARIOS = [
  // Distinct from CORR_07: this is the follow-through conversation after a schedule change has
  // already been raised and a real business/goal need exists — not an optional ask to a strong
  // performer. Works the same for a new or established technician.
- triggers: ['already asked her to change her schedule','already talked to him about his schedule','asked to work a different schedule and refuses','keeps refusing to change schedule',"won't adjust schedule after being asked",'resists working the schedule we agreed on','pushed back every time i bring up the schedule','already had this conversation about his schedule'],
- // 'refus'/'resist' are stems so they also match refuses/refusing and resists/resisting.
- concepts: ['already asked','already talked','schedule change','resist','refus','pushed back','agreed schedule'],
+ triggers: ['already asked her to change her schedule','already talked to him about his schedule','asked to work a different schedule and refuses','keeps refusing to change schedule',"won't adjust schedule after being asked",'resists working the schedule we agreed on','pushed back every time i bring up the schedule','already had this conversation about his schedule','wants technician to change schedule but they don\'t want to'],
+ // 'refus'/'resist' are stems so they also match refuses/refusing and resists/resisting; plain
+ // 'schedule' plus 'don't/doesn't want' cover the common leader phrasing "I want them to change
+ // their schedule but they don't want to" (word order that 'schedule change' alone would miss).
+ concepts: ['already asked','already talked','schedule change','schedule','resist','refus',"don't want","doesn't want",'pushed back','agreed schedule'],
  content: {
  context: "This is different from a first conversation about a schedule change — the expectation has already been communicated and the technician has not followed through. This applies whether the technician is new or established.",
  approach: "Acknowledge what's already been discussed, restate the business or goal-related reason clearly, and move the conversation from exploring to confirming a decision and a timeline.",
