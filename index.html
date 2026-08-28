@@ -4463,6 +4463,24 @@ const SCENARIOS = [
  followUp: "Confirm the standard is being met consistently; move to a formal appearance-standards process only if it continues after the expectation has been clearly reset.",
  escalation: "religious or medical accommodation concern; a stated cost/access barrier; formal appearance-standards or attendance process if it persists after a clear reset.",
  }},
+ { id: 'CORR_10', title: 'Technician Keeps a Messy or Disorganized Work Area', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['CLARITY','ACCOUNTABILITY'], metrics: [],
+ mode: 'ASK_THEN_DIRECT', intensity: 'RESET',
+ // 'clean'/'messy'/'station'/'work area' are each their own concept (not just baked into
+ // longer trigger phrases) so paired-concept matching catches phrasing this list doesn't
+ // literally spell out — the same fix that "won't wear the uniform" needed for CORR_09.
+ triggers: ['messy work area','messy station','messy workstation',"doesn't clean up after herself","doesn't clean up after himself",'leaves the station a mess',"won't clean their station","won't clean up their area","won't keep the station clean",'not keeping station clean','disorganized work area','leaves a mess','station is always a mess','not cleaning up between guests','keeps a messy station','not keeping the area organized','keep their area clean'],
+ concepts: ['messy','clean','station','work area','workstation','disorganized','mess','area','organized','tidy','dirty'],
+ content: {
+ context: "A messy or disorganized station is an observable standard, not a reflection of character — confirm the technician actually knows what a reset station should look like, and check whether they have what they need (time between guests, storage, supplies) before treating it as a choice not to care.",
+ approach: "Name the specific standard and the specific instance, check understanding, and reset the expectation clearly. Avoid generalizing into a statement about how much the technician cares or their overall professionalism.",
+ startWith: "I want to talk about keeping your station reset and organized between guests — it hasn't been consistent lately, and I want to make sure we're clear on the standard together.",
+ ask: ["Were you clear on what a reset station should look like between guests?", "Is there anything getting in the way — time between appointments, storage, supplies?", "What would help you keep this consistent every time?"],
+ coachToward: "Confirmed understanding of the standard and a specific plan for keeping the station consistent.",
+ avoid: "You're so messy, it's unprofessional.",
+ followUp: "Confirm the station is being kept to standard consistently; move to a formal process only if it continues after the expectation has been clearly reset.",
+ escalation: "a stated resource, staffing, or scheduling barrier (not enough time between guests, no storage) rather than a technician issue; formal performance process if it continues after a clear reset.",
+ }},
 
 // CULT — Culture & Team
  { id: 'CULT_01', title: 'Technician Is Gossiping', cats: ['CULTURE','CONFLICT'], model: 'SBI',
