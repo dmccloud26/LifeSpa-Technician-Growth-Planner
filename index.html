@@ -4698,6 +4698,17 @@ async function getCoachResponse(userInput, context, history) {
 
  if (pendingMeta && pendingMeta.archetype) {
  const chosen = coachMatchOption(pendingMeta.archetype, text);
+ // Topic-drift guard: a typed follow-up that doesn't match any offered option is normally
+ // glued onto the earlier (possibly stale/unrelated) conversation via situationText below.
+ // But if the new text plainly stands on its own as a different, recognizable topic — it gets
+ // real trigger/concept hits against the scenario library by itself — treat it as a fresh
+ // question instead of merging it with whatever was being discussed before. Without this, a
+ // leader who types a new question mid-conversation (instead of clicking "Start Over") gets
+ // that new question silently blended with an earlier, unrelated one.
+ if (!chosen) {
+ const standsAlone = SCENARIOS.some(sc => coachScoreScenario(sc, text.toLowerCase(), context, false) > 0);
+ if (standsAlone) return getCoachResponse(text, context, []);
+ }
  if (pendingMeta.archetype === 'VAGUE_BEHAVIOR') {
  if (chosen && chosen.routeTo) { forcedScenarioId = chosen.routeTo; gapOverride = chosen.gap; }
  // "Something else" (no routeTo) or no match at all: fall through to normal scoring below.
