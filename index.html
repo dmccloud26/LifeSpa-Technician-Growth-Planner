@@ -3785,22 +3785,29 @@ function coachContextHint(ctx, fields) {
 
 // ── Scenario scoring: exact/partial trigger match, concept + paired-concept match, supporting
 // metric presence, strong/conflicting metric signal, and diagnostic-answer bonus. ──
+// Leaders type fast and don't always use an apostrophe ("dont", "doesnt", "isnt", "wont").
+// Stripping every apostrophe variant from BOTH the typed text and the authored triggers/
+// concepts before comparing means a scenario author can keep writing natural contractions
+// ("don't want") without having to separately spell out every apostrophe-free variant by hand.
+function coachFlattenApostrophes(s) { return s.replace(/[’‘`´']/g, ''); }
+
 function coachScoreScenario(sc, normText, ctx, isDiagnosticBoost) {
  const wt = COACH_CONFIG.scoringWeights;
+ const flatText = coachFlattenApostrophes(normText);
  let score = 0;
- const exactHit = sc.triggers.some(tr => normText.includes(tr));
+ const exactHit = sc.triggers.some(tr => flatText.includes(coachFlattenApostrophes(tr)));
  if (exactHit) {
  score += wt.exactTriggerMatch;
  } else {
  const partialHit = sc.triggers.some(tr => {
- const words = tr.split(/\s+/).filter(w => w.length > 3);
+ const words = coachFlattenApostrophes(tr).split(/\s+/).filter(w => w.length > 3);
  if (!words.length) return false;
- const hits = words.filter(w => normText.includes(w)).length;
+ const hits = words.filter(w => flatText.includes(w)).length;
  return hits / words.length >= 0.5;
  });
  if (partialHit) score += wt.partialTriggerMatch;
  }
- const matchedConcepts = sc.concepts.filter(c => normText.includes(c));
+ const matchedConcepts = sc.concepts.filter(c => flatText.includes(coachFlattenApostrophes(c)));
  if (matchedConcepts.length) score += matchedConcepts.length * wt.conceptMatch;
  if (matchedConcepts.length >= 2) score += wt.pairedConceptMatch;
  // Planner-context signals (KPI status, tenure, etc.) are supporting evidence only — they
@@ -4195,6 +4202,27 @@ const SCENARIOS = [
  avoid: "Great job. Now here's what you need to do next.",
  followUp: "Review progress only when a development goal is selected.",
  }},
+ { id: 'PERF_06', title: 'Leader Wants a Top Performer to Add Hours for the Business, and They Have Said No', cats: ['GROWTH','RECOGNITION'], model: 'GROW',
+ gaps: ['CLARITY'], metrics: ['productivity','performanceStatus','scheduledHours','bookedHours','revenue'],
+ mode: 'ASK', intensity: 'DEVELOP', guardrailSensitive: true, metricSignal: coachHighProdSignal,
+ // This is a leader-mindset scenario, not a technician gap: the ask itself (more hours to
+ // grow the business, not the technician's own goal) is usually the thing to let go of, not
+ // something to keep revisiting with the technician. Distinct from CORR_07 (an operational
+ // guest-access need may exist) and RECOG_02 (pure recognition, no ask on the table) — this
+ // is specifically the business-driven "we need more revenue" ask that's already been declined.
+ triggers: ['top performer to add more hours','want my top performer to work more','get my top performer to add hours','top performer to work more hours for the business',"top performer doesn't want to add hours","top performer doesn't want more hours",'ask a top performer to add hours for the business','top performer add more hours to bring in more money'],
+ // (Apostrophes in "don't"/"doesn't" are normalized away by coachFlattenApostrophes at match
+ // time, so "dont"/"doesnt" match the same as the apostrophized spelling — no need to list both.)
+ concepts: ['top performer','add hours','more hours','work more','for the business','bring in more money','grow the business','more money',"don't want","doesn't want"],
+ content: {
+ context: "A top performer does not owe the business additional hours simply because leadership wants more revenue. Once they have already said no, pressuring them to add hours or change their schedule risks resentment, burnout, or losing your best technician — and it treats a business need as if it were a performance gap, when it is not one.",
+ approach: "Separate the two problems. Recognize the technician's current contribution on its own terms, without reopening the ask. If a real revenue or guest-access need exists, treat it as a business problem to solve through other technicians, hiring, or business-building — not by continuing to ask this technician for more.",
+ startWith: "I want to start by recognizing the business you've built — it's some of the strongest on the team, and I don't want you to think this is about doing more than that.",
+ ask: ["Is there anything about your current schedule you'd want to revisit, entirely on your own terms?", "Is there anything outside of adding hours that you'd be open to helping with?", "What would you want me to know before I bring this business question to someone else?"],
+ coachToward: "Clear confirmation that the technician's current schedule stands as their decision, and a plan for meeting the business need through a different lever entirely.",
+ avoid: "You're already so busy — can't you just add one more day for the team?",
+ followUp: "Confirm the ask has genuinely been dropped, and that whatever solves the business need does not route back through this technician's schedule.",
+ }},
 
 // DEV — Development
  { id: 'DEV_01', title: 'Technician Has Plateaued', cats: ['GROWTH'], model: 'GROW',
@@ -4316,8 +4344,10 @@ const SCENARIOS = [
  { id: 'CORR_03', title: 'Guest Complaint', cats: ['FEEDBACK','GROWTH'], model: 'SBI',
  gaps: ['SKILL','CLARITY','BEHAVIOR'], metrics: ['repeatRate'],
  mode: 'ASK_THEN_COACH', intensity: 'RESET',
- triggers: ['guest complaint','member complaint','client complained','bad guest experience','unhappy guest'],
- concepts: ['complaint','guest','member','client','unhappy'],
+ // 'club member complaint' (not bare 'member') — "member" alone collides with the generic
+ // "team member" a leader uses to refer to any employee, which has nothing to do with a guest complaint.
+ triggers: ['guest complaint','club member complaint','client complained','bad guest experience','unhappy guest'],
+ concepts: ['complaint','guest','club member','client','unhappy'],
  content: {
  context: "A complaint is one perspective and should be explored factually with the technician before conclusions are reached.",
  approach: "Share the specific concern without accusation and hear the technician's perspective.",
@@ -4360,8 +4390,11 @@ const SCENARIOS = [
  { id: 'CORR_06', title: 'Technician Is Consistently Late or Unprepared', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
  gaps: ['ACCOUNTABILITY','CAPACITY'], metrics: [],
  mode: 'ASK_THEN_DIRECT', intensity: 'RESET',
- triggers: ['always late','keeps coming late','not prepared','not ready for guests','late to shift','late technician'],
- concepts: ['late','unprepared','not ready','shift','arrival'],
+ // Several literal, common leader phrasings ("keeps coming in late", "shows up late") are
+ // included as exact triggers so this confidently wins on its own merits rather than relying
+ // on the loose word-overlap fallback, which was landing this just under the confirmation threshold.
+ triggers: ['always late','keeps coming late','keeps coming in late','shows up late','late for work','late to work','running late for shift','not prepared','not ready for guests','late to shift','late technician'],
+ concepts: ['late','coming in late','shows up late','late for work','unprepared','not ready','shift','arrival'],
  content: {
  context: "Repeated lateness or lack of readiness should focus on observable occurrences, impact, expectations, and barriers.",
  approach: "Use specific examples and avoid assumptions about commitment or work ethic.",
@@ -4378,6 +4411,7 @@ const SCENARIOS = [
  triggers: ['refuses schedule change',"won't work weekends","won't work saturday","won't work evenings",'does not want to change schedule','resists schedule',"doesn't want to change their schedule"],
  // 'don't want'/'doesn't want' are the plain-language way leaders actually phrase resistance —
  // without them this scenario under-scores against generic schedule-topic scenarios like PERF_03.
+ // (coachFlattenApostrophes normalizes "dont"/"doesnt" to match these the same way.)
  concepts: ['refuse','schedule',"don't want","doesn't want",'weekend','saturday','evening','availability'],
  content: {
  context: "Resistance may reflect a legitimate constraint, preference, or unwillingness. High productivity alone does not justify pressuring a technician to add days or hours.",
@@ -4399,6 +4433,7 @@ const SCENARIOS = [
  // 'refus'/'resist' are stems so they also match refuses/refusing and resists/resisting; plain
  // 'schedule' plus 'don't/doesn't want' cover the common leader phrasing "I want them to change
  // their schedule but they don't want to" (word order that 'schedule change' alone would miss).
+ // (coachFlattenApostrophes normalizes "dont"/"doesnt" to match these the same way.)
  concepts: ['already asked','already talked','schedule change','schedule','resist','refus',"don't want","doesn't want",'pushed back','agreed schedule'],
  content: {
  context: "This is different from a first conversation about a schedule change — the expectation has already been communicated and the technician has not followed through. This applies whether the technician is new or established.",
@@ -4409,6 +4444,21 @@ const SCENARIOS = [
  avoid: "You never listen to me about your schedule.",
  followUp: "Confirm the change was made and whether it addressed the underlying goal; escalate to a formal performance conversation if it continues to go unaddressed.",
  escalation: "medical restriction; leave concern; accommodation concern; formal attendance or performance process.",
+ }},
+ { id: 'CORR_09', title: 'Technician Is Not Following Uniform or Style Guide Standards', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
+ gaps: ['CLARITY','ACCOUNTABILITY'], metrics: [],
+ mode: 'ASK_THEN_DIRECT', intensity: 'RESET',
+ triggers: ['not wearing uniform','out of uniform','not following style guide','not following the style guide',"doesn't follow the style guide",'not in dress code','not following dress code','not dressed appropriately','ignoring the style guide','not wearing the right uniform','keeps coming in out of uniform','not following the dress code','out of dress code'],
+ concepts: ['uniform','style guide','dress code','not dressed','appearance standard'],
+ content: {
+ context: "A uniform or style-guide concern should be treated as a clear, observable standard, not a character judgment — confirm the technician actually knows the expectation before assuming it's a choice to ignore it. Also rule out a legitimate constraint (cost or access to required pieces, laundry timing, or a religious or medical accommodation) before treating it as noncompliance.",
+ approach: "Name the specific standard and the specific instance, check understanding, and reset the expectation clearly. Avoid broad statements about professionalism or attitude.",
+ startWith: "I want to talk through the uniform/style guide standard. A couple of times recently what you had on didn't match what's expected, and I want to make sure we're clear on it going forward.",
+ ask: ["Were you clear on what the style guide calls for here?", "Is there anything getting in the way — access to the right pieces, cost, timing?", "Is there anything about the standard itself I should know before we go further?", "What do you need from me to make this consistent?"],
+ coachToward: "Confirmed understanding of the standard and a specific plan for consistent compliance.",
+ avoid: "You look unprofessional.",
+ followUp: "Confirm the standard is being met consistently; move to a formal appearance-standards process only if it continues after the expectation has been clearly reset.",
+ escalation: "religious or medical accommodation concern; a stated cost/access barrier; formal appearance-standards or attendance process if it persists after a clear reset.",
  }},
 
 // CULT — Culture & Team
