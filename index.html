@@ -4448,8 +4448,11 @@ const SCENARIOS = [
  { id: 'CORR_09', title: 'Technician Is Not Following Uniform or Style Guide Standards', cats: ['ACCOUNTABILITY','FEEDBACK'], model: 'CLEAR_EXPECTATIONS',
  gaps: ['CLARITY','ACCOUNTABILITY'], metrics: [],
  mode: 'ASK_THEN_DIRECT', intensity: 'RESET',
- triggers: ['not wearing uniform','out of uniform','not following style guide','not following the style guide',"doesn't follow the style guide",'not in dress code','not following dress code','not dressed appropriately','ignoring the style guide','not wearing the right uniform','keeps coming in out of uniform','not following the dress code','out of dress code'],
- concepts: ['uniform','style guide','dress code','not dressed','appearance standard'],
+ // "won't wear" is the natural resistance phrasing (same pattern as CORR_07's "won't work
+ // weekends") — without a trigger for it, and without 'wear' as its own concept below, this
+ // scored just under the confirmation threshold for "she won't wear her uniform."
+ triggers: ['not wearing uniform','out of uniform',"won't wear uniform","won't wear her uniform","won't wear his uniform","won't wear the uniform",'refuses to wear the uniform','refuses to wear uniform','not following style guide','not following the style guide',"doesn't follow the style guide",'not in dress code','not following dress code','not dressed appropriately','ignoring the style guide','not wearing the right uniform','keeps coming in out of uniform','not following the dress code','out of dress code'],
+ concepts: ['uniform','wear','style guide','dress code','not dressed','appearance standard'],
  content: {
  context: "A uniform or style-guide concern should be treated as a clear, observable standard, not a character judgment — confirm the technician actually knows the expectation before assuming it's a choice to ignore it. Also rule out a legitimate constraint (cost or access to required pieces, laundry timing, or a religious or medical accommodation) before treating it as noncompliance.",
  approach: "Name the specific standard and the specific instance, check understanding, and reset the expectation clearly. Avoid broad statements about professionalism or attitude.",
