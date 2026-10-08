@@ -219,7 +219,7 @@
  .status-banner.red { background: var(--red-bg); border-color: var(--red-border); }
  .status-banner.blue { background: var(--sage-bg); border-color: var(--sage); }
  /* .neutral — the Overview tab's overall-classification banner. One consistent brand/neutral look
-    for all three Coaching Indicators (On Track / Coaching Opportunity / Additional Coaching
+    for all three Coaching Indicators (On Track / Coaching Focus / Coaching Action
     Needed) — the box itself never changes color based on performance; only the heading and copy do. */
  .status-banner.neutral { background: var(--accent-light); border-color: var(--tip-border); }
  .status-banner.neutral .status-body h3 { color: var(--accent-dark); }
@@ -532,7 +532,7 @@
 table.to-table th:nth-child(1), table.to-table td:nth-child(1) { width: 10.5%; }
  table.to-table th:nth-child(2), table.to-table td:nth-child(2) { width: 7.5%; }
  table.to-table th:nth-child(3), table.to-table td:nth-child(3) { width: 8.5%; }
- /* Status now carries the long Coaching Indicator label ("Additional Coaching Needed") instead of a
+ /* Status now carries the long Coaching Indicator label ("Coaching Action Needed") instead of a
     single color word — it needs real room to wrap onto 2-3 lines. */
  table.to-table th:nth-child(4), table.to-table td:nth-child(4) { width: 11.5%; }
  table.to-table th:nth-child(5), table.to-table td:nth-child(5) { width: 7%; }
@@ -1525,10 +1525,10 @@ return { cls, greenCount, revenueStatus, productivityStatus, repeatRateStatus };
 // "Coaching Indicator" is the leader-facing name for this 3-tier result. Internal keys (meeting /
 // progressing / needsFocus) are unchanged; only the labels shown to leaders are.
 //   On Track                   — all 3 KPIs green
-//   Coaching Opportunity       — 2 of 3 KPIs green
-//   Additional Coaching Needed — 0–1 of 3 KPIs green
+//   Coaching Focus             — 2 of 3 KPIs green
+//   Coaching Action Needed     — 0–1 of 3 KPIs green
 const COACHING_INDICATOR_NAME = 'Coaching Indicator';
-const OVERALL_CLASS_LABEL = { meeting: 'On Track', progressing: 'Coaching Opportunity', needsFocus: 'Additional Coaching Needed' };
+const OVERALL_CLASS_LABEL = { meeting: 'On Track', progressing: 'Coaching Focus', needsFocus: 'Coaching Action Needed' };
 
 // Pure: given a technician's per-day booking % (heatTech, 7 values sun..sat) and category demand
 // per day (heatCat, 7 values), finds the single best day-swap opportunity, if any, using the
@@ -1850,7 +1850,7 @@ tenureSignalHtml = `
 <div class="root-cause-card" style="background:${rrTrendUp?'var(--yellow-bg)':'var(--red-bg)'}; border-left-color:${rrTrendUp?'var(--yellow)':'var(--red)'}; margin-top:14px; margin-bottom:20px;">
 <div class="rc-icon"></div>
 <div class="rc-title">Sustained Repeat Rate Opportunity</div>
-<p style="font-size:12.5px; color:var(--text); line-height:1.55;"><strong>Why you're seeing this:</strong> ${name} has been on the team ${months} months, and repeat rate remains ${s.repeatRate} (12-mo avg ${m.repeatRate.y!=null?fp(m.repeatRate.y):'not entered'} vs. ${bm.rrStr} target for ${catLabel}). Repeat rate is a brand standard that matters independently of overall performance — it isn't offset by revenue or other metrics looking fine. A sustained low repeat rate this far in can affect guest experience, brand loyalty, and ${name}'s long-term growth.</p>
+<p style="font-size:12.5px; color:var(--text); line-height:1.55;"><strong>Why you're seeing this:</strong> ${name} has been on the team ${months} months, and repeat rate remains ${s.repeatRate} (12-mo avg ${m.repeatRate.y!=null?fp(m.repeatRate.y):'not entered'} vs. ${bm.rrStr} target for ${catLabel}). Repeat rate is a brand standard that matters independently of overall performance — it isn't offset by revenue or other metrics looking fine. Guest experience, brand loyalty, and the team member’s long-term growth may be at risk when a low repeat rate is sustained this far into their tenure.</p>
 <p style="font-size:12.5px; color:var(--text); line-height:1.55; margin-top:8px;"><strong>What to review:</strong> Repeat Rate trend over the most recent 3 months, Productivity, and schedule/demand.</p>
 <p style="font-size:12.5px; color:var(--text); line-height:1.55; margin-top:8px;"><strong>Next step:</strong> ${nextStep}</p>
 </div>`;
