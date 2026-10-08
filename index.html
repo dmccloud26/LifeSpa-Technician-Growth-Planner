@@ -138,13 +138,16 @@
  .input-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,94,82,0.15); background: var(--surface); }
 
  /* ── GENERATE BUTTON ── */
- .gen-btn {
+ .gen-btn, .gen-btn-alt {
  display: block; width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none;
  border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer;
  transition: background 0.2s, transform 0.1s; margin: 8px 0 28px;
  }
- .gen-btn:hover { background: var(--accent-dark); }
- .gen-btn:active { transform: scale(0.99); }
+ .gen-btn:hover, .gen-btn-alt:hover { background: var(--accent-dark); }
+ .gen-btn:active, .gen-btn-alt:active { transform: scale(0.99); }
+ /* Second Generate button inside the Load Technician Data card (shown once a technician is loaded) */
+ .gen-btn-alt { margin: 16px 0 0; }
+ .gen-btn-alt.stale { box-shadow: 0 0 0 3px var(--yellow-border); }
 
  /* ── RESULTS ── */
  #resultsSection { display: none; }
@@ -399,7 +402,7 @@
     (disclaimer, location + technician pickers, entry form) are on-screen controls, not report
     content, so they never print. Without this the first printed page was just this setup chrome. */
  header, .stale-banner, .rpanel[data-panel="setup"] { display: none !important; }
- .header-actions, .gen-btn, .results-actions, #inputSection, #validationSummary, .result-tabs { display: none !important; }
+ .header-actions, .gen-btn, .gen-btn-alt, .results-actions, #inputSection, #validationSummary, .result-tabs { display: none !important; }
  .card { box-shadow: none; border: 1px solid var(--border); break-inside: avoid; }
  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
  .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
@@ -654,6 +657,7 @@ table.to-table th:nth-child(1), table.to-table td:nth-child(1) { width: 10.5%; }
  <div class="d-icon">&#9888;&#65039;</div>
  <div id="autofillConflictText"></div>
  </div>
+ <button type="button" class="gen-btn-alt" id="autofillGenBtn" style="display:none;" onclick="runAnalysis()">Generate Growth Plan &amp; Coaching Recommendations</button>
  </div>
 
 <div id="inputSection">
@@ -3406,8 +3410,7 @@ let isStale = false;
 function markStale() {
 if (!resultsGenerated) return;
 isStale = true;
-const g = document.querySelector('.gen-btn');
-if (g) { g.textContent = 'Update Growth Plan — Inputs Changed'; g.classList.add('stale'); }
+document.querySelectorAll('.gen-btn, .gen-btn-alt').forEach(g => { g.textContent = 'Update Growth Plan — Inputs Changed'; g.classList.add('stale'); });
 const rs = document.getElementById('resultsSection');
 const b = document.getElementById('staleBanner');
 if (b && rs && getComputedStyle(rs).display !== 'none') b.style.display = 'flex';
@@ -3416,8 +3419,7 @@ function clearStale() {
 isStale = false;
 const b = document.getElementById('staleBanner');
 if (b) b.style.display = 'none';
-const g = document.querySelector('.gen-btn');
-if (g && genBtnLabel !== null) { g.textContent = genBtnLabel; g.classList.remove('stale'); }
+if (genBtnLabel !== null) document.querySelectorAll('.gen-btn, .gen-btn-alt').forEach(g => { g.textContent = genBtnLabel; g.classList.remove('stale'); });
 }
 (function initStale() {
 const g = document.querySelector('.gen-btn');
@@ -3849,6 +3851,7 @@ function onAutofillLocationChange() {
  techSel.innerHTML = '<option value="">Select a location first&hellip;</option>';
  document.getElementById('autofillStatus').textContent = '';
  document.getElementById('autofillConflict').style.display = 'none';
+ setAutofillGenBtn(false);
  return;
  }
  techSel.disabled = false;
@@ -3863,6 +3866,13 @@ function onAutofillLocationChange() {
  });
  document.getElementById('autofillStatus').textContent = '';
  document.getElementById('autofillConflict').style.display = 'none';
+ setAutofillGenBtn(false);
+}
+
+// The second Generate button under the Load Technician Data message only shows while a technician is loaded.
+function setAutofillGenBtn(show) {
+ const b = document.getElementById('autofillGenBtn');
+ if (b) b.style.display = show ? 'block' : 'none';
 }
 
 function onAutofillTechChange() {
@@ -3871,10 +3881,10 @@ function onAutofillTechChange() {
  const name = document.getElementById('autofillTech').value;
  const statusEl = document.getElementById('autofillStatus');
  const conflictBox = document.getElementById('autofillConflict');
- if (!loc || !name) { statusEl.textContent = ''; conflictBox.style.display = 'none'; return; }
+ if (!loc || !name) { statusEl.textContent = ''; conflictBox.style.display = 'none'; setAutofillGenBtn(false); return; }
  const key = loc + '\u241F' + name;
  const recs = TD_INDEX[key];
- if (!recs || !recs.length) { statusEl.textContent = 'No data found for this technician.'; return; }
+ if (!recs || !recs.length) { statusEl.textContent = 'No data found for this technician.'; setAutofillGenBtn(false); return; }
 
  const r = recs[0];
  TECH_FIELD_ORDER.forEach((id, i) => {
@@ -3910,7 +3920,7 @@ function onAutofillTechChange() {
  if (stillNeed.length) {
  tail += ' Still need ' + stillNeed.join(' and ') + ' in Step 1' + (heatmapFilled ? '' : ' (Schedule Optimization in Step 3 wasn\'t matched either, but that\'s optional)') + '.';
  } else if (heatmapFilled) {
- tail += ' Service Category, Hire Date, and Schedule Optimization (Step 3) filled in too \u2014 just double-check them.';
+ tail = ' Steps 1 - 3 are filled in for you. Steps 4 - 6 are optional for you to fill in.';
  } else {
  tail += ' Service Category and Hire Date filled in too. Schedule Optimization (Step 3) wasn\'t matched, but that\'s optional.';
  }
@@ -3925,6 +3935,7 @@ function onAutofillTechChange() {
  statusEl.innerHTML = '<span style="color:var(--green); font-weight:600;">Loaded ' + name + ' \u2014 ' + loc + '.</span>' + tail +
  (otherClubsNote ? '<br><span class="multi-club-inline">\u24D8 ' + otherClubsNote + '</span>' : '') +
  (transferNote ? '<br><span class="multi-club-inline">\u24D8 ' + transferNote + '</span>' : '');
+ setAutofillGenBtn(true);
 }
 
 function clearAutofill() {
